@@ -44,7 +44,7 @@ textarea {
 }
 
 /* =========================
-   NAVBAR
+   TOP BAR
 ========================= */
 
 .topbar {
@@ -188,7 +188,7 @@ textarea {
 }
 
 /* =========================
-   STEPS
+   STEP INDICATORS
 ========================= */
 
 .steps {
@@ -210,7 +210,6 @@ textarea {
     justify-content: center;
     font-size: 12px;
     font-weight: bold;
-    position: relative;
 }
 
 .step-dot.active {
@@ -336,11 +335,6 @@ textarea {
 .field textarea {
     min-height: 130px;
     resize: vertical;
-}
-
-.hint {
-    font-size: 11px;
-    color: var(--muted);
 }
 
 /* =========================
@@ -641,10 +635,6 @@ textarea {
 
 <body>
 
-<!-- =========================
-     TOP BAR
-========================= -->
-
 <header class="topbar">
 
     <a href="index.html" class="brand">
@@ -669,8 +659,6 @@ textarea {
 
 <div class="container">
 
-    <!-- HEADING -->
-
     <div class="heading">
 
         <div class="eyebrow">
@@ -686,8 +674,6 @@ textarea {
 
     </div>
 
-
-    <!-- FORM CARD -->
 
     <div class="form-card">
 
@@ -725,24 +711,20 @@ textarea {
         </div>
 
 
-        <!-- STEP INDICATORS -->
+        <!-- STEPS -->
 
         <div class="steps">
 
             <div class="step-dot active">1</div>
-
             <div class="step-line"></div>
 
             <div class="step-dot">2</div>
-
             <div class="step-line"></div>
 
             <div class="step-dot">3</div>
-
             <div class="step-line"></div>
 
             <div class="step-dot">4</div>
-
             <div class="step-line"></div>
 
             <div class="step-dot">5</div>
@@ -750,15 +732,11 @@ textarea {
         </div>
 
 
-        <!-- FORM -->
-
         <form id="registrationForm">
 
             <div class="form-body">
 
-                <!-- =========================
-                     STEP 1
-                ========================== -->
+                <!-- STEP 1 -->
 
                 <section class="form-step active">
 
@@ -869,9 +847,7 @@ textarea {
                 </section>
 
 
-                <!-- =========================
-                     STEP 2
-                ========================== -->
+                <!-- STEP 2 -->
 
                 <section class="form-step">
 
@@ -971,9 +947,7 @@ textarea {
                 </section>
 
 
-                <!-- =========================
-                     STEP 3
-                ========================== -->
+                <!-- STEP 3 -->
 
                 <section class="form-step">
 
@@ -1070,9 +1044,7 @@ textarea {
                 </section>
 
 
-                <!-- =========================
-                     STEP 4
-                ========================== -->
+                <!-- STEP 4 -->
 
                 <section class="form-step">
 
@@ -1189,9 +1161,7 @@ textarea {
                 </section>
 
 
-                <!-- =========================
-                     STEP 5
-                ========================== -->
+                <!-- STEP 5 -->
 
                 <section class="form-step">
 
@@ -1238,7 +1208,7 @@ textarea {
                 </section>
 
 
-                <!-- BUTTONS -->
+                <!-- ACTIONS -->
 
                 <div class="form-actions">
 
@@ -1269,9 +1239,7 @@ textarea {
         </form>
 
 
-        <!-- =========================
-             SUCCESS
-        ========================== -->
+        <!-- SUCCESS -->
 
         <div
             class="success-screen"
@@ -1285,8 +1253,7 @@ textarea {
             <h2>Registration Submitted</h2>
 
             <p>
-                Your AMUN registration has been successfully
-                received.
+                Your AMUN registration has been successfully received.
             </p>
 
             <div
@@ -1316,26 +1283,21 @@ textarea {
 </main>
 
 
-<!-- SUPABASE -->
+<!-- =====================================================
+     SUPABASE JAVASCRIPT LIBRARY
+====================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
 
-/* =========================================================
-   SUPABASE CONFIGURATION
-========================================================= */
+/* =====================================================
+   SUPABASE CONFIG
+====================================================== */
 
 const SUPABASE_URL =
     "https://gxtmwoeusikehczprbvv.supabase.co";
-
-/*
-   PASTE YOUR SUPABASE PUBLISHABLE KEY BELOW.
-
-   Example:
-   const SUPABASE_KEY = "sb_publishable_...";
-*/
 
 const SUPABASE_KEY =
     "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
@@ -1349,9 +1311,9 @@ const db = createClient(
 );
 
 
-/* =========================================================
+/* =====================================================
    FORM STATE
-========================================================= */
+====================================================== */
 
 let currentStep = 0;
 
@@ -1379,6 +1341,9 @@ const backBtn =
 const nextBtn =
     document.getElementById("nextBtn");
 
+const errorBox =
+    document.getElementById("errorMessage");
+
 
 const stepNames = [
     "Personal Information",
@@ -1389,9 +1354,9 @@ const stepNames = [
 ];
 
 
-/* =========================================================
-   UPDATE UI
-========================================================= */
+/* =====================================================
+   UPDATE STEP UI
+====================================================== */
 
 function updateStep() {
 
@@ -1472,9 +1437,9 @@ function updateStep() {
 }
 
 
-/* =========================================================
-   GET RADIO VALUE
-========================================================= */
+/* =====================================================
+   RADIO VALUE
+====================================================== */
 
 function getRadioValue(name) {
 
@@ -1490,9 +1455,9 @@ function getRadioValue(name) {
 }
 
 
-/* =========================================================
-   VALIDATE CURRENT STEP
-========================================================= */
+/* =====================================================
+   VALIDATION
+====================================================== */
 
 function validateCurrentStep() {
 
@@ -1529,10 +1494,7 @@ function validateCurrentStep() {
 
     if (currentStep === 2) {
 
-        const experience =
-            getRadioValue("experience");
-
-        if (!experience) {
+        if (!getRadioValue("experience")) {
 
             alert(
                 "Please select whether you have participated in an MUN before."
@@ -1545,7 +1507,7 @@ function validateCurrentStep() {
     }
 
 
-    /* Committee validation */
+    /* Committee preferences */
 
     if (currentStep === 3) {
 
@@ -1554,6 +1516,7 @@ function validateCurrentStep() {
 
         const committee2 =
             document.getElementById("committee2").value;
+
 
         if (committee1 === committee2) {
 
@@ -1573,9 +1536,9 @@ function validateCurrentStep() {
 }
 
 
-/* =========================================================
+/* =====================================================
    NEXT STEP
-========================================================= */
+====================================================== */
 
 async function nextStep() {
 
@@ -1588,16 +1551,20 @@ async function nextStep() {
 
         currentStep++;
 
+
         if (currentStep === steps.length - 1) {
             createReview();
         }
 
+
         updateStep();
+
 
         window.scrollTo({
             top: 0,
             behavior: "smooth"
         });
+
 
         return;
 
@@ -1609,9 +1576,9 @@ async function nextStep() {
 }
 
 
-/* =========================================================
+/* =====================================================
    PREVIOUS STEP
-========================================================= */
+====================================================== */
 
 function previousStep() {
 
@@ -1631,15 +1598,20 @@ function previousStep() {
 }
 
 
-/* =========================================================
+/* =====================================================
    ESCAPE HTML
-========================================================= */
+====================================================== */
 
 function escapeHTML(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
         return "—";
     }
+
 
     return String(value)
         .replace(/&/g, "&amp;")
@@ -1651,9 +1623,9 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================================
-   CREATE REVIEW
-========================================================= */
+/* =====================================================
+   REVIEW
+====================================================== */
 
 function createReview() {
 
@@ -1661,10 +1633,11 @@ function createReview() {
         getRadioValue("experience");
 
 
-    const data = [
+    const sections = [
 
         {
-            section: "Personal Information",
+            title: "Personal Information",
+
             items: [
                 ["Full Name", document.getElementById("fullName").value],
                 ["Email", document.getElementById("email").value],
@@ -1674,8 +1647,10 @@ function createReview() {
             ]
         },
 
+
         {
-            section: "School Information",
+            title: "School Information",
+
             items: [
                 ["School", document.getElementById("school").value],
                 ["Grade", document.getElementById("grade").value],
@@ -1684,8 +1659,10 @@ function createReview() {
             ]
         },
 
+
         {
-            section: "MUN Experience",
+            title: "MUN Experience",
+
             items: [
                 ["Previous MUN", experience],
                 ["Number of MUNs", document.getElementById("munCount").value],
@@ -1693,8 +1670,10 @@ function createReview() {
             ]
         },
 
+
         {
-            section: "Preferences",
+            title: "Committee Preferences",
+
             items: [
                 ["First Preference", document.getElementById("committee1").value],
                 ["Second Preference", document.getElementById("committee2").value],
@@ -1708,13 +1687,13 @@ function createReview() {
     let html = "";
 
 
-    data.forEach(section => {
+    sections.forEach(section => {
 
         html += `
             <div class="review-section">
 
                 <div class="review-title">
-                    ${escapeHTML(section.section)}
+                    ${escapeHTML(section.title)}
                 </div>
 
                 <div class="review-grid">
@@ -1742,6 +1721,7 @@ function createReview() {
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1754,9 +1734,9 @@ function createReview() {
 }
 
 
-/* =========================================================
-   GENERATE REGISTRATION ID
-========================================================= */
+/* =====================================================
+   REGISTRATION ID
+====================================================== */
 
 function generateRegistrationID() {
 
@@ -1766,20 +1746,17 @@ function generateRegistrationID() {
             .substring(2, 8)
             .toUpperCase();
 
+
     return "AMUN-" + random;
 
 }
 
 
-/* =========================================================
-   SUBMIT TO SUPABASE
-========================================================= */
+/* =====================================================
+   SUBMIT REGISTRATION
+====================================================== */
 
 async function submitRegistration() {
-
-    const errorBox =
-        document.getElementById("errorMessage");
-
 
     errorBox.style.display = "none";
     errorBox.textContent = "";
@@ -1787,33 +1764,45 @@ async function submitRegistration() {
 
     /* Agreement */
 
-    if (!document.getElementById("agreement").checked) {
+    if (
+        !document.getElementById("agreement").checked
+    ) {
 
         errorBox.textContent =
             "Please confirm that the information provided is accurate.";
 
-        errorBox.style.display = "block";
+        errorBox.style.display =
+            "block";
 
         return;
 
     }
 
 
-    /* Disable button */
+    /* Prevent double-click */
 
     nextBtn.disabled = true;
-    nextBtn.textContent = "Submitting...";
+    nextBtn.textContent =
+        "Submitting...";
 
 
     try {
+
+        /*
+         * Generate the ID BEFORE inserting.
+         * We don't use .select() after INSERT,
+         * because the public registration flow
+         * only needs INSERT permission.
+         */
 
         const registrationID =
             generateRegistrationID();
 
 
-        const data = {
+        const registrationData = {
 
-            registration_id: registrationID,
+            registration_id:
+                registrationID,
 
             full_name:
                 document.getElementById("fullName").value.trim(),
@@ -1867,18 +1856,24 @@ async function submitRegistration() {
 
 
         console.log(
-            "Sending registration:",
-            data
+            "Submitting:",
+            registrationData
         );
 
 
-        const {
-            data: insertedData,
-            error
-        } = await db
-            .from("registrations")
-            .insert([data])
-            .select();
+        /*
+         * INSERT ONLY.
+         *
+         * No .select()
+         * No SELECT permission required.
+         */
+
+        const { error } =
+            await db
+                .from("registrations")
+                .insert([
+                    registrationData
+                ]);
 
 
         if (error) {
@@ -1895,24 +1890,14 @@ async function submitRegistration() {
         }
 
 
-        if (
-            !insertedData ||
-            insertedData.length === 0
-        ) {
-
-            throw new Error(
-                "Registration was not returned by Supabase."
-            );
-
-        }
-
-
-        /* SUCCESS */
+        /* =============================================
+           SUCCESS
+        ============================================== */
 
         document.getElementById(
             "registrationID"
         ).textContent =
-            insertedData[0].registration_id;
+            registrationID;
 
 
         document.getElementById(
@@ -1934,14 +1919,16 @@ async function submitRegistration() {
 
 
         console.log(
-            "Registration successfully saved:",
-            insertedData[0]
+            "Registration successfully submitted."
         );
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Registration error:",
+            error
+        );
 
 
         errorBox.textContent =
@@ -1953,7 +1940,9 @@ async function submitRegistration() {
             "block";
 
 
-        nextBtn.disabled = false;
+        nextBtn.disabled =
+            false;
+
 
         nextBtn.textContent =
             "Submit Registration";
@@ -1963,24 +1952,27 @@ async function submitRegistration() {
 }
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-updateStep();
-
-
-/* =========================================================
-   FORM SUBMIT PROTECTION
-========================================================= */
+/* =====================================================
+   FORM SUBMIT
+====================================================== */
 
 document
     .getElementById("registrationForm")
-    .addEventListener("submit", function(event) {
+    .addEventListener(
+        "submit",
+        function(event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-    });
+        }
+    );
+
+
+/* =====================================================
+   INITIALIZE
+====================================================== */
+
+updateStep();
 
 </script>
 
