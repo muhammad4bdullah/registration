@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AMUN — Registration</title>
+
+<style>
+:root {
+    --blue: #073b78;
+    --blue-dark: #052d5d;
+    --blue-light: #eaf3ff;
+    --gold: #c9a34e;
+    --text: #172033;
+    --muted: #687386;
+    --white: #ffffff;
+    --border: #dfe5ec;
+    --bg: #f6f8fb;
+    --success: #15803d;
+    --danger: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.topbar {
+    height: 74px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 7%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.brand img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-text strong {
+    color: var(--blue);
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+.brand-text span {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+}
+
+/* =========================
+   PAGE
+========================= */
+
+.page {
+    min-height: calc(100vh - 74px);
+    padding: 55px 20px 80px;
+}
+
+.container {
+    width: min(950px, 100%);
+    margin: auto;
+}
+
+.heading {
+    text-align: center;
+    margin-bottom: 38px;
+}
+
+.heading .eyebrow {
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.heading h1 {
+    margin: 0;
+    color: var(--blue);
+    font-size: clamp(32px, 5vw, 48px);
+}
+
+.heading p {
+    max-width: 620px;
+    margin: 12px auto 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+/* =========================
+   FORM CARD
+========================= */
+
+.form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 15px 45px rgba(7, 59, 120, 0.08);
+    overflow: hidden;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-area {
+    padding: 26px 30px 22px;
+    border-bottom: 1px solid var(--border);
+    background: #fbfcfe;
+}
+
+.progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--blue);
+}
+
+.progress-percent {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.progress-track {
+    width: 100%;
+    height: 7px;
+    background: #e6ebf2;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 20%;
+    background: var(--blue);
+    border-radius: 20px;
+    transition: width 0.35s ease;
+}
+
+/* =========================
+   STEPS
+========================= */
+
+.steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.step-dot {
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background: #e8edf4;
+    color: #738096;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    position: relative;
+}
+
+.step-dot.active {
+    background: var(--blue);
+    color: white;
+}
+
+.step-dot.completed {
+    background: var(--gold);
+    color: white;
+}
+
+.step-line {
+    width: 35px;
+    height: 2px;
+    background: #e1e6ed;
+    align-self: center;
+}
+
+.step-line.active {
+    background: var(--gold);
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-body {
+    padding: 38px;
+}
+
+.form-step {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-heading {
+    margin-bottom: 28px;
+}
+
+.step-heading h2 {
+    margin: 0 0 7px;
+    color: var(--blue);
+    font-size: 25px;
+}
+
+.step-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #273449;
+}
+
+.required {
+    color: var(--danger);
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 14px;
+    outline: none;
+    background: white;
+    color: var(--text);
+    transition: 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(7, 59, 120, 0.08);
+}
+
+.field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* =========================
+   RADIO
+========================= */
+
+.radio-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.radio-option {
+    position: relative;
+}
+
+.radio-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.radio-option label {
+    display: block;
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    color: #435067;
+    transition: 0.2s ease;
+}
+
+.radio-option input:checked + label {
+    border-color: var(--blue);
+    background: var(--blue-light);
+    color: var(--blue);
+    font-weight: bold;
+}
+
+/* =========================
+   CHECKBOX
+========================= */
+
+.agreement {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 26px;
+    padding: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+}
+
+.agreement input {
+    margin-top: 3px;
+}
+
+.agreement label {
+    font-size: 13px;
+    color: #4d5a6e;
+    line-height: 1.6;
+}
+
+/* =========================
+   REVIEW
+========================= */
+
+.review-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.review-section {
+    border-bottom: 1px solid var(--border);
+}
+
+.review-section:last-child {
+    border-bottom: none;
+}
+
+.review-title {
+    padding: 13px 17px;
+    background: #f8fafc;
+    color: var(--blue);
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.review-item {
+    padding: 14px 17px;
+    border-top: 1px solid var(--border);
+}
+
+.review-item:nth-child(odd) {
+    border-right: 1px solid var(--border);
+}
+
+.review-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.review-value {
+    font-size: 14px;
+    color: var(--text);
+    word-break: break-word;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.form-actions {
+    margin-top: 35px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.btn {
+    border: none;
+    border-radius: 9px;
+    padding: 13px 22px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--blue-dark);
+}
+
+.btn-secondary {
+    background: #eef2f7;
+    color: #435067;
+}
+
+.btn-secondary:hover {
+    background: #e3e8ef;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================
+   SUCCESS
+========================= */
+
+.success-screen {
+    display: none;
+    text-align: center;
+    padding: 65px 30px;
+}
+
+.success-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    margin: 0 auto 22px;
+}
+
+.success-screen h2 {
+    margin: 0 0 10px;
+    color: var(--blue);
+    font-size: 30px;
+}
+
+.success-screen p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.registration-id {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 15px 24px;
+    border-radius: 10px;
+    background: var(--blue-light);
+    border: 1px solid #c9ddf5;
+    color: var(--blue);
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error-message {
+    display: none;
+    margin-top: 18px;
+    padding: 13px 15px;
+    border-radius: 9px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+    .brand img {
+        width: 42px;
+        height: 42px;
+    }
+
+    .brand-text strong {
+        font-size: 17px;
+    }
+
+    .page {
+        padding: 35px 12px 60px;
+    }
+
+    .form-body {
+        padding: 25px 20px;
+    }
+
+    .progress-area {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .full {
+        grid-column: auto;
+    }
+
+    .steps {
+        gap: 4px;
+    }
+
+    .step-line {
+        width: 17px;
+    }
+
+    .review-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .review-item:nth-child(odd) {
+        border-right: none;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     TOP BAR
+========================= -->
+
+<header class="topbar">
+
+    <a href="index.html" class="brand">
+
+        <img
+            src="apsacs-logo.png"
+            alt="APSACS Logo"
+            onerror="this.style.display='none'"
+        >
+
+        <div class="brand-text">
+            <strong>AMUN</strong>
+            <span>APSACS MODEL UNITED NATIONS</span>
+        </div>
+
+    </a>
+
+</header>
+
+
+<main class="page">
+
+<div class="container">
+
+    <!-- HEADING -->
+
+    <div class="heading">
+
+        <div class="eyebrow">
+            Delegate Registration
+        </div>
+
+        <h1>Join AMUN</h1>
+
+        <p>
+            Complete the registration form below to participate
+            in APSACS Model United Nations.
+        </p>
+
+    </div>
+
+
+    <!-- FORM CARD -->
+
+    <div class="form-card">
+
+        <!-- PROGRESS -->
+
+        <div class="progress-area">
+
+            <div class="progress-top">
+
+                <span
+                    class="progress-label"
+                    id="progressLabel"
+                >
+                    Personal Information
+                </span>
+
+                <span
+                    class="progress-percent"
+                    id="progressPercent"
+                >
+                    20%
+                </span>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-bar"
+                    id="progressBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP INDICATORS -->
+
+        <div class="steps">
+
+            <div class="step-dot active">1</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-dot">2</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-dot">3</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-dot">4</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-dot">5</div>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <form id="registrationForm">
+
+            <div class="form-body">
+
+                <!-- =========================
+                     STEP 1
+                ========================== -->
+
+                <section class="form-step active">
+
+                    <div class="step-heading">
+
+                        <h2>Personal Information</h2>
+
+                        <p>
+                            Tell us a little about yourself.
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field full">
+
+                            <label for="fullName">
+                                Full Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="fullName"
+                                placeholder="Enter your full name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="email">
+                                Email Address <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="you@example.com"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="phone">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                placeholder="03XX XXXXXXX"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="gender">
+                                Gender <span class="required">*</span>
+                            </label>
+
+                            <select id="gender" required>
+
+                                <option value="">
+                                    Select gender
+                                </option>
+
+                                <option value="Male">
+                                    Male
+                                </option>
+
+                                <option value="Female">
+                                    Female
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="dob">
+                                Date of Birth
+                            </label>
+
+                            <input
+                                type="date"
+                                id="dob"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     STEP 2
+                ========================== -->
+
+                <section class="form-step">
+
+                    <div class="step-heading">
+
+                        <h2>School Information</h2>
+
+                        <p>
+                            Provide your current academic information.
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field full">
+
+                            <label for="school">
+                                School <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="school"
+                                placeholder="Enter your school name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="grade">
+                                Grade / Class <span class="required">*</span>
+                            </label>
+
+                            <select id="grade" required>
+
+                                <option value="">
+                                    Select grade
+                                </option>
+
+                                <option value="9">
+                                    Grade 9
+                                </option>
+
+                                <option value="10">
+                                    Grade 10
+                                </option>
+
+                                <option value="11">
+                                    Grade 11
+                                </option>
+
+                                <option value="12">
+                                    Grade 12
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="city">
+                                City
+                            </label>
+
+                            <input
+                                type="text"
+                                id="city"
+                                placeholder="Enter your city"
+                            >
+
+                        </div>
+
+
+                        <div class="field full">
+
+                            <label for="schoolContact">
+                                School Contact / Coordinator
+                            </label>
+
+                            <input
+                                type="text"
+                                id="schoolContact"
+                                placeholder="Name of school coordinator (if applicable)"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     STEP 3
+                ========================== -->
+
+                <section class="form-step">
+
+                    <div class="step-heading">
+
+                        <h2>MUN Experience</h2>
+
+                        <p>
+                            Help us understand your previous MUN experience.
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field full">
+
+                            <label>
+                                Have you participated in an MUN before?
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="radio-group">
+
+                                <div class="radio-option">
+
+                                    <input
+                                        type="radio"
+                                        name="experience"
+                                        id="expYes"
+                                        value="Yes"
+                                    >
+
+                                    <label for="expYes">
+                                        Yes
+                                    </label>
+
+                                </div>
+
+
+                                <div class="radio-option">
+
+                                    <input
+                                        type="radio"
+                                        name="experience"
+                                        id="expNo"
+                                        value="No"
+                                    >
+
+                                    <label for="expNo">
+                                        No
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="munCount">
+                                Number of Previous MUNs
+                            </label>
+
+                            <input
+                                type="number"
+                                id="munCount"
+                                min="0"
+                                placeholder="e.g. 2"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="awards">
+                                Previous MUN Awards
+                            </label>
+
+                            <input
+                                type="text"
+                                id="awards"
+                                placeholder="e.g. Best Delegate, Honorable Mention"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     STEP 4
+                ========================== -->
+
+                <section class="form-step">
+
+                    <div class="step-heading">
+
+                        <h2>Committee Preferences</h2>
+
+                        <p>
+                            Choose your preferred committees.
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label for="committee1">
+                                First Preference <span class="required">*</span>
+                            </label>
+
+                            <select id="committee1" required>
+
+                                <option value="">
+                                    Select committee
+                                </option>
+
+                                <option value="UNGA">
+                                    UNGA
+                                </option>
+
+                                <option value="UNSC">
+                                    UNSC
+                                </option>
+
+                                <option value="UNHRC">
+                                    UNHRC
+                                </option>
+
+                                <option value="WHO">
+                                    WHO
+                                </option>
+
+                                <option value="UNEP">
+                                    UNEP
+                                </option>
+
+                                <option value="SPECPOL">
+                                    SPECPOL
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="committee2">
+                                Second Preference <span class="required">*</span>
+                            </label>
+
+                            <select id="committee2" required>
+
+                                <option value="">
+                                    Select committee
+                                </option>
+
+                                <option value="UNGA">
+                                    UNGA
+                                </option>
+
+                                <option value="UNSC">
+                                    UNSC
+                                </option>
+
+                                <option value="UNHRC">
+                                    UNHRC
+                                </option>
+
+                                <option value="WHO">
+                                    WHO
+                                </option>
+
+                                <option value="UNEP">
+                                    UNEP
+                                </option>
+
+                                <option value="SPECPOL">
+                                    SPECPOL
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field full">
+
+                            <label for="motivation">
+                                Why do you want to participate in AMUN?
+                            </label>
+
+                            <textarea
+                                id="motivation"
+                                placeholder="Tell us briefly about your interest in MUN..."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     STEP 5
+                ========================== -->
+
+                <section class="form-step">
+
+                    <div class="step-heading">
+
+                        <h2>Review & Submit</h2>
+
+                        <p>
+                            Check your information before submitting.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="review-box"
+                        id="reviewBox"
+                    ></div>
+
+
+                    <div class="agreement">
+
+                        <input
+                            type="checkbox"
+                            id="agreement"
+                        >
+
+                        <label for="agreement">
+
+                            I confirm that the information provided
+                            is accurate and I agree to participate
+                            in AMUN according to the conference rules.
+
+                        </label>
+
+                    </div>
+
+
+                    <div
+                        class="error-message"
+                        id="errorMessage"
+                    ></div>
+
+                </section>
+
+
+                <!-- BUTTONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="backBtn"
+                        onclick="previousStep()"
+                        style="display:none;"
+                    >
+                        ← Back
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="nextBtn"
+                        onclick="nextStep()"
+                    >
+                        Continue →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+
+        <!-- =========================
+             SUCCESS
+        ========================== -->
+
+        <div
+            class="success-screen"
+            id="successScreen"
+        >
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>Registration Submitted</h2>
+
+            <p>
+                Your AMUN registration has been successfully
+                received.
+            </p>
+
+            <div
+                class="registration-id"
+                id="registrationID"
+            >
+                AMUN-000000
+            </div>
+
+            <p>
+                Please save your registration ID for future reference.
+            </p>
+
+            <button
+                class="btn btn-primary"
+                onclick="window.location.href='index.html'"
+            >
+                Return to Home
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</main>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONFIGURATION
+========================================================= */
+
+const SUPABASE_URL =
+    "https://gxtmwoeusikehczprbvv.supabase.co";
+
+/*
+   PASTE YOUR SUPABASE PUBLISHABLE KEY BELOW.
+
+   Example:
+   const SUPABASE_KEY = "sb_publishable_...";
+*/
+
+const SUPABASE_KEY =
+    "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
+
+
+const { createClient } = supabase;
+
+const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   FORM STATE
+========================================================= */
+
+let currentStep = 0;
+
+const steps =
+    document.querySelectorAll(".form-step");
+
+const stepDots =
+    document.querySelectorAll(".step-dot");
+
+const stepLines =
+    document.querySelectorAll(".step-line");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const progressLabel =
+    document.getElementById("progressLabel");
+
+const progressPercent =
+    document.getElementById("progressPercent");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+
+const stepNames = [
+    "Personal Information",
+    "School Information",
+    "MUN Experience",
+    "Committee Preferences",
+    "Review & Submit"
+];
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateStep() {
+
+    steps.forEach((step, index) => {
+
+        step.classList.toggle(
+            "active",
+            index === currentStep
+        );
+
+    });
+
+
+    stepDots.forEach((dot, index) => {
+
+        dot.classList.remove("active");
+        dot.classList.remove("completed");
+
+        if (index < currentStep) {
+            dot.classList.add("completed");
+        }
+
+        if (index === currentStep) {
+            dot.classList.add("active");
+        }
+
+    });
+
+
+    stepLines.forEach((line, index) => {
+
+        line.classList.toggle(
+            "active",
+            index < currentStep
+        );
+
+    });
+
+
+    const percent =
+        ((currentStep + 1) / steps.length) * 100;
+
+
+    progressBar.style.width =
+        percent + "%";
+
+    progressPercent.textContent =
+        Math.round(percent) + "%";
+
+    progressLabel.textContent =
+        stepNames[currentStep];
+
+
+    backBtn.style.display =
+        currentStep === 0
+            ? "none"
+            : "block";
+
+
+    if (currentStep === steps.length - 1) {
+
+        nextBtn.textContent =
+            "Submit Registration";
+
+        nextBtn.className =
+            "btn btn-success";
+
+    } else {
+
+        nextBtn.textContent =
+            "Continue →";
+
+        nextBtn.className =
+            "btn btn-primary";
+
+    }
+
+}
+
+
+/* =========================================================
+   GET RADIO VALUE
+========================================================= */
+
+function getRadioValue(name) {
+
+    const selected =
+        document.querySelector(
+            `input[name="${name}"]:checked`
+        );
+
+    return selected
+        ? selected.value
+        : "";
+
+}
+
+
+/* =========================================================
+   VALIDATE CURRENT STEP
+========================================================= */
+
+function validateCurrentStep() {
+
+    const current =
+        steps[currentStep];
+
+    const inputs =
+        current.querySelectorAll(
+            "input, select, textarea"
+        );
+
+
+    for (const input of inputs) {
+
+        if (
+            input.hasAttribute("required") &&
+            !input.value.trim()
+        ) {
+
+            input.focus();
+
+            alert(
+                "Please complete all required fields."
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    /* MUN experience */
+
+    if (currentStep === 2) {
+
+        const experience =
+            getRadioValue("experience");
+
+        if (!experience) {
+
+            alert(
+                "Please select whether you have participated in an MUN before."
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    /* Committee validation */
+
+    if (currentStep === 3) {
+
+        const committee1 =
+            document.getElementById("committee1").value;
+
+        const committee2 =
+            document.getElementById("committee2").value;
+
+        if (committee1 === committee2) {
+
+            alert(
+                "Please choose two different committee preferences."
+            );
+
+            return false;
+
+        }
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   NEXT STEP
+========================================================= */
+
+async function nextStep() {
+
+    if (!validateCurrentStep()) {
+        return;
+    }
+
+
+    if (currentStep < steps.length - 1) {
+
+        currentStep++;
+
+        if (currentStep === steps.length - 1) {
+            createReview();
+        }
+
+        updateStep();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        return;
+
+    }
+
+
+    await submitRegistration();
+
+}
+
+
+/* =========================================================
+   PREVIOUS STEP
+========================================================= */
+
+function previousStep() {
+
+    if (currentStep > 0) {
+
+        currentStep--;
+
+        updateStep();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "—";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   CREATE REVIEW
+========================================================= */
+
+function createReview() {
+
+    const experience =
+        getRadioValue("experience");
+
+
+    const data = [
+
+        {
+            section: "Personal Information",
+            items: [
+                ["Full Name", document.getElementById("fullName").value],
+                ["Email", document.getElementById("email").value],
+                ["Phone", document.getElementById("phone").value],
+                ["Gender", document.getElementById("gender").value],
+                ["Date of Birth", document.getElementById("dob").value]
+            ]
+        },
+
+        {
+            section: "School Information",
+            items: [
+                ["School", document.getElementById("school").value],
+                ["Grade", document.getElementById("grade").value],
+                ["City", document.getElementById("city").value],
+                ["School Contact", document.getElementById("schoolContact").value]
+            ]
+        },
+
+        {
+            section: "MUN Experience",
+            items: [
+                ["Previous MUN", experience],
+                ["Number of MUNs", document.getElementById("munCount").value],
+                ["Previous Awards", document.getElementById("awards").value]
+            ]
+        },
+
+        {
+            section: "Preferences",
+            items: [
+                ["First Preference", document.getElementById("committee1").value],
+                ["Second Preference", document.getElementById("committee2").value],
+                ["Motivation", document.getElementById("motivation").value]
+            ]
+        }
+
+    ];
+
+
+    let html = "";
+
+
+    data.forEach(section => {
+
+        html += `
+            <div class="review-section">
+
+                <div class="review-title">
+                    ${escapeHTML(section.section)}
+                </div>
+
+                <div class="review-grid">
+        `;
+
+
+        section.items.forEach(item => {
+
+            html += `
+                <div class="review-item">
+
+                    <div class="review-label">
+                        ${escapeHTML(item[0])}
+                    </div>
+
+                    <div class="review-value">
+                        ${escapeHTML(item[1])}
+                    </div>
+
+                </div>
+            `;
+
+        });
+
+
+        html += `
+                </div>
+            </div>
+        `;
+
+    });
+
+
+    document.getElementById("reviewBox").innerHTML =
+        html;
+
+}
+
+
+/* =========================================================
+   GENERATE REGISTRATION ID
+========================================================= */
+
+function generateRegistrationID() {
+
+    const random =
+        Math.random()
+            .toString(36)
+            .substring(2, 8)
+            .toUpperCase();
+
+    return "AMUN-" + random;
+
+}
+
+
+/* =========================================================
+   SUBMIT TO SUPABASE
+========================================================= */
+
+async function submitRegistration() {
+
+    const errorBox =
+        document.getElementById("errorMessage");
+
+
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+
+
+    /* Agreement */
+
+    if (!document.getElementById("agreement").checked) {
+
+        errorBox.textContent =
+            "Please confirm that the information provided is accurate.";
+
+        errorBox.style.display = "block";
+
+        return;
+
+    }
+
+
+    /* Disable button */
+
+    nextBtn.disabled = true;
+    nextBtn.textContent = "Submitting...";
+
+
+    try {
+
+        const registrationID =
+            generateRegistrationID();
+
+
+        const data = {
+
+            registration_id: registrationID,
+
+            full_name:
+                document.getElementById("fullName").value.trim(),
+
+            email:
+                document.getElementById("email").value.trim(),
+
+            phone:
+                document.getElementById("phone").value.trim(),
+
+            gender:
+                document.getElementById("gender").value,
+
+            dob:
+                document.getElementById("dob").value || null,
+
+            school:
+                document.getElementById("school").value.trim(),
+
+            grade:
+                document.getElementById("grade").value,
+
+            city:
+                document.getElementById("city").value.trim(),
+
+            school_contact:
+                document.getElementById("schoolContact").value.trim(),
+
+            previous_mun:
+                getRadioValue("experience"),
+
+            previous_muns:
+                document.getElementById("munCount").value.trim(),
+
+            awards:
+                document.getElementById("awards").value.trim(),
+
+            committee_1:
+                document.getElementById("committee1").value,
+
+            committee_2:
+                document.getElementById("committee2").value,
+
+            motivation:
+                document.getElementById("motivation").value.trim(),
+
+            status:
+                "Pending"
+
+        };
+
+
+        console.log(
+            "Sending registration:",
+            data
+        );
+
+
+        const {
+            data: insertedData,
+            error
+        } = await db
+            .from("registrations")
+            .insert([data])
+            .select();
+
+
+        if (error) {
+
+            console.error(
+                "Supabase error:",
+                error
+            );
+
+            throw new Error(
+                error.message
+            );
+
+        }
+
+
+        if (
+            !insertedData ||
+            insertedData.length === 0
+        ) {
+
+            throw new Error(
+                "Registration was not returned by Supabase."
+            );
+
+        }
+
+
+        /* SUCCESS */
+
+        document.getElementById(
+            "registrationID"
+        ).textContent =
+            insertedData[0].registration_id;
+
+
+        document.getElementById(
+            "registrationForm"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "successScreen"
+        ).style.display =
+            "block";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+
+        console.log(
+            "Registration successfully saved:",
+            insertedData[0]
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        errorBox.textContent =
+            "Registration failed: " +
+            error.message;
+
+
+        errorBox.style.display =
+            "block";
+
+
+        nextBtn.disabled = false;
+
+        nextBtn.textContent =
+            "Submit Registration";
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updateStep();
+
+
+/* =========================================================
+   FORM SUBMIT PROTECTION
+========================================================= */
+
+document
+    .getElementById("registrationForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+    });
+
+</script>
+
+</body>
+</html>

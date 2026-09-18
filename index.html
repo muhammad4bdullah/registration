@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#073b78">
+
+    <title>AMUN | APSACS Model United Nations</title>
+
+    <style>
+        :root {
+            --blue: #073b78;
+            --blue-dark: #052d5d;
+            --blue-light: #eaf3ff;
+            --gold: #c9a34e;
+            --text: #172033;
+            --muted: #687386;
+            --white: #ffffff;
+            --border: #dfe5ec;
+            --bg: #f6f8fb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: var(--white);
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 76px;
+            width: 100%;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid transparent;
+
+            transition: 0.25s ease;
+        }
+
+        .navbar.scrolled {
+            border-bottom-color: var(--border);
+            box-shadow: 0 4px 20px rgba(20, 40, 70, 0.06);
+        }
+
+        .nav-inner {
+            width: min(1180px, 92%);
+            height: 100%;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .brand-text strong {
+            display: block;
+            color: var(--blue);
+            font-size: 17px;
+            letter-spacing: 0.3px;
+        }
+
+        .brand-text span {
+            display: block;
+            color: #7a8493;
+            font-size: 11px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #485366;
+            font-size: 14px;
+            font-weight: 600;
+
+            position: relative;
+        }
+
+        .nav-links a:not(.nav-button)::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -7px;
+
+            width: 0;
+            height: 2px;
+
+            background: var(--blue);
+            transition: width 0.2s ease;
+        }
+
+        .nav-links a:not(.nav-button):hover::after {
+            width: 100%;
+        }
+
+        .nav-button {
+            background: var(--blue);
+            color: white !important;
+
+            padding: 11px 19px;
+            border-radius: 5px;
+
+            transition: 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
+        }
+
+        .menu-button {
+            display: none;
+
+            border: 0;
+            background: transparent;
+            color: var(--blue);
+
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            min-height: 680px;
+            padding-top: 76px;
+
+            display: flex;
+            align-items: center;
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #f8fbff 0%,
+                    #edf5ff 55%,
+                    #ffffff 100%
+                );
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-inner {
+            width: min(1180px, 92%);
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 70px;
+
+            align-items: center;
+        }
+
+        .hero-label {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            color: #10233f;
+
+            font-size: clamp(48px, 6vw, 78px);
+            line-height: 1.02;
+            letter-spacing: -2px;
+
+            max-width: 700px;
+        }
+
+        .hero h1 span {
+            color: var(--blue);
+        }
+
+        .hero-description {
+            color: var(--muted);
+
+            max-width: 610px;
+            margin-top: 22px;
+
+            font-size: 17px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            margin-top: 32px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 13px 21px;
+
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: 0.2s ease;
+        }
+
+        .primary-button {
+            background: var(--blue);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: var(--blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .secondary-button {
+            border: 1px solid #cfd8e4;
+            background: white;
+            color: var(--blue);
+        }
+
+        .secondary-button:hover {
+            border-color: var(--blue);
+        }
+
+        /* Hero info panel */
+
+        .hero-panel {
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            box-shadow: 0 18px 45px rgba(30, 60, 100, 0.09);
+
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: var(--blue);
+            color: white;
+
+            padding: 17px 20px;
+
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .panel-body {
+            padding: 22px;
+        }
+
+        .event-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            padding: 16px 0;
+
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .event-row:last-child {
+            border-bottom: 0;
+        }
+
+        .event-row small {
+            display: block;
+            color: #8992a1;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .event-row strong {
+            display: block;
+            margin-top: 2px;
+            font-size: 14px;
+        }
+
+        .event-value {
+            color: var(--blue);
+            font-weight: 700;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        /* ================= GENERAL ================= */
+
+        .section {
+            padding: 100px 0;
+        }
+
+        .section.alt {
+            background: var(--bg);
+        }
+
+        .container {
+            width: min(1180px, 92%);
+            margin: auto;
+        }
+
+        .section-heading {
+            max-width: 690px;
+            margin-bottom: 48px;
+        }
+
+        .section-kicker {
+            color: var(--blue);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        .section-heading h2 {
+            margin-top: 9px;
+
+            font-size: clamp(32px, 4vw, 48px);
+            line-height: 1.1;
+            color: #13243d;
+        }
+
+        .section-heading p {
+            margin-top: 15px;
+            color: var(--muted);
+            max-width: 650px;
+        }
+
+        /* ================= ABOUT ================= */
+
+        .about-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 70px;
+            align-items: center;
+        }
+
+        .about-text p {
+            color: var(--muted);
+            margin-bottom: 17px;
+        }
+
+        .about-points {
+            margin-top: 25px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .point {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .point-mark {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+            background: var(--blue-light);
+            color: var(--blue);
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .point span {
+            color: #4f5a6c;
+            font-size: 14px;
+        }
+
+        .about-box {
+            padding: 30px;
+
+            border-left: 4px solid var(--blue);
+            background: var(--blue-light);
+        }
+
+        .about-box strong {
+            color: var(--blue);
+            font-size: 20px;
+        }
+
+        .about-box p {
+            margin-top: 12px;
+            color: #50617a;
+            font-size: 14px;
+        }
+
+        /* ================= COMMITTEES ================= */
+
+        .committee-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .committee-card {
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 7px;
+
+            overflow: hidden;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .committee-card:hover,
+        .committee-card.open {
+            transform: translateY(-4px);
+            border-color: #a9bdd7;
+            box-shadow: 0 12px 30px rgba(20, 50, 90, 0.09);
+        }
+
+        .committee-top {
+            padding: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .committee-number {
+            color: #8b96a6;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .committee-card h3 {
+            margin-top: 6px;
+            color: #19304f;
+            font-size: 19px;
+        }
+
+        .committee-arrow {
+            color: var(--blue);
+            font-size: 20px;
+            transition: transform 0.2s;
+        }
+
+        .committee-card.open .committee-arrow {
+            transform: rotate(45deg);
+        }
+
+        .committee-details {
+            max-height: 0;
+            overflow: hidden;
+
+            transition: max-height 0.3s ease;
+        }
+
+        .committee-details-inner {
+            padding: 0 22px 22px;
+
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            background: var(--blue);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            text-align: center;
+        }
+
+        .stat {
+            padding: 20px;
+            border-right: 1px solid rgba(255,255,255,0.16);
+        }
+
+        .stat:last-child {
+            border-right: 0;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 38px;
+        }
+
+        .stat span {
+            color: #d9e7f7;
+            font-size: 13px;
+        }
+
+        /* ================= TIMELINE ================= */
+
+        .timeline {
+            max-width: 800px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 145px 1fr;
+
+            border-bottom: 1px solid var(--border);
+            padding: 22px 0;
+        }
+
+        .timeline-date {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .timeline-content strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .timeline-content span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* ================= CTA ================= */
+
+        .cta {
+            background: #f1f6fc;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .cta h2 {
+            color: #122944;
+            font-size: clamp(32px, 5vw, 52px);
+        }
+
+        .cta p {
+            color: var(--muted);
+            margin: 12px 0 25px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            background: #082e5c;
+            color: white;
+            padding: 45px 0;
+        }
+
+        .footer-inner {
+            width: min(1180px, 92%);
+            margin: auto;
+
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .footer-brand strong {
+            font-size: 18px;
+        }
+
+        .footer-brand p {
+            color: #b9cbe0;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .footer-right {
+            text-align: right;
+            color: #b9cbe0;
+            font-size: 13px;
+        }
+
+        /* ================= SCROLL ANIMATION ================= */
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 850px) {
+
+            .menu-button {
+                display: block;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 76px;
+                left: 0;
+                right: 0;
+
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+
+                background: white;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 15px 6%;
+                border-bottom: 1px solid #eef1f5;
+            }
+
+            .nav-links a::after {
+                display: none;
+            }
+
+            .hero-inner,
+            .about-layout {
+                grid-template-columns: 1fr;
+                gap: 45px;
+            }
+
+            .hero {
+                padding-top: 120px;
+                padding-bottom: 70px;
+            }
+
+            .committee-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat {
+                border-right: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.16);
+            }
+
+            .stat:last-child {
+                border-bottom: 0;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+            }
+
+            .footer-right {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .hero-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .primary-button,
+            .secondary-button {
+                width: 100%;
+            }
+
+            .brand-text span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+
+    <nav class="navbar" id="navbar">
+
+        <div class="nav-inner">
+
+            <a href="#" class="brand">
+                <!-- Replace this src with your actual APSACS logo file -->
+                <img src="apsacs-logo.png" alt="APSACS Logo">
+
+                <div class="brand-text">
+                    <strong>AMUN</strong>
+                    <span>APSACS Model United Nations</span>
+                </div>
+            </a>
+
+            <button class="menu-button" id="menuButton">
+                ☰
+            </button>
+
+            <div class="nav-links" id="navLinks">
+
+                <a href="#about">About</a>
+                <a href="#committees">Committees</a>
+                <a href="#timeline">Timeline</a>
+                <a href="#contact">Contact</a>
+
+                <a href="registration.html" class="nav-button">
+                    Register
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <header class="hero">
+
+        <div class="hero-inner">
+
+            <div class="hero-copy reveal">
+
+                <div class="hero-label">
+                    APSACS Model United Nations • 2026
+                </div>
+
+                <h1>
+                    Debate ideas.<br>
+                    <span>Represent nations.</span>
+                </h1>
+
+                <p class="hero-description">
+                    AMUN provides students with a platform to experience
+                    diplomacy, international relations, public speaking
+                    and collaborative problem-solving.
+                </p>
+
+                <div class="hero-actions">
+
+                    <a
+                        href="registration.html"
+                        class="primary-button"
+                    >
+                        Register as a Delegate
+                    </a>
+
+                    <a
+                        href="#committees"
+                        class="secondary-button"
+                    >
+                        View Committees
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-panel reveal">
+
+                <div class="panel-header">
+                    AMUN 2026
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="event-row">
+
+                        <div>
+                            <small>Registration</small>
+                            <strong>Delegate Registration</strong>
+                        </div>
+
+                        <div class="event-value">
+                            OPEN
+                        </div>
+
+                    </div>
+
+                    <div class="event-row">
+
+                        <div>
+                            <small>Conference</small>
+                            <strong>AMUN Conference</strong>
+                        </div>
+
+                        <div class="event-value">
+                            TBA
+                        </div>
+
+                    </div>
+
+                    <div class="event-row">
+
+                        <div>
+                            <small>Location</small>
+                            <strong>APSACS</strong>
+                        </div>
+
+                        <div class="event-value">
+                            TBA
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ABOUT -->
+
+    <section class="section" id="about">
+
+        <div class="container">
+
+            <div class="about-layout">
+
+                <div class="about-text reveal">
+
+                    <div class="section-kicker">
+                        About AMUN
+                    </div>
+
+                    <h2 class="section-heading" style="margin-bottom: 20px;">
+                        A student conference built around diplomacy.
+                    </h2>
+
+                    <p>
+                        Model United Nations gives students the opportunity
+                        to represent countries, research international
+                        issues and participate in structured diplomatic debate.
+                    </p>
+
+                    <p>
+                        At AMUN, delegates are encouraged to listen,
+                        negotiate and work with others while developing
+                        confidence in public speaking.
+                    </p>
+
+                    <div class="about-points">
+
+                        <div class="point">
+                            <div class="point-mark">✓</div>
+                            <span>Research international issues</span>
+                        </div>
+
+                        <div class="point">
+                            <div class="point-mark">✓</div>
+                            <span>Represent a country's position</span>
+                        </div>
+
+                        <div class="point">
+                            <div class="point-mark">✓</div>
+                            <span>Negotiate and collaborate with delegates</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="about-box reveal">
+
+                    <strong>
+                        Your voice has a place at the table.
+                    </strong>
+
+                    <p>
+                        AMUN is designed to give students practical
+                        experience in communication, diplomacy,
+                        leadership and structured debate.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- COMMITTEES -->
+
+    <section class="section alt" id="committees">
+
+        <div class="container">
+
+            <div class="section-heading reveal">
+
+                <div class="section-kicker">
+                    Committees
+                </div>
+
+                <h2>
+                    Choose your committee.
+                </h2>
+
+                <p>
+                    Explore the committees available at AMUN.
+                    Click a committee to view more information.
+                </p>
+
+            </div>
+
+
+            <div class="committee-grid">
+
+                <div class="committee-card reveal">
+
+                    <div class="committee-top">
+
+                        <div>
+                            <div class="committee-number">
+                                COMMITTEE 01
+                            </div>
+
+                            <h3>
+                                General Assembly
+                            </h3>
+                        </div>
+
+                        <div class="committee-arrow">
+                            +
+                        </div>
+
+                    </div>
+
+                    <div class="committee-details">
+
+                        <div class="committee-details-inner">
+                            Discuss international issues, develop
+                            resolutions and negotiate with other
+                            member states.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="committee-card reveal">
+
+                    <div class="committee-top">
+
+                        <div>
+                            <div class="committee-number">
+                                COMMITTEE 02
+                            </div>
+
+                            <h3>
+                                Security Council
+                            </h3>
+                        </div>
+
+                        <div class="committee-arrow">
+                            +
+                        </div>
+
+                    </div>
+
+                    <div class="committee-details">
+
+                        <div class="committee-details-inner">
+                            Examine matters concerning international
+                            peace and security through diplomatic debate.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="committee-card reveal">
+
+                    <div class="committee-top">
+
+                        <div>
+                            <div class="committee-number">
+                                COMMITTEE 03
+                            </div>
+
+                            <h3>
+                                Human Rights Council
+                            </h3>
+                        </div>
+
+                        <div class="committee-arrow">
+                            +
+                        </div>
+
+                    </div>
+
+                    <div class="committee-details">
+
+                        <div class="committee-details-inner">
+                            Debate human rights issues and explore
+                            international approaches to protecting
+                            fundamental freedoms.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="container">
+
+            <div class="stats-grid">
+
+                <div class="stat">
+                    <strong data-count="3">0</strong>
+                    <span>Committees</span>
+                </div>
+
+                <div class="stat">
+                    <strong data-count="100">0</strong>
+                    <span>Delegates</span>
+                </div>
+
+                <div class="stat">
+                    <strong data-count="1">0</strong>
+                    <span>Conference</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TIMELINE -->
+
+    <section class="section" id="timeline">
+
+        <div class="container">
+
+            <div class="section-heading reveal">
+
+                <div class="section-kicker">
+                    Timeline
+                </div>
+
+                <h2>
+                    Important dates.
+                </h2>
+
+            </div>
+
+
+            <div class="timeline reveal">
+
+                <div class="timeline-item">
+
+                    <div class="timeline-date">
+                        TBA
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Registration Opens
+                        </strong>
+
+                        <span>
+                            Delegate registration begins.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-date">
+                        TBA
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Registration Closes
+                        </strong>
+
+                        <span>
+                            Final deadline for registration.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-date">
+                        TBA
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Allocations
+                        </strong>
+
+                        <span>
+                            Committee and country allocations are released.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="timeline-item">
+
+                    <div class="timeline-date">
+                        TBA
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            AMUN Conference
+                        </strong>
+
+                        <span>
+                            Delegates take their seats.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section class="section cta">
+
+        <div class="container reveal">
+
+            <h2>
+                Take your seat at the table.
+            </h2>
+
+            <p>
+                Registration for AMUN 2026 is now open.
+            </p>
+
+            <a
+                href="registration.html"
+                class="primary-button"
+            >
+                Start Registration →
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer id="contact">
+
+        <div class="footer-inner">
+
+            <div class="footer-brand">
+
+                <strong>
+                    AMUN • APSACS
+                </strong>
+
+                <p>
+                    APSACS Model United Nations 2026
+                </p>
+
+            </div>
+
+            <div class="footer-right">
+
+                Registration Team<br>
+                APSACS
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        /* NAVBAR */
+
+        const navbar = document.getElementById("navbar");
+
+        window.addEventListener("scroll", () => {
+
+            if (window.scrollY > 20) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+
+        });
+
+
+        /* MOBILE MENU */
+
+        const menuButton =
+            document.getElementById("menuButton");
+
+        const navLinks =
+            document.getElementById("navLinks");
+
+        menuButton.addEventListener("click", () => {
+
+            navLinks.classList.toggle("open");
+
+        });
+
+
+        navLinks.querySelectorAll("a").forEach(link => {
+
+            link.addEventListener("click", () => {
+
+                navLinks.classList.remove("open");
+
+            });
+
+        });
+
+
+        /* COMMITTEE ACCORDION */
+
+        document.querySelectorAll(".committee-card")
+            .forEach(card => {
+
+                card.addEventListener("click", () => {
+
+                    const details =
+                        card.querySelector(".committee-details");
+
+                    const isOpen =
+                        card.classList.contains("open");
+
+
+                    document
+                        .querySelectorAll(".committee-card")
+                        .forEach(other => {
+
+                            other.classList.remove("open");
+
+                            other.querySelector(".committee-details")
+                                .style.maxHeight = null;
+
+                        });
+
+
+                    if (!isOpen) {
+
+                        card.classList.add("open");
+
+                        details.style.maxHeight =
+                            details.scrollHeight + "px";
+
+                    }
+
+                });
+
+            });
+
+
+        /* SCROLL REVEAL */
+
+        const revealObserver =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(entry => {
+
+                        if (entry.isIntersecting) {
+
+                            entry.target.classList.add("visible");
+
+                            revealObserver.unobserve(entry.target);
+
+                        }
+
+                    });
+
+                },
+                {
+                    threshold: 0.12
+                }
+            );
+
+
+        document.querySelectorAll(".reveal")
+            .forEach(element => {
+
+                revealObserver.observe(element);
+
+            });
+
+
+        /* COUNTERS */
+
+        const counters =
+            document.querySelectorAll("[data-count]");
+
+        let countersStarted = false;
+
+        const counterObserver =
+            new IntersectionObserver(
+                entries => {
+
+                    if (
+                        entries[0].isIntersecting &&
+                        !countersStarted
+                    ) {
+
+                        countersStarted = true;
+
+                        counters.forEach(counter => {
+
+                            const target =
+                                Number(counter.dataset.count);
+
+                            let current = 0;
+
+                            const increment =
+                                Math.max(1, Math.ceil(target / 40));
+
+                            const timer =
+                                setInterval(() => {
+
+                                    current += increment;
+
+                                    if (current >= target) {
+
+                                        current = target;
+
+                                        clearInterval(timer);
+
+                                    }
+
+                                    counter.textContent =
+                                        current + (
+                                            target >= 100 ? "+" : ""
+                                        );
+
+                                }, 35);
+
+                        });
+
+                    }
+
+                },
+                {
+                    threshold: 0.5
+                }
+            );
+
+        counterObserver.observe(
+            document.querySelector(".stats")
+        );
+
+    </script>
+
+</body>
+</html>
