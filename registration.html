@@ -8,17 +8,20 @@
 
 <style>
 :root {
-    --blue: #073b78;
-    --blue-dark: #052d5d;
-    --blue-light: #eaf3ff;
-    --gold: #c9a34e;
-    --text: #172033;
-    --muted: #687386;
+    --blue: #0f5bd7;
+    --blue-dark: #0a3f9b;
+    --blue-light: rgba(132, 188, 255, 0.16);
+    --gold: #f4c76d;
+    --text: #eaf4ff;
+    --muted: #a5b8d6;
     --white: #ffffff;
-    --border: #dfe5ec;
-    --bg: #f6f8fb;
-    --success: #15803d;
-    --danger: #dc2626;
+    --border: rgba(160, 197, 255, 0.14);
+    --bg: #071525;
+    --bg-2: #0c1c2d;
+    --panel: rgba(11, 24, 40, 0.78);
+    --success: #34d399;
+    --danger: #ff6b6b;
+    --cyan: #7de8ff;
 }
 
 * {
@@ -33,7 +36,21 @@ body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
     color: var(--text);
-    background: var(--bg);
+    background:
+        radial-gradient(circle at top, rgba(20, 83, 196, 0.26), transparent 24%),
+        linear-gradient(180deg, #071522 0%, #0a1830 45%, #071421 100%);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(7, 59, 120, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 59, 120, 0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: -1;
 }
 
 button,
@@ -43,20 +60,31 @@ textarea {
     font: inherit;
 }
 
+.tilt-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.tilt-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 50px rgba(5, 10, 18, 0.22);
+}
+
 /* =========================
    TOP BAR
 ========================= */
 
 .topbar {
     height: 74px;
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
+    background: rgba(7, 17, 29, 0.72);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(160, 197, 255, 0.12);
     display: flex;
     align-items: center;
     padding: 0 7%;
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .brand {
@@ -79,7 +107,7 @@ textarea {
 }
 
 .brand-text strong {
-    color: var(--blue);
+    color: var(--white);
     font-size: 20px;
     letter-spacing: 1px;
 }
@@ -110,7 +138,7 @@ textarea {
 }
 
 .heading .eyebrow {
-    color: var(--gold);
+    color: var(--cyan);
     font-size: 13px;
     font-weight: bold;
     letter-spacing: 2px;
@@ -120,7 +148,7 @@ textarea {
 
 .heading h1 {
     margin: 0;
-    color: var(--blue);
+    color: #edf6ff;
     font-size: clamp(32px, 5vw, 48px);
 }
 
@@ -136,11 +164,25 @@ textarea {
 ========================= */
 
 .form-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    box-shadow: 0 15px 45px rgba(7, 59, 120, 0.08);
+    background: linear-gradient(180deg, rgba(12, 22, 35, 0.9), rgba(9, 17, 27, 0.96));
+    border: 1px solid rgba(125, 232, 255, 0.14);
+    border-radius: 22px;
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.05);
     overflow: hidden;
+    position: relative;
+}
+
+.form-card::before {
+    content: "";
+    position: absolute;
+    right: 30px;
+    top: 20px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(201, 163, 78, 0.18), transparent 68%);
+    pointer-events: none;
 }
 
 /* =========================
@@ -150,7 +192,7 @@ textarea {
 .progress-area {
     padding: 26px 30px 22px;
     border-bottom: 1px solid var(--border);
-    background: #fbfcfe;
+    background: rgba(14, 25, 39, 0.82);
 }
 
 .progress-top {
@@ -163,7 +205,7 @@ textarea {
 .progress-label {
     font-size: 13px;
     font-weight: bold;
-    color: var(--blue);
+    color: var(--cyan);
 }
 
 .progress-percent {
@@ -182,9 +224,10 @@ textarea {
 .progress-bar {
     height: 100%;
     width: 20%;
-    background: var(--blue);
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
     border-radius: 20px;
     transition: width 0.35s ease;
+    box-shadow: 0 0 18px rgba(125, 232, 255, 0.4);
 }
 
 /* =========================
@@ -203,34 +246,36 @@ textarea {
     width: 31px;
     height: 31px;
     border-radius: 50%;
-    background: #e8edf4;
-    color: #738096;
+    background: rgba(140, 169, 211, 0.12);
+    color: #9eaed1;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 12px;
     font-weight: bold;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .step-dot.active {
-    background: var(--blue);
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
     color: white;
+    box-shadow: 0 0 18px rgba(125, 232, 255, 0.35);
 }
 
 .step-dot.completed {
-    background: var(--gold);
+    background: linear-gradient(135deg, var(--gold), #d9a445);
     color: white;
 }
 
 .step-line {
     width: 35px;
     height: 2px;
-    background: #e1e6ed;
+    background: rgba(160, 197, 255, 0.12);
     align-self: center;
 }
 
 .step-line.active {
-    background: var(--gold);
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
 }
 
 /* =========================
@@ -268,7 +313,7 @@ textarea {
 
 .step-heading h2 {
     margin: 0 0 7px;
-    color: var(--blue);
+    color: #edf6ff;
     font-size: 25px;
 }
 
@@ -305,7 +350,7 @@ textarea {
 .field label {
     font-size: 13px;
     font-weight: bold;
-    color: #273449;
+    color: #dfeaff;
 }
 
 .required {
@@ -316,13 +361,14 @@ textarea {
 .field select,
 .field textarea {
     width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 9px;
+    border: 1px solid rgba(160, 197, 255, 0.12);
+    border-radius: 12px;
     padding: 13px 14px;
     outline: none;
-    background: white;
+    background: rgba(8, 17, 28, 0.8);
     color: var(--text);
     transition: 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.2);
 }
 
 .field input:focus,
@@ -359,17 +405,18 @@ textarea {
 .radio-option label {
     display: block;
     padding: 12px 18px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(160, 197, 255, 0.12);
     border-radius: 9px;
     cursor: pointer;
-    color: #435067;
+    color: #dfeaff;
     transition: 0.2s ease;
+    background: rgba(8, 17, 28, 0.7);
 }
 
 .radio-option input:checked + label {
-    border-color: var(--blue);
-    background: var(--blue-light);
-    color: var(--blue);
+    border-color: rgba(125, 232, 255, 0.5);
+    background: rgba(16, 42, 72, 0.82);
+    color: var(--cyan);
     font-weight: bold;
 }
 
@@ -384,8 +431,8 @@ textarea {
     margin-top: 26px;
     padding: 16px;
     border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
+    background: rgba(12, 25, 39, 0.7);
+    border: 1px solid rgba(125, 232, 255, 0.1);
 }
 
 .agreement input {
@@ -403,13 +450,14 @@ textarea {
 ========================= */
 
 .review-box {
-    border: 1px solid var(--border);
+    border: 1px solid rgba(160, 197, 255, 0.12);
     border-radius: 12px;
     overflow: hidden;
+    background: rgba(8, 17, 28, 0.7);
 }
 
 .review-section {
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(160, 197, 255, 0.08);
 }
 
 .review-section:last-child {
@@ -418,8 +466,8 @@ textarea {
 
 .review-title {
     padding: 13px 17px;
-    background: #f8fafc;
-    color: var(--blue);
+    background: rgba(15, 35, 55, 0.9);
+    color: var(--cyan);
     font-weight: bold;
     font-size: 13px;
 }
@@ -475,21 +523,23 @@ textarea {
 }
 
 .btn-primary {
-    background: var(--blue);
+    background: linear-gradient(135deg, var(--blue), #2c7dff);
     color: white;
+    box-shadow: 0 14px 26px rgba(15, 91, 215, 0.28);
 }
 
 .btn-primary:hover {
-    background: var(--blue-dark);
+    background: linear-gradient(135deg, #2c7dff, var(--blue));
 }
 
 .btn-secondary {
-    background: #eef2f7;
-    color: #435067;
+    background: rgba(12, 25, 39, 0.8);
+    color: #edf6ff;
+    border: 1px solid rgba(160, 197, 255, 0.12);
 }
 
 .btn-secondary:hover {
-    background: #e3e8ef;
+    background: rgba(18, 34, 52, 0.9);
 }
 
 .btn-success {
@@ -675,7 +725,7 @@ textarea {
     </div>
 
 
-    <div class="form-card">
+    <div class="form-card tilt-card">
 
         <!-- PROGRESS -->
 
