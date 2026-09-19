@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AMUN — Admin Panel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+:root {
+    --blue: #0f5bd7;
+    --blue-dark: #0a3f9b;
+    --blue-light: rgba(132, 188, 255, 0.16);
+    --gold: #f4c76d;
+    --text: #eaf4ff;
+    --muted: #a5b8d6;
+    --white: #ffffff;
+    --border: rgba(160, 197, 255, 0.14);
+    --bg: #071525;
+    --bg-2: #0c1c2d;
+    --panel: rgba(11, 24, 40, 0.8);
+    --green: #34d399;
+    --red: #ff6b6b;
+    --orange: #fbbf24;
+    --cyan: #7de8ff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(20, 83, 196, 0.24), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(125, 232, 255, 0.12), transparent 23%),
+        linear-gradient(180deg, #050d18 0%, #091a2a 38%, #071421 100%);
+    color: var(--text);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(7, 59, 120, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(7, 59, 120, 0.02) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.tilt-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.tilt-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 50px rgba(5, 10, 18, 0.22);
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    background: linear-gradient(180deg, rgba(12, 22, 35, 0.9), rgba(9, 17, 27, 0.96));
+    border: 1px solid rgba(125, 232, 255, 0.14);
+    border-radius: 22px;
+    padding: 38px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: "";
+    position: absolute;
+    inset: -40px auto auto -40px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(7, 59, 120, 0.12), transparent 68%);
+    pointer-events: none;
+}
+
+.login-logo {
+    width: 85px;
+    height: 85px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.login-card h1 {
+    text-align: center;
+    margin: 0;
+    color: #edf6ff;
+    font-size: 28px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin: 8px 0 30px;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid rgba(160, 197, 255, 0.12);
+    border-radius: 9px;
+    font-size: 14px;
+    outline: none;
+    background: rgba(8, 17, 28, 0.82);
+    color: var(--text);
+}
+
+.form-group input:focus {
+    border-color: rgba(125, 232, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(125, 232, 255, 0.08);
+}
+
+.login-btn {
+    width: 100%;
+    border: none;
+    background: linear-gradient(135deg, var(--blue), #2c7dff);
+    color: white;
+    padding: 14px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(15, 91, 215, 0.28);
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #2c7dff, var(--blue));
+}
+
+.login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-error {
+    display: none;
+    background: #fff0f0;
+    border: 1px solid #ffd0d0;
+    color: var(--red);
+    padding: 11px 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 17px;
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+#dashboard {
+    display: none;
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 72px;
+    background: rgba(7, 17, 29, 0.72);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(160, 197, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.brand img {
+    width: 43px;
+    height: 43px;
+    object-fit: contain;
+}
+
+.brand h2 {
+    margin: 0;
+    color: #edf6ff;
+    font-size: 18px;
+}
+
+.brand span {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-email {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.action-btn,
+.logout-btn {
+    border: none;
+    padding: 9px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.action-btn {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.logout-btn {
+    background: #fff0f0;
+    color: var(--red);
+}
+
+.container {
+    width: min(1500px, calc(100% - 40px));
+    margin: auto;
+    padding: 32px 0 60px;
+}
+
+.page-heading {
+    margin-bottom: 25px;
+}
+
+.page-heading h1 {
+    margin: 0 0 5px;
+    color: var(--blue);
+    font-size: 30px;
+}
+
+.page-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: linear-gradient(180deg, rgba(12, 22, 35, 0.92), rgba(9, 17, 27, 0.96));
+    border: 1px solid rgba(125, 232, 255, 0.12);
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 18px 38px rgba(2, 8, 18, 0.28);
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stat-number {
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 8px;
+    color: var(--blue);
+}
+
+.pending-number {
+    color: var(--orange);
+}
+
+.approved-number {
+    color: var(--green);
+}
+
+.rejected-number {
+    color: var(--red);
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-card {
+    background: linear-gradient(180deg, rgba(12, 22, 35, 0.92), rgba(9, 17, 27, 0.96));
+    border: 1px solid rgba(125, 232, 255, 0.12);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(2, 8, 18, 0.28);
+}
+
+.table-header {
+    padding: 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.search-box {
+    width: min(500px, 100%);
+    padding: 11px 13px;
+    border: 1px solid rgba(160, 197, 255, 0.12);
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    background: rgba(8, 17, 28, 0.8);
+    color: var(--text);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1300px;
+}
+
+thead {
+    background: #f8fafc;
+}
+
+th {
+    text-align: left;
+    padding: 13px 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #edf0f4;
+    font-size: 13px;
+}
+
+tbody tr {
+    cursor: pointer;
+}
+
+tbody tr:hover {
+    background: #fafcff;
+}
+
+.registration-id {
+    color: var(--blue);
+    font-weight: 800;
+}
+
+.delegate-name {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.status.pending {
+    background: rgba(251, 191, 36, 0.12);
+    color: var(--orange);
+}
+
+.status.approved {
+    background: rgba(52, 211, 153, 0.12);
+    color: var(--green);
+}
+
+.status.rejected {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--red);
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.actions {
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.approve-btn,
+.reject-btn {
+    border: none;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.approve-btn {
+    background: rgba(52, 211, 153, 0.12);
+    color: var(--green);
+}
+
+.approve-btn:hover {
+    background: rgba(52, 211, 153, 0.18);
+}
+
+.reject-btn {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--red);
+}
+
+.reject-btn:hover {
+    background: rgba(255, 107, 107, 0.18);
+}
+
+.approve-btn:disabled,
+.reject-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.dashboard-error {
+    display: none;
+    background: #fff0f0;
+    border: 1px solid #ffd0d0;
+    color: var(--red);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 25, 45, .55);
+    z-index: 100;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.modal {
+    width: min(850px, 100%);
+    margin: 40px auto;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.2);
+}
+
+.modal-header {
+    padding: 22px 25px;
+    background: var(--blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.close-modal {
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 27px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.detail-section {
+    margin-bottom: 25px;
+}
+
+.detail-section h3 {
+    margin: 0 0 13px;
+    font-size: 14px;
+    color: var(--blue);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.detail-item {
+    background: #f8fafc;
+    border-radius: 9px;
+    padding: 12px;
+}
+
+.detail-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.detail-value {
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.detail-wide {
+    grid-column: 1 / -1;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-approve,
+.modal-reject {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.modal-approve {
+    background: var(--green);
+    color: white;
+}
+
+.modal-reject {
+    background: var(--red);
+    color: white;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width: 900px) {
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-email {
+        display: none;
+    }
+
+}
+
+@media(max-width: 600px) {
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .container {
+        width: calc(100% - 24px);
+        padding-top: 22px;
+    }
+
+    .stats {
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-number {
+        font-size: 25px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-wide {
+        grid-column: auto;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<section id="loginScreen">
+
+    <div class="login-card tilt-card">
+
+        <img
+            src="apsacs-logo.png"
+            class="login-logo"
+            alt="APSACS Logo"
+        >
+
+        <h1>AMUN Admin</h1>
+
+        <p class="subtitle">
+            APSACS Model United Nations<br>
+            Registration Management
+        </p>
+
+        <div
+            id="loginError"
+            class="login-error"
+        ></div>
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="email">
+                    Admin Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    required
+                    autocomplete="email"
+                    placeholder="admin@example.com"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+            >
+                Sign In
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section id="dashboard">
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <img
+                src="apsacs-logo.png"
+                alt="APSACS Logo"
+            >
+
+            <div>
+
+                <h2>AMUN Admin Panel</h2>
+
+                <span>
+                    APSACS Model United Nations
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <span
+                id="adminEmail"
+                class="admin-email"
+            ></span>
+
+            <button
+                class="action-btn"
+                id="refreshBtn"
+            >
+                ↻ Refresh
+            </button>
+
+            <button
+                class="logout-btn"
+                id="logoutBtn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <main class="container">
+
+        <div class="page-heading">
+
+            <h1>
+                Registrations
+            </h1>
+
+            <p>
+                Review, approve, or reject AMUN delegate applications.
+            </p>
+
+        </div>
+
+
+        <div
+            id="dashboardError"
+            class="dashboard-error"
+        ></div>
+
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Registrations
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Pending
+                </div>
+
+                <div
+                    class="stat-number pending-number"
+                    id="pendingCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Approved
+                </div>
+
+                <div
+                    class="stat-number approved-number"
+                    id="approvedCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Rejected
+                </div>
+
+                <div
+                    class="stat-number rejected-number"
+                    id="rejectedCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TABLE -->
+
+        <div class="table-card tilt-card">
+
+            <div class="table-header">
+
+                <input
+                    id="searchBox"
+                    class="search-box"
+                    type="text"
+                    placeholder="Search name, school, email, committee..."
+                >
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Registration ID
+                            </th>
+
+                            <th>
+                                Delegate
+                            </th>
+
+                            <th>
+                                Contact
+                            </th>
+
+                            <th>
+                                School
+                            </th>
+
+                            <th>
+                                Grade
+                            </th>
+
+                            <th>
+                                City
+                            </th>
+
+                            <th>
+                                Committee 1
+                            </th>
+
+                            <th>
+                                Committee 2
+                            </th>
+
+                            <th>
+                                Experience
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                            <th>
+                                Submitted
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="registrationTable">
+
+                        <tr>
+
+                            <td
+                                colspan="12"
+                                style="text-align:center;padding:50px;color:#687386"
+                            >
+                                Loading registrations...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</section>
+
+
+
+<!-- =====================================================
+     DETAILS MODAL
+===================================================== -->
+
+<div
+    id="detailsModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Registration Details
+            </h2>
+
+            <button
+                class="close-modal"
+                id="closeModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            id="modalBody"
+            class="modal-body"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://gxtmwoeusikehczprbvv.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
+
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const loginScreen =
+    document.getElementById("loginScreen");
+
+const dashboard =
+    document.getElementById("dashboard");
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const loginBtn =
+    document.getElementById("loginBtn");
+
+const loginError =
+    document.getElementById("loginError");
+
+const dashboardError =
+    document.getElementById("dashboardError");
+
+const registrationTable =
+    document.getElementById("registrationTable");
+
+const searchBox =
+    document.getElementById("searchBox");
+
+const refreshBtn =
+    document.getElementById("refreshBtn");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+const adminEmail =
+    document.getElementById("adminEmail");
+
+const totalCount =
+    document.getElementById("totalCount");
+
+const pendingCount =
+    document.getElementById("pendingCount");
+
+const approvedCount =
+    document.getElementById("approvedCount");
+
+const rejectedCount =
+    document.getElementById("rejectedCount");
+
+const detailsModal =
+    document.getElementById("detailsModal");
+
+const modalBody =
+    document.getElementById("modalBody");
+
+const modalTitle =
+    document.getElementById("modalTitle");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+
+let allRegistrations = [];
+
+let selectedRegistration = null;
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+loginForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+        hideLoginError();
+
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Signing in...";
+
+
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
+
+        const password =
+            document
+                .getElementById("password")
+                .value;
+
+
+        const {
+            data,
+            error
+        } =
+            await db.auth.signInWithPassword({
+                email,
+                password
+            });
+
+
+        if (error) {
+
+            showLoginError(
+                error.message
+            );
+
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Sign In";
+
+            return;
+        }
+
+
+        showDashboard();
+
+        adminEmail.textContent =
+            data.user?.email || "";
+
+
+        const success =
+            await loadRegistrations();
+
+
+        if (!success) {
+
+            await db.auth.signOut();
+
+            showLogin();
+
+            showLoginError(
+                "This account is not authorized as an AMUN administrator."
+            );
+
+        }
+
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Sign In";
+
+    }
+);
+
+
+/* =====================================================
+   SESSION
+===================================================== */
+
+async function checkSession() {
+
+    const {
+        data: { user }
+    } =
+        await db.auth.getUser();
+
+
+    if (!user) {
+
+        showLogin();
+
+        return;
+    }
+
+
+    showDashboard();
+
+    adminEmail.textContent =
+        user.email || "";
+
+
+    const success =
+        await loadRegistrations();
+
+
+    if (!success) {
+
+        await db.auth.signOut();
+
+        showLogin();
+
+        showLoginError(
+            "This account is not authorized as an AMUN administrator."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+async function loadRegistrations() {
+
+    hideDashboardError();
+
+
+    registrationTable.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="12"
+                style="text-align:center;padding:50px;color:#687386"
+            >
+                Loading registrations...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("registrations")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        showDashboardError(
+            "Database access denied. Make sure this account is registered as an AMUN administrator."
+        );
+
+        registrationTable.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="12"
+                    style="text-align:center;padding:50px;color:#c93636"
+                >
+                    Unable to load registrations.
+                </td>
+
+            </tr>
+
+        `;
+
+        return false;
+    }
+
+
+    allRegistrations =
+        data || [];
+
+
+    updateStats();
+
+    filterRegistrations();
+
+    return true;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats() {
+
+    totalCount.textContent =
+        allRegistrations.length;
+
+
+    pendingCount.textContent =
+        allRegistrations.filter(
+            row =>
+                String(row.status || "")
+                    .toLowerCase() === "pending"
+        ).length;
+
+
+    approvedCount.textContent =
+        allRegistrations.filter(
+            row =>
+                String(row.status || "")
+                    .toLowerCase() === "approved"
+        ).length;
+
+
+    rejectedCount.textContent =
+        allRegistrations.filter(
+            row =>
+                String(row.status || "")
+                    .toLowerCase() === "rejected"
+        ).length;
+
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+function renderTable(rows) {
+
+    if (!rows.length) {
+
+        registrationTable.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="12"
+                    style="text-align:center;padding:50px;color:#687386"
+                >
+                    No registrations found.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    registrationTable.innerHTML =
+        rows.map(
+            row => {
+
+                const status =
+                    String(
+                        row.status || "Pending"
+                    );
+
+
+                const statusClass =
+                    status.toLowerCase();
+
+
+                return `
+
+                    <tr
+                        onclick="openDetails('${escapeAttribute(row.id)}')"
+                    >
+
+                        <td>
+                            <span class="registration-id">
+                                ${escapeHTML(row.registration_id)}
+                            </span>
+                        </td>
+
+
+                        <td>
+                            <span class="delegate-name">
+                                ${escapeHTML(row.full_name)}
+                            </span>
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.email || "")}<br>
+                            ${escapeHTML(row.phone || "")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.school || "—")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.grade || "—")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.city || "—")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.committee_1 || "—")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(row.committee_2 || "—")}
+                        </td>
+
+
+                        <td>
+                            ${escapeHTML(
+                                formatExperience(row.previous_mun)
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="status ${statusClass}"
+                            >
+                                ${escapeHTML(status)}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div
+                                class="actions"
+                                onclick="event.stopPropagation()"
+                            >
+
+                                <button
+                                    class="approve-btn"
+                                    onclick="changeStatus('${escapeAttribute(row.id)}','Approved')"
+                                    ${status.toLowerCase() === "approved" ? "disabled" : ""}
+                                >
+                                    Approve
+                                </button>
+
+
+                                <button
+                                    class="reject-btn"
+                                    onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')"
+                                    ${status.toLowerCase() === "rejected" ? "disabled" : ""}
+                                >
+                                    Reject
+                                </button>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            ${formatDate(row.created_at)}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+searchBox.addEventListener(
+    "input",
+    filterRegistrations
+);
+
+
+function filterRegistrations() {
+
+    const query =
+        searchBox.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!query) {
+
+        renderTable(
+            allRegistrations
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        allRegistrations.filter(
+            row => {
+
+                const searchable = [
+
+                    row.registration_id,
+                    row.full_name,
+                    row.email,
+                    row.phone,
+                    row.school,
+                    row.grade,
+                    row.city,
+                    row.committee_1,
+                    row.committee_2,
+                    row.previous_mun,
+                    row.previous_muns,
+                    row.awards,
+                    row.motivation,
+                    row.status
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+                return searchable.includes(query);
+
+            }
+        );
+
+
+    renderTable(filtered);
+
+}
+
+
+/* =====================================================
+   CHANGE STATUS
+===================================================== */
+
+async function changeStatus(
+    id,
+    newStatus
+) {
+
+    const row =
+        allRegistrations.find(
+            item =>
+                String(item.id) === String(id)
+        );
+
+
+    if (!row) {
+        return;
+    }
+
+
+    const action =
+        newStatus === "Approved"
+            ? "approve"
+            : "reject";
+
+
+    const confirmed =
+        confirm(
+            `Are you sure you want to ${action} ${row.full_name}?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await db
+            .from("registrations")
+            .update({
+                status: newStatus
+            })
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to update status.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    /*
+       Update local copy immediately.
+    */
+
+    row.status =
+        newStatus;
+
+
+    updateStats();
+
+    filterRegistrations();
+
+
+    /*
+       If details modal is open,
+       refresh it too.
+    */
+
+    if (
+        selectedRegistration &&
+        String(selectedRegistration.id) === String(id)
+    ) {
+
+        selectedRegistration.status =
+            newStatus;
+
+        showRegistrationDetails(
+            selectedRegistration
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DETAILS MODAL
+===================================================== */
+
+function openDetails(id) {
+
+    const row =
+        allRegistrations.find(
+            item =>
+                String(item.id) === String(id)
+        );
+
+
+    if (!row) {
+        return;
+    }
+
+
+    selectedRegistration =
+        row;
+
+
+    showRegistrationDetails(row);
+
+    detailsModal.style.display =
+        "block";
+
+}
+
+
+function showRegistrationDetails(row) {
+
+    modalTitle.textContent =
+        row.registration_id || "Registration Details";
+
+
+    const status =
+        String(
+            row.status || "Pending"
+        );
+
+
+    modalBody.innerHTML = `
+
+        <div class="detail-section">
+
+            <h3>
+                Personal Information
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "Full Name",
+                    row.full_name
+                )}
+
+                ${detail(
+                    "Email",
+                    row.email
+                )}
+
+                ${detail(
+                    "Phone",
+                    row.phone
+                )}
+
+                ${detail(
+                    "Gender",
+                    row.gender
+                )}
+
+                ${detail(
+                    "Date of Birth",
+                    row.dob
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="detail-section">
+
+            <h3>
+                School Information
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "School",
+                    row.school
+                )}
+
+                ${detail(
+                    "Grade",
+                    row.grade
+                )}
+
+                ${detail(
+                    "City",
+                    row.city
+                )}
+
+                ${detail(
+                    "School Contact",
+                    row.school_contact
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="detail-section">
+
+            <h3>
+                MUN Experience
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "Previous MUN",
+                    row.previous_mun
+                )}
+
+                ${detail(
+                    "Number of MUNs",
+                    row.previous_muns
+                )}
+
+                ${detail(
+                    "Awards",
+                    row.awards,
+                    true
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="detail-section">
+
+            <h3>
+                Committee Preferences
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "First Preference",
+                    row.committee_1
+                )}
+
+                ${detail(
+                    "Second Preference",
+                    row.committee_2
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="detail-section">
+
+            <h3>
+                Motivation
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "Motivation",
+                    row.motivation,
+                    true
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="detail-section">
+
+            <h3>
+                Application Status
+            </h3>
+
+            <div class="detail-grid">
+
+                ${detail(
+                    "Registration ID",
+                    row.registration_id
+                )}
+
+                ${detail(
+                    "Current Status",
+                    status
+                )}
+
+                ${detail(
+                    "Submitted",
+                    formatDate(row.created_at)
+                )}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-approve"
+                onclick="changeStatus('${escapeAttribute(row.id)}','Approved')"
+                ${status.toLowerCase() === "approved" ? "disabled" : ""}
+            >
+                ✓ Approve Application
+            </button>
+
+
+            <button
+                class="modal-reject"
+                onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')"
+                ${status.toLowerCase() === "rejected" ? "disabled" : ""}
+            >
+                ✕ Reject Application
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   DETAIL HELPER
+===================================================== */
+
+function detail(
+    label,
+    value,
+    wide = false
+) {
+
+    return `
+
+        <div
+            class="detail-item ${wide ? "detail-wide" : ""}"
+        >
+
+            <div class="detail-label">
+                ${escapeHTML(label)}
+            </div>
+
+            <div class="detail-value">
+                ${escapeHTML(
+                    value || "Not provided"
+                )}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   MODAL CLOSE
+===================================================== */
+
+closeModal.addEventListener(
+    "click",
+    closeDetails
+);
+
+
+detailsModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === detailsModal
+        ) {
+
+            closeDetails();
+
+        }
+
+    }
+);
+
+
+function closeDetails() {
+
+    detailsModal.style.display =
+        "none";
+
+    selectedRegistration =
+        null;
+
+}
+
+
+/* =====================================================
+   REFRESH
+===================================================== */
+
+refreshBtn.addEventListener(
+    "click",
+    async () => {
+
+        refreshBtn.disabled = true;
+
+        refreshBtn.textContent =
+            "Refreshing...";
+
+
+        await loadRegistrations();
+
+
+        refreshBtn.disabled = false;
+
+        refreshBtn.textContent =
+            "↻ Refresh";
+
+    }
+);
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+logoutBtn.addEventListener(
+    "click",
+    async () => {
+
+        await db.auth.signOut();
+
+        allRegistrations = [];
+
+        showLogin();
+
+    }
+);
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+db.auth.onAuthStateChange(
+    (
+        event,
+        session
+    ) => {
+
+        if (!session) {
+
+            showLogin();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   UI
+===================================================== */
+
+function showLogin() {
+
+    loginScreen.style.display =
+        "flex";
+
+    dashboard.style.display =
+        "none";
+
+}
+
+
+function showDashboard() {
+
+    loginScreen.style.display =
+        "none";
+
+    dashboard.style.display =
+        "block";
+
+}
+
+
+function showLoginError(message) {
+
+    loginError.textContent =
+        message;
+
+    loginError.style.display =
+        "block";
+
+}
+
+
+function hideLoginError() {
+
+    loginError.textContent =
+        "";
+
+    loginError.style.display =
+        "none";
+
+}
+
+
+function showDashboardError(message) {
+
+    dashboardError.textContent =
+        message;
+
+    dashboardError.style.display =
+        "block";
+
+}
+
+
+function hideDashboardError() {
+
+    dashboardError.textContent =
+        "";
+
+    dashboardError.style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(value) {
+
+    return String(value)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+function formatExperience(value) {
+
+    if (!value) {
+        return "Not specified";
+    }
+
+
+    const text =
+        String(value)
+            .toLowerCase();
+
+
+    if (
+        text === "no" ||
+        text === "none" ||
+        text.includes("no experience")
+    ) {
+
+        return "No previous MUN";
+
+    }
+
+
+    if (
+        text === "yes" ||
+        text.includes("yes")
+    ) {
+
+        return "Previous MUN";
+
+    }
+
+
+    return String(value);
+
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "—";
+
+    }
+
+
+    return date.toLocaleString(
+        undefined,
+        {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }
+    );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+checkSession();
+
+</script>
+
+</body>
+</html>
