@@ -78,88 +78,6 @@
             z-index: -1;
         }
 
-        .orbit-field {
-            position: fixed;
-            inset: 0;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.9;
-        }
-
-        .orbit-field::before {
-            content: "";
-            position: absolute;
-            width: 560px;
-            height: 560px;
-            left: 62%;
-            top: 38%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(125, 232, 255, 0.09), transparent 62%);
-            filter: blur(8px);
-        }
-
-        .orbit {
-            position: absolute;
-            left: 62%;
-            top: 38%;
-            width: min(72vw, 980px);
-            height: min(31vw, 420px);
-            border: 1px solid rgba(125, 232, 255, 0.14);
-            border-radius: 50%;
-            transform: translate(-50%, -50%) rotate(-18deg);
-            box-shadow: 0 0 24px rgba(125, 232, 255, 0.04);
-        }
-
-        .orbit:nth-child(2) {
-            width: min(58vw, 780px);
-            height: min(23vw, 310px);
-            border-color: rgba(244, 199, 109, 0.16);
-            transform: translate(-50%, -50%) rotate(32deg);
-        }
-
-        .orbit:nth-child(3) {
-            width: min(88vw, 1200px);
-            height: min(40vw, 540px);
-            border-color: rgba(125, 232, 255, 0.07);
-            transform: translate(-50%, -50%) rotate(58deg);
-        }
-
-        .orbit i {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            left: 50%;
-            top: 50%;
-            border-radius: 50%;
-            background: var(--cyan);
-            box-shadow: 0 0 16px 4px rgba(125, 232, 255, 0.45);
-            offset-path: ellipse(50% 50% at 50% 50%);
-            animation: planetOrbit 18s linear infinite;
-        }
-
-        .orbit:nth-child(2) i {
-            background: var(--gold);
-            box-shadow: 0 0 16px 4px rgba(244, 199, 109, 0.38);
-            animation-duration: 26s;
-            animation-direction: reverse;
-        }
-
-        .orbit:nth-child(3) i {
-            animation-duration: 34s;
-        }
-
-        @keyframes planetOrbit {
-            from { offset-distance: 0%; }
-            to { offset-distance: 100%; }
-        }
-
-        @keyframes orbitDrift {
-            from { rotate: 0deg; }
-            to { rotate: 360deg; }
-        }
-
         a {
             color: inherit;
             text-decoration: none;
@@ -1102,34 +1020,11 @@
         .hero {
             background-image:
                 linear-gradient(90deg, rgba(242, 252, 245, 0.97) 0%, rgba(242, 252, 245, 0.88) 42%, rgba(210, 240, 220, 0.72) 100%),
-                url("https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg");
-            background-size: cover, cover;
-            background-position: center, calc(50% - 18vw) center;
+                url("world-map.webp");
+            background-size: cover, auto 150%;
+            background-position: center, 135% center;
             background-repeat: no-repeat, no-repeat;
             border-bottom-color: rgba(22, 138, 77, 0.16);
-        }
-
-        .orbit-field {
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.55s ease;
-        }
-
-        .orbit-field.visible {
-            opacity: 0.9;
-        }
-
-        .orbit {
-            border-color: rgba(22, 138, 77, 0.28);
-            box-shadow: 0 0 24px rgba(22, 138, 77, 0.1);
-        }
-
-        .orbit:nth-child(2) {
-            border-color: rgba(122, 191, 59, 0.3);
-        }
-
-        .orbit:nth-child(3) {
-            border-color: rgba(22, 138, 77, 0.16);
         }
 
         .navbar,
@@ -1166,20 +1061,14 @@
 
         @media (max-width: 700px) {
             .hero {
-                background-size: cover, cover;
-                background-position: center, calc(50% - 12vw) center;
+                background-size: cover, auto 125%;
+                background-position: center, 80% center;
             }
         }
     </style>
 </head>
 
 <body>
-
-    <div class="orbit-field" aria-hidden="true">
-        <span class="orbit"><i></i></span>
-        <span class="orbit"><i></i></span>
-        <span class="orbit"><i></i></span>
-    </div>
 
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -1735,8 +1624,6 @@
 
         const navbar = document.getElementById("navbar");
         const scrollProgress = document.getElementById("scrollProgress");
-        const hero = document.querySelector(".hero");
-        const orbitField = document.querySelector(".orbit-field");
         const sectionLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
         const pageSections = sectionLinks
             .map(link => document.querySelector(link.getAttribute("href")))
@@ -1750,8 +1637,6 @@
                 : 0;
 
             scrollProgress.style.width = `${progress}%`;
-
-            orbitField.classList.toggle("visible", window.scrollY > hero.offsetHeight - 120);
 
             if (window.scrollY > 20) {
                 navbar.classList.add("scrolled");
