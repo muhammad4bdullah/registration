@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#073b78">
+    <meta name="theme-color" content="#071525">
 
     <title>AMUN | APSACS Model United Nations</title>
 
@@ -45,17 +45,112 @@
             line-height: 1.5;
         }
 
+        body::after {
+            content: "";
+            position: fixed;
+            width: 360px;
+            height: 360px;
+            left: calc(var(--pointer-x, 50) * 1px - 180px);
+            top: calc(var(--pointer-y, 30) * 1px - 180px);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(125, 232, 255, 0.1), transparent 68%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.8;
+            transition: left 0.18s ease-out, top 0.18s ease-out;
+        }
+
         body::before {
             content: "";
             position: fixed;
             inset: 0;
             background-image:
+                radial-gradient(circle at 18% 28%, rgba(125, 232, 255, 0.38) 0 1px, transparent 2px),
+                radial-gradient(circle at 76% 22%, rgba(244, 199, 109, 0.32) 0 1px, transparent 2px),
+                radial-gradient(circle at 68% 72%, rgba(125, 232, 255, 0.28) 0 1px, transparent 2px),
+                repeating-radial-gradient(ellipse at 72% 42%, transparent 0 74px, rgba(125, 232, 255, 0.07) 75px 76px, transparent 77px 116px),
                 linear-gradient(rgba(125, 232, 255, 0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(125, 232, 255, 0.04) 1px, transparent 1px);
-            background-size: 28px 28px;
+            background-size: auto, auto, auto, auto, 28px 28px, 28px 28px;
+            background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
             mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
             pointer-events: none;
             z-index: -1;
+        }
+
+        .orbit-field {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.9;
+        }
+
+        .orbit-field::before {
+            content: "";
+            position: absolute;
+            width: 560px;
+            height: 560px;
+            left: 62%;
+            top: 38%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(125, 232, 255, 0.09), transparent 62%);
+            filter: blur(8px);
+        }
+
+        .orbit {
+            position: absolute;
+            left: 62%;
+            top: 38%;
+            width: min(72vw, 980px);
+            height: min(31vw, 420px);
+            border: 1px solid rgba(125, 232, 255, 0.14);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(-18deg);
+            box-shadow: 0 0 24px rgba(125, 232, 255, 0.04);
+            animation: orbitDrift 24s linear infinite;
+        }
+
+        .orbit:nth-child(2) {
+            width: min(58vw, 780px);
+            height: min(23vw, 310px);
+            border-color: rgba(244, 199, 109, 0.16);
+            transform: translate(-50%, -50%) rotate(32deg);
+            animation-duration: 31s;
+            animation-direction: reverse;
+        }
+
+        .orbit:nth-child(3) {
+            width: min(88vw, 1200px);
+            height: min(40vw, 540px);
+            border-color: rgba(125, 232, 255, 0.07);
+            transform: translate(-50%, -50%) rotate(58deg);
+            animation-duration: 40s;
+        }
+
+        .orbit i {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            right: 14%;
+            top: 8%;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 16px 4px rgba(125, 232, 255, 0.45);
+        }
+
+        .orbit:nth-child(2) i {
+            left: 17%;
+            top: 78%;
+            background: var(--gold);
+            box-shadow: 0 0 16px 4px rgba(244, 199, 109, 0.38);
+        }
+
+        @keyframes orbitDrift {
+            from { rotate: 0deg; }
+            to { rotate: 360deg; }
         }
 
         a {
@@ -93,6 +188,18 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 
             transition: 0.25s ease;
+        }
+
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            z-index: 1100;
+            background: linear-gradient(90deg, var(--cyan), var(--gold));
+            box-shadow: 0 0 14px rgba(125, 232, 255, 0.65);
+            transition: width 0.08s linear;
         }
 
         .navbar.scrolled {
@@ -166,6 +273,14 @@
             width: 100%;
         }
 
+        .nav-links a.active:not(.nav-button) {
+            color: var(--cyan);
+        }
+
+        .nav-links a.active:not(.nav-button)::after {
+            width: 100%;
+        }
+
         .nav-button {
             background: linear-gradient(135deg, var(--blue), var(--blue-dark));
             color: white !important;
@@ -187,7 +302,7 @@
 
             border: 0;
             background: transparent;
-            color: var(--blue);
+            color: var(--cyan);
 
             font-size: 25px;
             cursor: pointer;
@@ -212,6 +327,32 @@
             overflow: hidden;
         }
 
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(125, 232, 255, 0.12);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 680px;
+            height: 680px;
+            right: -260px;
+            top: -180px;
+            transform: rotate(18deg) scaleY(0.42);
+        }
+
+        .hero::after {
+            width: 430px;
+            height: 430px;
+            right: -80px;
+            top: -20px;
+            transform: rotate(-24deg) scaleY(0.42);
+            border-color: rgba(244, 199, 109, 0.16);
+        }
+
         .hero-inner {
             width: min(1180px, 92%);
             margin: auto;
@@ -221,6 +362,12 @@
             gap: 70px;
 
             align-items: center;
+        }
+
+        .hero-copy,
+        .hero-visual {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-label {
@@ -317,6 +464,7 @@
             overflow: hidden;
             position: relative;
             transform-style: preserve-3d;
+            z-index: 1;
         }
 
         .hero-panel::before {
@@ -337,13 +485,29 @@
             align-items: center;
             justify-content: center;
             perspective: 1400px;
+            isolation: isolate;
+            --orbit-x: 0px;
+            --orbit-y: 0px;
+        }
+
+        .hero-visual::before {
+            content: "";
+            position: absolute;
+            width: 310px;
+            height: 310px;
+            border: 1px solid rgba(125, 232, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(var(--orbit-x), var(--orbit-y)) rotate(-18deg) scaleY(0.38);
+            box-shadow: 0 0 50px rgba(125, 232, 255, 0.12);
+            transition: transform 0.2s ease-out;
+            z-index: 0;
         }
 
         .floating-shape {
             position: absolute;
-            border: 1px solid rgba(7, 59, 120, 0.18);
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(234,243,255,0.82));
-            box-shadow: 0 25px 60px rgba(17, 38, 69, 0.12);
+            border: 1px solid rgba(125, 232, 255, 0.28);
+            background: linear-gradient(135deg, rgba(125, 232, 255, 0.2), rgba(17, 60, 104, 0.38));
+            box-shadow: 0 25px 60px rgba(2, 8, 18, 0.38), inset 0 1px 0 rgba(255,255,255,0.12);
             transform-style: preserve-3d;
             animation: floatObject 9s ease-in-out infinite;
         }
@@ -352,7 +516,7 @@
             width: 170px;
             height: 170px;
             border-radius: 28px;
-            transform: rotateX(24deg) rotateY(-22deg) translateZ(20px);
+            transform: translate(var(--orbit-x), var(--orbit-y)) rotateX(24deg) rotateY(-22deg) translateZ(20px);
             right: 38px;
             top: 40px;
             animation-delay: 0.5s;
@@ -363,7 +527,7 @@
             height: 220px;
             border-radius: 50%;
             border-width: 2px;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(234,243,255,0.35) 40%, rgba(7,59,120,0.08) 100%);
+            background: radial-gradient(circle at center, rgba(125, 232, 255, 0.3) 0%, rgba(18, 76, 135, 0.2) 40%, rgba(7, 59, 120, 0.08) 100%);
             transform: rotateX(68deg) rotateY(18deg);
             left: 40px;
             bottom: 30px;
@@ -433,7 +597,7 @@
 
             padding: 16px 0;
 
-            border-bottom: 1px solid #edf0f4;
+            border-bottom: 1px solid rgba(160, 197, 255, 0.12);
         }
 
         .event-row:last-child {
@@ -548,7 +712,7 @@
         }
 
         .point span {
-            color: #4f5a6c;
+            color: var(--muted);
             font-size: 14px;
         }
 
@@ -560,13 +724,13 @@
         }
 
         .about-box strong {
-            color: var(--blue);
+            color: var(--cyan);
             font-size: 20px;
         }
 
         .about-box p {
             margin-top: 12px;
-            color: #50617a;
+            color: var(--muted);
             font-size: 14px;
         }
 
@@ -775,6 +939,20 @@
             transform: translateY(0);
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
         /* ================= MOBILE ================= */
 
         @media (max-width: 850px) {
@@ -794,7 +972,8 @@
                 align-items: stretch;
                 gap: 0;
 
-                background: white;
+                background: rgba(7, 17, 29, 0.96);
+                backdrop-filter: blur(18px);
                 border-bottom: 1px solid var(--border);
             }
 
@@ -804,7 +983,7 @@
 
             .nav-links a {
                 padding: 15px 6%;
-                border-bottom: 1px solid #eef1f5;
+                border-bottom: 1px solid rgba(160, 197, 255, 0.1);
             }
 
             .nav-links a::after {
@@ -873,6 +1052,14 @@
 </head>
 
 <body>
+
+    <div class="orbit-field" aria-hidden="true">
+        <span class="orbit"><i></i></span>
+        <span class="orbit"><i></i></span>
+        <span class="orbit"><i></i></span>
+    </div>
+
+    <div class="scroll-progress" id="scrollProgress"></div>
 
     <!-- NAVIGATION -->
 
@@ -1425,8 +1612,20 @@
         /* NAVBAR */
 
         const navbar = document.getElementById("navbar");
+        const scrollProgress = document.getElementById("scrollProgress");
+        const sectionLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+        const pageSections = sectionLinks
+            .map(link => document.querySelector(link.getAttribute("href")))
+            .filter(Boolean);
 
         window.addEventListener("scroll", () => {
+
+            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = scrollableHeight > 0
+                ? (window.scrollY / scrollableHeight) * 100
+                : 0;
+
+            scrollProgress.style.width = `${progress}%`;
 
             if (window.scrollY > 20) {
                 navbar.classList.add("scrolled");
@@ -1434,7 +1633,24 @@
                 navbar.classList.remove("scrolled");
             }
 
+            let currentSection = "";
+
+            pageSections.forEach(section => {
+                if (window.scrollY >= section.offsetTop - 180) {
+                    currentSection = `#${section.id}`;
+                }
+            });
+
+            sectionLinks.forEach(link => {
+                link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === currentSection
+                );
+            });
+
         });
+
+        window.dispatchEvent(new Event("scroll"));
 
 
         /* MOBILE MENU */
@@ -1461,6 +1677,31 @@
             });
 
         });
+
+        const heroVisual = document.querySelector(".hero-visual");
+
+        heroVisual.addEventListener("pointermove", event => {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                return;
+            }
+
+            const bounds = heroVisual.getBoundingClientRect();
+            const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 18;
+            const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 18;
+
+            heroVisual.style.setProperty("--orbit-x", `${x}px`);
+            heroVisual.style.setProperty("--orbit-y", `${y}px`);
+        });
+
+        heroVisual.addEventListener("pointerleave", () => {
+            heroVisual.style.setProperty("--orbit-x", "0px");
+            heroVisual.style.setProperty("--orbit-y", "0px");
+        });
+
+        window.addEventListener("pointermove", event => {
+            document.documentElement.style.setProperty("--pointer-x", event.clientX);
+            document.documentElement.style.setProperty("--pointer-y", event.clientY);
+        }, { passive: true });
 
 
         /* COMMITTEE ACCORDION */
