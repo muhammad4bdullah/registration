@@ -44,16 +44,108 @@ body {
     color: var(--text);
 }
 
+body::after {
+    content: "";
+    position: fixed;
+    width: 360px;
+    height: 360px;
+    left: calc(var(--pointer-x, 50) * 1px - 180px);
+    top: calc(var(--pointer-y, 30) * 1px - 180px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(125, 232, 255, 0.08), transparent 68%);
+    pointer-events: none;
+    z-index: 0;
+    transition: left 0.18s ease-out, top 0.18s ease-out;
+}
+
 body::before {
     content: "";
     position: fixed;
     inset: 0;
     background-image:
+        radial-gradient(circle at 12% 22%, rgba(125, 232, 255, 0.28) 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 16%, rgba(244, 199, 109, 0.25) 0 1px, transparent 2px),
+        radial-gradient(circle at 72% 76%, rgba(125, 232, 255, 0.22) 0 1px, transparent 2px),
+        repeating-radial-gradient(ellipse at 78% 40%, transparent 0 72px, rgba(125, 232, 255, 0.055) 73px 74px, transparent 75px 114px),
         linear-gradient(rgba(7, 59, 120, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(7, 59, 120, 0.02) 1px, transparent 1px);
-    background-size: 30px 30px;
+    background-size: auto, auto, auto, auto, 30px 30px, 30px 30px;
     pointer-events: none;
     z-index: -1;
+}
+
+.orbit-field {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.62;
+}
+
+.orbit-field::before {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    left: 82%;
+    top: 28%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(125, 232, 255, 0.07), transparent 62%);
+    filter: blur(8px);
+}
+
+.orbit {
+    position: absolute;
+    left: 82%;
+    top: 28%;
+    width: min(76vw, 1080px);
+    height: min(32vw, 440px);
+    border: 1px solid rgba(125, 232, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-20deg);
+    animation: orbitDrift 30s linear infinite;
+}
+
+.orbit:nth-child(2) {
+    width: min(58vw, 820px);
+    height: min(23vw, 320px);
+    border-color: rgba(244, 199, 109, 0.12);
+    transform: translate(-50%, -50%) rotate(30deg);
+    animation-duration: 39s;
+    animation-direction: reverse;
+}
+
+.orbit:nth-child(3) {
+    width: min(90vw, 1300px);
+    height: min(41vw, 560px);
+    border-color: rgba(125, 232, 255, 0.05);
+    transform: translate(-50%, -50%) rotate(58deg);
+    animation-duration: 48s;
+}
+
+.orbit i {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    right: 12%;
+    top: 9%;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 15px 4px rgba(125, 232, 255, 0.36);
+}
+
+.orbit:nth-child(2) i {
+    left: 15%;
+    top: 78%;
+    background: var(--gold);
+    box-shadow: 0 0 15px 4px rgba(244, 199, 109, 0.3);
+}
+
+@keyframes orbitDrift {
+    from { rotate: 0deg; }
+    to { rotate: 360deg; }
 }
 
 .tilt-card {
@@ -63,6 +155,17 @@ body::before {
 .tilt-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 22px 50px rgba(5, 10, 18, 0.22);
+}
+
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    z-index: 200;
+    background: linear-gradient(90deg, var(--cyan), var(--gold));
+    box-shadow: 0 0 14px rgba(125, 232, 255, 0.65);
 }
 
 
@@ -301,6 +404,12 @@ body::before {
     border-radius: 16px;
     padding: 22px;
     box-shadow: 0 18px 38px rgba(2, 8, 18, 0.28);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(125, 232, 255, 0.32);
+    box-shadow: 0 24px 48px rgba(2, 8, 18, 0.4);
 }
 
 .stat-label {
@@ -673,11 +782,29 @@ tbody tr:hover {
 
 }
 
+@media(prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 </style>
 </head>
 
 
 <body>
+
+<div class="orbit-field" aria-hidden="true">
+    <span class="orbit"><i></i></span>
+    <span class="orbit"><i></i></span>
+    <span class="orbit"><i></i></span>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
 
 
 <!-- =====================================================
@@ -2272,6 +2399,22 @@ function formatDate(value) {
 /* =====================================================
    START
 ===================================================== */
+
+const scrollProgress = document.getElementById("scrollProgress");
+
+window.addEventListener("scroll", () => {
+    const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollableHeight > 0
+        ? (window.scrollY / scrollableHeight) * 100
+        : 0;
+
+    scrollProgress.style.width = `${progress}%`;
+}, { passive: true });
+
+window.addEventListener("pointermove", event => {
+    document.documentElement.style.setProperty("--pointer-x", event.clientX);
+    document.documentElement.style.setProperty("--pointer-y", event.clientY);
+}, { passive: true });
 
 checkSession();
 
