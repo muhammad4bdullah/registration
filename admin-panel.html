@@ -11,21 +11,21 @@
 <style>
 
 :root {
-    --blue: #0f5bd7;
-    --blue-dark: #0a3f9b;
-    --blue-light: rgba(132, 188, 255, 0.16);
-    --gold: #f4c76d;
-    --text: #eaf4ff;
-    --muted: #a5b8d6;
+    --blue: #1ea76b;
+    --blue-dark: #126d45;
+    --blue-light: rgba(35, 177, 98, 0.16);
+    --gold: #bfeecf;
+    --text: #ecfff4;
+    --muted: #bfd9c8;
     --white: #ffffff;
-    --border: rgba(160, 197, 255, 0.14);
-    --bg: #071525;
-    --bg-2: #0c1c2d;
-    --panel: rgba(11, 24, 40, 0.8);
+    --border: rgba(140, 220, 180, 0.14);
+    --bg: #071d15;
+    --bg-2: #0d2d21;
+    --panel: rgba(12, 31, 22, 0.8);
     --green: #34d399;
     --red: #ff6b6b;
     --orange: #fbbf24;
-    --cyan: #7de8ff;
+    --cyan: #a9f7c8;
 }
 
 * {
@@ -38,9 +38,9 @@ body {
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     background:
-        radial-gradient(circle at top left, rgba(20, 83, 196, 0.24), transparent 26%),
-        radial-gradient(circle at bottom right, rgba(125, 232, 255, 0.12), transparent 23%),
-        linear-gradient(180deg, #050d18 0%, #091a2a 38%, #071421 100%);
+        radial-gradient(circle at top left, rgba(30, 167, 107, 0.24), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(169, 247, 200, 0.12), transparent 23%),
+        linear-gradient(180deg, #05170f 0%, #0a241b 38%, #071d15 100%);
     color: var(--text);
 }
 
@@ -792,6 +792,40 @@ tbody tr:hover {
     }
 }
 
+    /* ================= WHITE + GREEN THEME ================= */
+    :root {
+        --blue: #168a4d;
+        --blue-dark: #0d6738;
+        --blue-light: rgba(22, 138, 77, 0.1);
+        --gold: #7abf3b;
+        --text: #183329;
+        --muted: #5d7569;
+        --border: rgba(22, 138, 77, 0.16);
+        --bg: #f5fbf7;
+        --bg-2: #e8f5ec;
+        --panel: rgba(255, 255, 255, 0.96);
+        --cyan: #168a4d;
+    }
+
+    html, body { background: linear-gradient(180deg, #f7fcf8 0%, #edf8f0 48%, #ffffff 100%); color: #183329; }
+    body::before { background-image: linear-gradient(rgba(22, 138, 77, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 138, 77, 0.035) 1px, transparent 1px); }
+    .topbar { background: rgba(255, 255, 255, 0.92); border-bottom-color: rgba(22, 138, 77, 0.14); box-shadow: 0 10px 30px rgba(22, 81, 46, 0.08); }
+    .brand h2, .page-heading h1, .detail-value { color: #123e29; }
+    .brand span, .admin-email, .page-heading p, .stat-label, th, .detail-label { color: var(--muted); }
+    .login-card, .stat-card, .table-card, .modal { background: rgba(255, 255, 255, 0.96); border-color: rgba(22, 138, 77, 0.16); box-shadow: 0 24px 60px rgba(22, 81, 46, 0.1); }
+    .form-group input, .search-box { background: #ffffff; color: #183329; border-color: rgba(22, 138, 77, 0.2); }
+    .form-group input:focus, .search-box:focus { border-color: #168a4d; box-shadow: 0 0 0 3px rgba(22, 138, 77, 0.1); }
+    .login-btn, .modal-header { background: linear-gradient(135deg, #168a4d, #38b765); }
+    .login-btn:hover { background: linear-gradient(135deg, #0d6738, #168a4d); }
+    .action-btn { background: #e1f4e7; border-color: rgba(22, 138, 77, 0.2); color: #0d6738; }
+    .table-card table { background: #ffffff; }
+    thead { background: #e8f5ec; }
+    td { color: #315745; border-bottom-color: rgba(22, 138, 77, 0.1); }
+    tbody tr:hover { background: #f0faf2; }
+    .registration-id, .stat-number { color: #168a4d; }
+    .detail-item { background: #f3faf5; border-color: rgba(22, 138, 77, 0.14); }
+    .detail-section h3 { color: #168a4d; }
+    .modal-overlay { background: rgba(18, 51, 35, 0.42); }
 </style>
 </head>
 
