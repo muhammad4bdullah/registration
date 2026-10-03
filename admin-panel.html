@@ -750,6 +750,7 @@ tbody tr:hover {
     tbody tr:hover { background: rgba(22, 139, 88, 0.12); }
     .registration-id, .stat-number, .detail-section h3 { color: var(--gold); }
     .detail-item { background: rgba(4, 29, 22, 0.68); border-color: rgba(216, 177, 106, 0.16); }
+    .detail-value a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
     .modal-overlay { background: rgba(2, 15, 11, 0.78); }
     .approve-btn { background: rgba(73, 184, 121, 0.14); }
     .reject-btn { background: rgba(226, 118, 120, 0.14); }
@@ -1014,7 +1015,7 @@ tbody tr:hover {
                     id="searchBox"
                     class="search-box"
                     type="text"
-                    placeholder="Search name, school, email, committee..."
+                    placeholder="Search name, email, phone, committee..."
                 >
 
             </div>
@@ -1041,27 +1042,11 @@ tbody tr:hover {
                             </th>
 
                             <th>
-                                School
-                            </th>
-
-                            <th>
-                                Grade
-                            </th>
-
-                            <th>
-                                City
-                            </th>
-
-                            <th>
                                 Committee 1
                             </th>
 
                             <th>
                                 Committee 2
-                            </th>
-
-                            <th>
-                                Experience
                             </th>
 
                             <th>
@@ -1086,7 +1071,7 @@ tbody tr:hover {
                         <tr>
 
                             <td
-                                colspan="12"
+                                colspan="8"
                                 style="text-align:center;padding:50px;color:#687386"
                             >
                                 Loading registrations...
@@ -1372,7 +1357,7 @@ async function loadRegistrations() {
         <tr>
 
             <td
-                colspan="12"
+                colspan="8"
                 style="text-align:center;padding:50px;color:#687386"
             >
                 Loading registrations...
@@ -1411,7 +1396,7 @@ async function loadRegistrations() {
             <tr>
 
                 <td
-                    colspan="12"
+                    colspan="8"
                     style="text-align:center;padding:50px;color:#c93636"
                 >
                     Unable to load registrations.
@@ -1486,7 +1471,7 @@ function renderTable(rows) {
             <tr>
 
                 <td
-                    colspan="12"
+                    colspan="8"
                     style="text-align:center;padding:50px;color:#687386"
                 >
                     No registrations found.
@@ -1541,34 +1526,12 @@ function renderTable(rows) {
 
 
                         <td>
-                            ${escapeHTML(row.school || "—")}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(row.grade || "—")}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(row.city || "—")}
-                        </td>
-
-
-                        <td>
                             ${escapeHTML(row.committee_1 || "—")}
                         </td>
 
 
                         <td>
                             ${escapeHTML(row.committee_2 || "—")}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(
-                                formatExperience(row.previous_mun)
-                            )}
                         </td>
 
 
@@ -1664,15 +1627,8 @@ function filterRegistrations() {
                     row.full_name,
                     row.email,
                     row.phone,
-                    row.school,
-                    row.grade,
-                    row.city,
                     row.committee_1,
                     row.committee_2,
-                    row.previous_mun,
-                    row.previous_muns,
-                    row.awards,
-                    row.motivation,
                     row.status
 
                 ]
@@ -1878,70 +1834,6 @@ function showRegistrationDetails(row) {
         <div class="detail-section">
 
             <h3>
-                School Information
-            </h3>
-
-            <div class="detail-grid">
-
-                ${detail(
-                    "School",
-                    row.school
-                )}
-
-                ${detail(
-                    "Grade",
-                    row.grade
-                )}
-
-                ${detail(
-                    "City",
-                    row.city
-                )}
-
-                ${detail(
-                    "School Contact",
-                    row.school_contact
-                )}
-
-            </div>
-
-        </div>
-
-
-
-        <div class="detail-section">
-
-            <h3>
-                MUN Experience
-            </h3>
-
-            <div class="detail-grid">
-
-                ${detail(
-                    "Previous MUN",
-                    row.previous_mun
-                )}
-
-                ${detail(
-                    "Number of MUNs",
-                    row.previous_muns
-                )}
-
-                ${detail(
-                    "Awards",
-                    row.awards,
-                    true
-                )}
-
-            </div>
-
-        </div>
-
-
-
-        <div class="detail-section">
-
-            <h3>
                 Committee Preferences
             </h3>
 
@@ -1966,17 +1858,16 @@ function showRegistrationDetails(row) {
         <div class="detail-section">
 
             <h3>
-                Motivation
+                Payment
             </h3>
 
             <div class="detail-grid">
-
-                ${detail(
-                    "Motivation",
-                    row.motivation,
-                    true
-                )}
-
+                <div class="detail-item detail-wide payment-proof-detail">
+                    <div class="detail-label">Proof of Payment</div>
+                    <div class="detail-value" id="paymentProofLink">
+                        ${row.registration_id ? "Preparing secure link…" : "Not available"}
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -2035,6 +1926,78 @@ function showRegistrationDetails(row) {
 
     `;
 
+    if (row.payment_proof_path) {
+        loadPaymentProofLink(row.payment_proof_path);
+    }
+
+}
+
+
+async function loadPaymentProofLink(path) {
+    const linkContainer =
+        modalBody.querySelector("#paymentProofLink");
+
+    if (!linkContainer) {
+        return;
+    }
+
+    linkContainer.dataset.path = path;
+
+    try {
+        const { data: files, error: listError } =
+            await db
+                .storage
+                .from("payment-proofs")
+                .list(registrationID, {
+                    limit: 100,
+                    search: "proof"
+                });
+
+        const currentContainer =
+            modalBody.querySelector("#paymentProofLink");
+
+        if (!currentContainer || currentContainer.dataset.path !== path) {
+            return;
+        }
+
+        if (listError) {
+            console.error("Unable to find payment proof:", listError);
+            currentContainer.textContent = "Unable to create secure link.";
+            return;
+        }
+
+        if (!files.some(file => file.name === "proof")) {
+            currentContainer.textContent = "Not provided";
+            return;
+        }
+
+        const { data, error } =
+            await db
+                .storage
+                .from("payment-proofs")
+                .createSignedUrl(path, 300);
+
+        if (error) {
+            console.error("Unable to create payment proof link:", error);
+            currentContainer.textContent = "Unable to create secure link.";
+            return;
+        }
+
+        const link = document.createElement("a");
+        link.href = data.signedUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Open payment proof (link expires in 5 minutes)";
+        currentContainer.replaceChildren(link);
+    } catch (error) {
+        console.error("Unable to create payment proof link:", error);
+        const currentContainer =
+            modalBody.querySelector("#paymentProofLink");
+
+        if (currentContainer && currentContainer.dataset.path === path) {
+            currentContainer.textContent = "Unable to create secure link.";
+        }
+    }
 }
 
 
@@ -2292,44 +2255,6 @@ function escapeAttribute(value) {
             /'/g,
             "\\'"
         );
-
-}
-
-
-function formatExperience(value) {
-
-    if (!value) {
-        return "Not specified";
-    }
-
-
-    const text =
-        String(value)
-            .toLowerCase();
-
-
-    if (
-        text === "no" ||
-        text === "none" ||
-        text.includes("no experience")
-    ) {
-
-        return "No previous MUN";
-
-    }
-
-
-    if (
-        text === "yes" ||
-        text.includes("yes")
-    ) {
-
-        return "Previous MUN";
-
-    }
-
-
-    return String(value);
 
 }
 
