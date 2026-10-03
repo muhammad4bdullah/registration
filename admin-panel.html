@@ -44,110 +44,6 @@ body {
     color: var(--text);
 }
 
-body::after {
-    content: "";
-    position: fixed;
-    width: 360px;
-    height: 360px;
-    left: calc(var(--pointer-x, 50) * 1px - 180px);
-    top: calc(var(--pointer-y, 30) * 1px - 180px);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(125, 232, 255, 0.08), transparent 68%);
-    pointer-events: none;
-    z-index: 0;
-    transition: left 0.18s ease-out, top 0.18s ease-out;
-}
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-        radial-gradient(circle at 12% 22%, rgba(125, 232, 255, 0.28) 0 1px, transparent 2px),
-        radial-gradient(circle at 84% 16%, rgba(244, 199, 109, 0.25) 0 1px, transparent 2px),
-        radial-gradient(circle at 72% 76%, rgba(125, 232, 255, 0.22) 0 1px, transparent 2px),
-        repeating-radial-gradient(ellipse at 78% 40%, transparent 0 72px, rgba(125, 232, 255, 0.055) 73px 74px, transparent 75px 114px),
-        linear-gradient(rgba(7, 59, 120, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(7, 59, 120, 0.02) 1px, transparent 1px);
-    background-size: auto, auto, auto, auto, 30px 30px, 30px 30px;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.orbit-field {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.62;
-}
-
-.orbit-field::before {
-    content: "";
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    left: 82%;
-    top: 28%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(125, 232, 255, 0.07), transparent 62%);
-    filter: blur(8px);
-}
-
-.orbit {
-    position: absolute;
-    left: 82%;
-    top: 28%;
-    width: min(76vw, 1080px);
-    height: min(32vw, 440px);
-    border: 1px solid rgba(125, 232, 255, 0.1);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) rotate(-20deg);
-    animation: orbitDrift 30s linear infinite;
-}
-
-.orbit:nth-child(2) {
-    width: min(58vw, 820px);
-    height: min(23vw, 320px);
-    border-color: rgba(244, 199, 109, 0.12);
-    transform: translate(-50%, -50%) rotate(30deg);
-    animation-duration: 39s;
-    animation-direction: reverse;
-}
-
-.orbit:nth-child(3) {
-    width: min(90vw, 1300px);
-    height: min(41vw, 560px);
-    border-color: rgba(125, 232, 255, 0.05);
-    transform: translate(-50%, -50%) rotate(58deg);
-    animation-duration: 48s;
-}
-
-.orbit i {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    right: 12%;
-    top: 9%;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 15px 4px rgba(125, 232, 255, 0.36);
-}
-
-.orbit:nth-child(2) i {
-    left: 15%;
-    top: 78%;
-    background: var(--gold);
-    box-shadow: 0 0 15px 4px rgba(244, 199, 109, 0.3);
-}
-
-@keyframes orbitDrift {
-    from { rotate: 0deg; }
-    to { rotate: 360deg; }
-}
-
 .tilt-card {
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -156,18 +52,6 @@ body::before {
     transform: translateY(-4px);
     box-shadow: 0 22px 50px rgba(5, 10, 18, 0.22);
 }
-
-.scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 3px;
-    z-index: 200;
-    background: linear-gradient(90deg, var(--cyan), var(--gold));
-    box-shadow: 0 0 14px rgba(125, 232, 255, 0.65);
-}
-
 
 /* =====================================================
    LOGIN
@@ -792,54 +676,107 @@ tbody tr:hover {
     }
 }
 
-    /* ================= WHITE + GREEN THEME ================= */
+    /* ================= APSACS RED + GREEN THEME ================= */
     :root {
-        --blue: #168a4d;
-        --blue-dark: #0d6738;
-        --blue-light: rgba(22, 138, 77, 0.1);
-        --gold: #7abf3b;
-        --text: #183329;
-        --muted: #5d7569;
-        --border: rgba(22, 138, 77, 0.16);
-        --bg: #f5fbf7;
-        --bg-2: #e8f5ec;
-        --panel: rgba(255, 255, 255, 0.96);
-        --cyan: #168a4d;
+        --blue: #168b58;
+        --blue-dark: #0b5f3b;
+        --blue-light: rgba(22, 139, 88, 0.16);
+        --gold: #d8b16a;
+        --text: #f5ead2;
+        --muted: #c7c0a8;
+        --white: #fff8e9;
+        --border: rgba(216, 177, 106, 0.2);
+        --bg: #06291e;
+        --bg-2: #0a3527;
+        --panel: rgba(6, 38, 28, 0.9);
+        --green: #49b879;
+        --red: #e27678;
+        --orange: #d8b16a;
+        --cyan: #d8b16a;
     }
 
-    html, body { background: linear-gradient(180deg, #f7fcf8 0%, #edf8f0 48%, #ffffff 100%); color: #183329; }
-    body::before { background-image: linear-gradient(rgba(22, 138, 77, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 138, 77, 0.035) 1px, transparent 1px); }
-    .topbar { background: rgba(255, 255, 255, 0.92); border-bottom-color: rgba(22, 138, 77, 0.14); box-shadow: 0 10px 30px rgba(22, 81, 46, 0.08); }
-    .brand h2, .page-heading h1, .detail-value { color: #123e29; }
+    html, body {
+        background:
+            radial-gradient(circle at 8% 12%, rgba(104, 13, 24, 0.24), transparent 28%),
+            radial-gradient(circle at 92% 78%, rgba(22, 139, 88, 0.12), transparent 30%),
+            linear-gradient(180deg, #041d16 0%, #082b20 52%, #041d16 100%);
+        color: var(--text);
+    }
+    .theme-map {
+        position: fixed;
+        top: 50%;
+        right: -18%;
+        width: min(100vw, 1280px);
+        height: auto;
+        transform: translateY(-50%);
+        opacity: 0.24;
+        pointer-events: none;
+        z-index: 0;
+    }
+    #loginScreen, #dashboard { position: relative; z-index: 1; }
+    .topbar {
+        background: rgba(4, 29, 22, 0.9);
+        border-bottom-color: rgba(216, 177, 106, 0.22);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+    }
+    .brand h2, .page-heading h1, .login-card h1, .detail-value { color: var(--white); }
     .brand span, .admin-email, .page-heading p, .stat-label, th, .detail-label { color: var(--muted); }
-    .login-card, .stat-card, .table-card, .modal { background: rgba(255, 255, 255, 0.96); border-color: rgba(22, 138, 77, 0.16); box-shadow: 0 24px 60px rgba(22, 81, 46, 0.1); }
-    .form-group input, .search-box { background: #ffffff; color: #183329; border-color: rgba(22, 138, 77, 0.2); }
-    .form-group input:focus, .search-box:focus { border-color: #168a4d; box-shadow: 0 0 0 3px rgba(22, 138, 77, 0.1); }
-    .login-btn, .modal-header { background: linear-gradient(135deg, #168a4d, #38b765); }
-    .login-btn:hover { background: linear-gradient(135deg, #0d6738, #168a4d); }
-    .action-btn { background: #e1f4e7; border-color: rgba(22, 138, 77, 0.2); color: #0d6738; }
-    .table-card table { background: #ffffff; }
-    thead { background: #e8f5ec; }
-    td { color: #315745; border-bottom-color: rgba(22, 138, 77, 0.1); }
-    tbody tr:hover { background: #f0faf2; }
-    .registration-id, .stat-number { color: #168a4d; }
-    .detail-item { background: #f3faf5; border-color: rgba(22, 138, 77, 0.14); }
-    .detail-section h3 { color: #168a4d; }
-    .modal-overlay { background: rgba(18, 51, 35, 0.42); }
+    .login-card, .stat-card, .table-card, .modal {
+        background: linear-gradient(150deg, rgba(10, 52, 38, 0.96), rgba(5, 32, 24, 0.97));
+        border-color: rgba(216, 177, 106, 0.2);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    }
+    .login-card::before { background: radial-gradient(circle, rgba(216, 177, 106, 0.18), transparent 68%); }
+    .form-group input, .search-box {
+        background: rgba(4, 29, 22, 0.82);
+        color: var(--text);
+        border-color: rgba(216, 177, 106, 0.18);
+    }
+    .form-group input:focus, .search-box:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(216, 177, 106, 0.1);
+    }
+    .login-btn, .modal-header { background: linear-gradient(135deg, #8b1e2d, #64111e); }
+    .login-btn:hover { background: linear-gradient(135deg, #a52a38, #741421); }
+    .action-btn {
+        background: rgba(22, 139, 88, 0.14);
+        border-color: rgba(216, 177, 106, 0.24);
+        color: var(--gold);
+    }
+    .logout-btn { background: rgba(139, 30, 45, 0.2); color: #f09a9a; }
+    .table-card table { background: rgba(4, 29, 22, 0.54); }
+    thead { background: rgba(139, 30, 45, 0.24); }
+    td { color: var(--text); border-bottom-color: rgba(216, 177, 106, 0.12); }
+    tbody tr:hover { background: rgba(22, 139, 88, 0.12); }
+    .registration-id, .stat-number, .detail-section h3 { color: var(--gold); }
+    .detail-item { background: rgba(4, 29, 22, 0.68); border-color: rgba(216, 177, 106, 0.16); }
+    .modal-overlay { background: rgba(2, 15, 11, 0.78); }
+    .approve-btn { background: rgba(73, 184, 121, 0.14); }
+    .reject-btn { background: rgba(226, 118, 120, 0.14); }
+    .pending-number { color: var(--gold); }
+    .approved-number { color: var(--green); }
+    .rejected-number { color: var(--red); }
+    @media (max-width: 600px) {
+        .theme-map { right: -52%; width: 130vw; opacity: 0.16; }
+    }
 </style>
 </head>
 
 
 <body>
 
-<div class="orbit-field" aria-hidden="true">
-    <span class="orbit"><i></i></span>
-    <span class="orbit"><i></i></span>
-    <span class="orbit"><i></i></span>
-</div>
-
-<div class="scroll-progress" id="scrollProgress"></div>
-
+<svg class="theme-map" viewBox="0 0 460 345" aria-hidden="true">
+    <defs>
+        <filter id="admin-red-map" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="
+                0 0 0 0 0.55
+                0 0 0 0 0.045
+                0 0 0 0 0.08
+                -0.2126 -0.7152 -0.0722 0 1" />
+        </filter>
+    </defs>
+    <image href="world-map.webp" width="460" height="345" filter="url(#admin-red-map)" />
+</svg>
 
 <!-- =====================================================
      LOGIN
@@ -2433,22 +2370,6 @@ function formatDate(value) {
 /* =====================================================
    START
 ===================================================== */
-
-const scrollProgress = document.getElementById("scrollProgress");
-
-window.addEventListener("scroll", () => {
-    const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = scrollableHeight > 0
-        ? (window.scrollY / scrollableHeight) * 100
-        : 0;
-
-    scrollProgress.style.width = `${progress}%`;
-}, { passive: true });
-
-window.addEventListener("pointermove", event => {
-    document.documentElement.style.setProperty("--pointer-x", event.clientX);
-    document.documentElement.style.setProperty("--pointer-y", event.clientY);
-}, { passive: true });
 
 checkSession();
 
