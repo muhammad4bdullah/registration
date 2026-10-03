@@ -242,7 +242,7 @@ textarea {
 
 .progress-bar {
     height: 100%;
-    width: 20%;
+    width: 25%;
     background: linear-gradient(90deg, var(--cyan), var(--blue));
     border-radius: 20px;
     transition: width 0.35s ease;
@@ -870,6 +870,56 @@ body {
     border-color: rgba(216, 177, 106, 0.16);
 }
 
+.payment-details {
+    margin-bottom: 26px;
+    padding: 20px;
+    border: 1px solid rgba(216, 177, 106, 0.2);
+    border-radius: 12px;
+    background: rgba(4, 29, 22, 0.58);
+}
+
+.payment-details h3 {
+    margin: 0 0 16px;
+    color: var(--gold);
+    font-size: 15px;
+}
+
+.payment-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.payment-detail-grid div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.payment-detail-grid span,
+#paymentProofHelp,
+#paymentProofName {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.payment-detail-grid strong {
+    color: var(--white);
+    font-size: 14px;
+}
+
+.payment-proof-field input {
+    padding: 12px;
+}
+
+.payment-proof-field small {
+    line-height: 1.5;
+}
+
+.payment-proof-field #paymentProofName {
+    color: var(--gold);
+}
+
 .review-section,
 .review-item,
 .steps {
@@ -915,6 +965,10 @@ body {
 }
 
 @media (max-width: 700px) {
+    .payment-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
     .theme-map {
         right: -52%;
         width: 130vw;
@@ -998,7 +1052,7 @@ body {
                     class="progress-percent"
                     id="progressPercent"
                 >
-                    20%
+                    25%
                 </span>
 
             </div>
@@ -1021,17 +1075,11 @@ body {
 
             <div class="step-dot active">1</div>
             <div class="step-line"></div>
-
             <div class="step-dot">2</div>
             <div class="step-line"></div>
-
             <div class="step-dot">3</div>
             <div class="step-line"></div>
-
             <div class="step-dot">4</div>
-            <div class="step-line"></div>
-
-            <div class="step-dot">5</div>
 
         </div>
 
@@ -1092,13 +1140,14 @@ body {
                         <div class="field">
 
                             <label for="phone">
-                                Phone Number
+                                Phone Number <span class="required">*</span>
                             </label>
 
                             <input
                                 type="tel"
                                 id="phone"
                                 placeholder="03XX XXXXXXX"
+                                required
                             >
 
                         </div>
@@ -1136,12 +1185,13 @@ body {
                         <div class="field">
 
                             <label for="dob">
-                                Date of Birth
+                                Date of Birth <span class="required">*</span>
                             </label>
 
                             <input
                                 type="date"
                                 id="dob"
+                                required
                             >
 
                         </div>
@@ -1152,203 +1202,6 @@ body {
 
 
                 <!-- STEP 2 -->
-
-                <section class="form-step">
-
-                    <div class="step-heading">
-
-                        <h2>School Information</h2>
-
-                        <p>
-                            Provide your current academic information.
-                        </p>
-
-                    </div>
-
-
-                    <div class="form-grid">
-
-                        <div class="field full">
-
-                            <label for="school">
-                                School <span class="required">*</span>
-                            </label>
-
-                            <input
-                                type="text"
-                                id="school"
-                                placeholder="Enter your school name"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="field">
-
-                            <label for="grade">
-                                Grade / Class <span class="required">*</span>
-                            </label>
-
-                            <select id="grade" required>
-
-                                <option value="">
-                                    Select grade
-                                </option>
-
-                                <option value="9">
-                                    Grade 9
-                                </option>
-
-                                <option value="10">
-                                    Grade 10
-                                </option>
-
-                                <option value="11">
-                                    Grade 11
-                                </option>
-
-                                <option value="12">
-                                    Grade 12
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="field">
-
-                            <label for="city">
-                                City
-                            </label>
-
-                            <input
-                                type="text"
-                                id="city"
-                                placeholder="Enter your city"
-                            >
-
-                        </div>
-
-
-                        <div class="field full">
-
-                            <label for="schoolContact">
-                                School Contact / Coordinator
-                            </label>
-
-                            <input
-                                type="text"
-                                id="schoolContact"
-                                placeholder="Name of school coordinator (if applicable)"
-                            >
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- STEP 3 -->
-
-                <section class="form-step">
-
-                    <div class="step-heading">
-
-                        <h2>MUN Experience</h2>
-
-                        <p>
-                            Help us understand your previous MUN experience.
-                        </p>
-
-                    </div>
-
-
-                    <div class="form-grid">
-
-                        <div class="field full">
-
-                            <label>
-                                Have you participated in an MUN before?
-                                <span class="required">*</span>
-                            </label>
-
-                            <div class="radio-group">
-
-                                <div class="radio-option">
-
-                                    <input
-                                        type="radio"
-                                        name="experience"
-                                        id="expYes"
-                                        value="Yes"
-                                    >
-
-                                    <label for="expYes">
-                                        Yes
-                                    </label>
-
-                                </div>
-
-
-                                <div class="radio-option">
-
-                                    <input
-                                        type="radio"
-                                        name="experience"
-                                        id="expNo"
-                                        value="No"
-                                    >
-
-                                    <label for="expNo">
-                                        No
-                                    </label>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="field">
-
-                            <label for="munCount">
-                                Number of Previous MUNs
-                            </label>
-
-                            <input
-                                type="number"
-                                id="munCount"
-                                min="0"
-                                placeholder="e.g. 2"
-                            >
-
-                        </div>
-
-
-                        <div class="field">
-
-                            <label for="awards">
-                                Previous MUN Awards
-                            </label>
-
-                            <input
-                                type="text"
-                                id="awards"
-                                placeholder="e.g. Best Delegate, Honorable Mention"
-                            >
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- STEP 4 -->
 
                 <section class="form-step">
 
@@ -1447,25 +1300,57 @@ body {
                         </div>
 
 
-                        <div class="field full">
-
-                            <label for="motivation">
-                                Why do you want to participate in AMUN?
-                            </label>
-
-                            <textarea
-                                id="motivation"
-                                placeholder="Tell us briefly about your interest in MUN..."
-                            ></textarea>
-
-                        </div>
-
                     </div>
 
                 </section>
 
 
-                <!-- STEP 5 -->
+                <!-- STEP 3 -->
+
+                <section class="form-step">
+
+                    <div class="step-heading">
+
+                        <h2>Payment Details</h2>
+
+                        <p>
+                            Bank and fee details are not finalized yet.
+                            Upload your payment proof once the official instructions are available.
+                        </p>
+
+                    </div>
+
+                    <div class="payment-details">
+                        <h3>Bank Details</h3>
+                        <div class="payment-detail-grid">
+                            <div><span>Bank</span><strong>Unknown</strong></div>
+                            <div><span>Account Title</span><strong>Unknown</strong></div>
+                            <div><span>Account / IBAN</span><strong>Unknown</strong></div>
+                            <div><span>Registration Fee</span><strong>Unknown</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="field payment-proof-field">
+                        <label for="paymentProof">
+                            Proof of Payment <span class="required">*</span>
+                        </label>
+                        <input
+                            type="file"
+                            id="paymentProof"
+                            accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                            aria-describedby="paymentProofHelp paymentProofName"
+                            required
+                        >
+                        <small id="paymentProofHelp">
+                            Attach a JPG, PNG, or PDF file up to 5 MB.
+                        </small>
+                        <small id="paymentProofName">No file selected.</small>
+                    </div>
+
+                </section>
+
+
+                <!-- STEP 4 -->
 
                 <section class="form-step">
 
@@ -1651,11 +1536,18 @@ const errorBox =
 
 const stepNames = [
     "Personal Information",
-    "School Information",
-    "MUN Experience",
     "Committee Preferences",
+    "Payment Details",
     "Review & Submit"
 ];
+
+document
+    .getElementById("paymentProof")
+    .addEventListener("change", event => {
+        const file = event.target.files[0];
+        document.getElementById("paymentProofName").textContent =
+            file ? file.name : "No file selected.";
+    });
 
 
 /* =====================================================
@@ -1742,24 +1634,6 @@ function updateStep() {
 
 
 /* =====================================================
-   RADIO VALUE
-====================================================== */
-
-function getRadioValue(name) {
-
-    const selected =
-        document.querySelector(
-            `input[name="${name}"]:checked`
-        );
-
-    return selected
-        ? selected.value
-        : "";
-
-}
-
-
-/* =====================================================
    VALIDATION
 ====================================================== */
 
@@ -1794,26 +1668,9 @@ function validateCurrentStep() {
     }
 
 
-    /* MUN experience */
-
-    if (currentStep === 2) {
-
-        if (!getRadioValue("experience")) {
-
-            alert(
-                "Please select whether you have participated in an MUN before."
-            );
-
-            return false;
-
-        }
-
-    }
-
-
     /* Committee preferences */
 
-    if (currentStep === 3) {
+    if (currentStep === 1) {
 
         const committee1 =
             document.getElementById("committee1").value;
@@ -1832,6 +1689,27 @@ function validateCurrentStep() {
 
         }
 
+    }
+
+
+    if (currentStep === 2) {
+        const file = document.getElementById("paymentProof").files[0];
+        const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+        const allowedExtensions = /\.(jpe?g|png|pdf)$/i;
+
+        if (!file) {
+            alert("Please attach your proof of payment.");
+            return false;
+        }
+
+        if (
+            file.size > 5 * 1024 * 1024 ||
+            (file.type && !allowedTypes.includes(file.type)) ||
+            !allowedExtensions.test(file.name)
+        ) {
+            alert("Choose a JPG, PNG, or PDF file up to 5 MB.");
+            return false;
+        }
     }
 
 
@@ -1933,9 +1811,8 @@ function escapeHTML(value) {
 
 function createReview() {
 
-    const experience =
-        getRadioValue("experience");
-
+    const paymentProof =
+        document.getElementById("paymentProof").files[0];
 
     const sections = [
 
@@ -1953,35 +1830,22 @@ function createReview() {
 
 
         {
-            title: "School Information",
-
-            items: [
-                ["School", document.getElementById("school").value],
-                ["Grade", document.getElementById("grade").value],
-                ["City", document.getElementById("city").value],
-                ["School Contact", document.getElementById("schoolContact").value]
-            ]
-        },
-
-
-        {
-            title: "MUN Experience",
-
-            items: [
-                ["Previous MUN", experience],
-                ["Number of MUNs", document.getElementById("munCount").value],
-                ["Previous Awards", document.getElementById("awards").value]
-            ]
-        },
-
-
-        {
             title: "Committee Preferences",
 
             items: [
                 ["First Preference", document.getElementById("committee1").value],
-                ["Second Preference", document.getElementById("committee2").value],
-                ["Motivation", document.getElementById("motivation").value]
+                ["Second Preference", document.getElementById("committee2").value]
+            ]
+        },
+
+        {
+            title: "Payment",
+            items: [
+                ["Bank", "Unknown"],
+                ["Account Title", "Unknown"],
+                ["Account / IBAN", "Unknown"],
+                ["Registration Fee", "Unknown"],
+                ["Proof of Payment", paymentProof ? paymentProof.name : ""]
             ]
         }
 
@@ -2102,6 +1966,37 @@ async function submitRegistration() {
         const registrationID =
             generateRegistrationID();
 
+        const proofFile =
+            document.getElementById("paymentProof").files[0];
+
+        const proofExtension =
+            proofFile.name.split(".").pop().toLowerCase();
+
+        const paymentProofPath =
+            `${registrationID}/proof`;
+
+        const proofContentType = {
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png",
+            pdf: "application/pdf"
+        }[proofExtension];
+
+        const { error: uploadError } =
+            await db
+                .storage
+                .from("payment-proofs")
+                .upload(paymentProofPath, proofFile, {
+                    contentType: proofContentType || proofFile.type,
+                    upsert: false
+                });
+
+        if (uploadError) {
+            throw new Error(
+                `Proof upload failed: ${uploadError.message}`
+            );
+        }
+
 
         const registrationData = {
 
@@ -2121,28 +2016,7 @@ async function submitRegistration() {
                 document.getElementById("gender").value,
 
             dob:
-                document.getElementById("dob").value || null,
-
-            school:
-                document.getElementById("school").value.trim(),
-
-            grade:
-                document.getElementById("grade").value,
-
-            city:
-                document.getElementById("city").value.trim(),
-
-            school_contact:
-                document.getElementById("schoolContact").value.trim(),
-
-            previous_mun:
-                getRadioValue("experience"),
-
-            previous_muns:
-                document.getElementById("munCount").value.trim(),
-
-            awards:
-                document.getElementById("awards").value.trim(),
+                document.getElementById("dob").value,
 
             committee_1:
                 document.getElementById("committee1").value,
@@ -2150,8 +2024,8 @@ async function submitRegistration() {
             committee_2:
                 document.getElementById("committee2").value,
 
-            motivation:
-                document.getElementById("motivation").value.trim(),
+            payment_proof_path:
+                paymentProofPath,
 
             status:
                 "Pending"
@@ -2188,7 +2062,7 @@ async function submitRegistration() {
             );
 
             throw new Error(
-                error.message
+                `${error.message}. The proof was uploaded as ${registrationID}; contact the AMUN team if it remains unlinked.`
             );
 
         }
