@@ -908,9 +908,19 @@
         }
 
         .footer-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
             text-align: right;
             color: #b9cbe0;
             font-size: 13px;
+        }
+
+        .footer-link {
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
         /* ================= SCROLL ANIMATION ================= */
@@ -1021,6 +1031,7 @@
             }
 
             .footer-right {
+                align-items: flex-start;
                 text-align: left;
             }
         }
@@ -1513,7 +1524,6 @@
 
                 <a href="#about">About</a>
                 <a href="#committees">Committees</a>
-                <a href="#timeline">Timeline</a>
                 <a href="#contact">Contact</a>
 
                 <a href="registration.html" class="nav-button">
@@ -1609,9 +1619,12 @@
                 </div>
 
                 <h1>
-                    Debate ideas.<br>
-                    <span>Represent nations.</span>
+                    AMUN 2026.<br>
+                    <span>Chapter 1.</span>
                 </h1>
+                <p class="hero-description" style="margin-top: 10px; font-size: 14px; letter-spacing: 0.4px; text-transform: uppercase; color: #dfeafc;">
+                    By APSACS RYK Cantt
+                </p>
 
                 <p class="hero-description">
                     AMUN provides students with a platform to experience
@@ -1966,146 +1979,7 @@
     </section>
 
 
-    <!-- STATS -->
-
-    <section class="stats">
-
-        <div class="container">
-
-            <div class="stats-grid">
-
-                <div class="stat">
-                    <strong data-count="5">0</strong>
-                    <span>Committees</span>
-                </div>
-
-                <div class="stat">
-                    <strong data-count="200">0</strong>
-                    <span>Delegates</span>
-                </div>
-
-                <div class="stat">
-                    <strong data-count="1">0</strong>
-                    <span>Conference</span>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- TIMELINE -->
-
-    <section class="section" id="timeline">
-
-        <div class="container">
-
-            <div class="section-heading reveal">
-
-                <div class="section-kicker">
-                    Timeline
-                </div>
-
-                <h2>
-                    Important dates.
-                </h2>
-
-            </div>
-
-
-            <div class="timeline reveal">
-
-                <div class="timeline-item">
-
-                    <div class="timeline-date">
-                        TBA
-                    </div>
-
-                    <div class="timeline-content">
-
-                        <strong>
-                            Registration Opens
-                        </strong>
-
-                        <span>
-                            Delegate registration begins.
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item">
-
-                    <div class="timeline-date">
-                        TBA
-                    </div>
-
-                    <div class="timeline-content">
-
-                        <strong>
-                            Registration Closes
-                        </strong>
-
-                        <span>
-                            Final deadline for registration.
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item">
-
-                    <div class="timeline-date">
-                        TBA
-                    </div>
-
-                    <div class="timeline-content">
-
-                        <strong>
-                            Allocations
-                        </strong>
-
-                        <span>
-                            Committee and country allocations are released.
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item">
-
-                    <div class="timeline-date">
-                        TBA
-                    </div>
-
-                    <div class="timeline-content">
-
-                        <strong>
-                            AMUN Conference
-                        </strong>
-
-                        <span>
-                            Delegates take their seats.
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
+    
 
     <!-- CTA -->
 
@@ -2153,8 +2027,9 @@
 
             <div class="footer-right">
 
-                Registration Team<br>
-                APSACS
+                <a class="footer-link" href="registration.html">Register</a>
+                <a class="footer-link" href="mailto:info@apsacs.org">Email Us</a>
+                <a class="footer-link" href="#contact">Contact Us</a>
 
             </div>
 
@@ -2392,6 +2267,30 @@
                 updateAccountUI(data.session?.user || null);
 
                 const params = new URLSearchParams(window.location.search);
+                const oauthError = params.get("error");
+                if (oauthError) {
+                    const errorCode = params.get("error_code");
+                    const errorDescription = params.get("error_description");
+                    const retryRegistration =
+                        params.get("next") === "registration" ||
+                        params.get("auth") === "required";
+                    const cleanUrl = new URL(window.location.href);
+                    cleanUrl.search = "";
+                    cleanUrl.hash = "";
+                    window.history.replaceState({}, "", cleanUrl.toString());
+
+                    openAuthDialog("signin", retryRegistration);
+                    setAuthStatus(
+                        errorCode === "bad_oauth_state"
+                            ? "Google sign-in could not be verified. Start Google sign-in again from this page. If it keeps happening, check the Supabase Site URL and Google callback configuration."
+                            : errorDescription
+                                ? `Google sign-in failed: ${errorDescription}`
+                                : `Google sign-in failed: ${oauthError}`,
+                        true
+                    );
+                    return;
+                }
+
                 if (
                     data.session?.user?.email &&
                     params.get("next") === "registration"
