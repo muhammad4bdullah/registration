@@ -1199,8 +1199,10 @@ body {
                             </label>
 
                             <input
-                                type="date"
+                                type="text"
                                 id="dob"
+                                placeholder="e.g. 15 August 2008"
+                                autocomplete="bday"
                                 required
                             >
 
@@ -1301,6 +1303,20 @@ body {
 
                         </div>
 
+                        <div class="field full">
+
+                            <label for="preferredPersonalityCountry">
+                                Your Preferred Personality/Country <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="preferredPersonalityCountry"
+                                placeholder="Enter your preferred personality or country"
+                                required
+                            >
+
+                        </div>
 
                     </div>
 
@@ -1881,7 +1897,8 @@ function createReview() {
 
             items: [
                 ["First Preference", document.getElementById("committee1").value],
-                ["Second Preference", document.getElementById("committee2").value]
+                ["Second Preference", document.getElementById("committee2").value],
+                ["Preferred Personality/Country", document.getElementById("preferredPersonalityCountry").value.trim()]
             ]
         },
 
@@ -2084,6 +2101,9 @@ async function submitRegistration() {
 
             committee_2:
                 document.getElementById("committee2").value,
+
+            preferred_personality_country:
+                document.getElementById("preferredPersonalityCountry").value.trim(),
 
             payment_proof_path:
                 paymentProofPath,
