@@ -402,6 +402,11 @@ textarea {
     resize: vertical;
 }
 
+.email-account-hint {
+    color: var(--muted);
+    font-size: 12px;
+}
+
 /* =========================
    RADIO
 ========================= */
@@ -1130,9 +1135,14 @@ body {
                             <input
                                 type="email"
                                 id="email"
-                                placeholder="you@example.com"
+                                placeholder="Sign in to load your email"
+                                readonly
                                 required
                             >
+
+                            <small class="email-account-hint">
+                                Using your account email. It cannot be changed here.
+                            </small>
 
                         </div>
 
@@ -1491,12 +1501,26 @@ const db = createClient(
     SUPABASE_KEY
 );
 
+const publicDb = createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+            detectSessionInUrl: false,
+            storageKey: "amun-public-registration"
+        }
+    }
+);
+
 
 /* =====================================================
    FORM STATE
 ====================================================== */
 
 let currentStep = 0;
+let authenticatedEmail = "";
 
 const steps =
     document.querySelectorAll(".form-step");
@@ -1524,6 +1548,37 @@ const nextBtn =
 
 const errorBox =
     document.getElementById("errorMessage");
+
+async function initializeRegistrationAuth() {
+    nextBtn.disabled = true;
+
+    try {
+        const { data, error } = await db.auth.getSession();
+
+        if (error) {
+            throw error;
+        }
+
+        const user = data.session?.user;
+        if (!user?.email) {
+            window.location.replace(
+                "index.html?auth=required&next=registration"
+            );
+            return;
+        }
+
+        authenticatedEmail = user.email;
+        document.getElementById("email").value = authenticatedEmail;
+        nextBtn.disabled = false;
+    } catch (error) {
+        console.error("Could not load signed-in user:", error);
+        errorBox.textContent =
+            `Could not confirm your sign-in: ${error.message}`;
+        errorBox.style.display = "block";
+    }
+}
+
+initializeRegistrationAuth();
 
 
 const stepNames = [
@@ -1813,7 +1868,7 @@ function createReview() {
 
             items: [
                 ["Full Name", document.getElementById("fullName").value],
-                ["Email", document.getElementById("email").value],
+                ["Email", authenticatedEmail],
                 ["Phone", document.getElementById("phone").value],
                 ["Gender", document.getElementById("gender").value],
                 ["Date of Birth", document.getElementById("dob").value]
@@ -1948,6 +2003,20 @@ async function submitRegistration() {
 
     try {
 
+        const { data: authData, error: authError } =
+            await db.auth.getUser();
+
+        if (authError) {
+            throw authError;
+        }
+
+        if (!authData.user?.email) {
+            throw new Error("Your session has expired. Sign in again to submit.");
+        }
+
+        authenticatedEmail = authData.user.email;
+        document.getElementById("email").value = authenticatedEmail;
+
         /*
          * Generate the ID BEFORE inserting.
          * We don't use .select() after INSERT,
@@ -1975,7 +2044,7 @@ async function submitRegistration() {
         }[proofExtension];
 
         const { error: uploadError } =
-            await db
+            await publicDb
                 .storage
                 .from("payment-proofs")
                 .upload(paymentProofPath, proofFile, {
@@ -1999,7 +2068,7 @@ async function submitRegistration() {
                 document.getElementById("fullName").value.trim(),
 
             email:
-                document.getElementById("email").value.trim(),
+                authenticatedEmail,
 
             phone:
                 document.getElementById("phone").value.trim(),
@@ -2039,7 +2108,7 @@ async function submitRegistration() {
          */
 
         const { error } =
-            await db
+            await publicDb
                 .from("registrations")
                 .insert([
                     registrationData
