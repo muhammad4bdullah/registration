@@ -137,6 +137,7 @@
             width: min(1180px, 92%);
             height: 100%;
             margin: auto;
+            position: relative;
 
             display: flex;
             align-items: center;
@@ -1289,6 +1290,198 @@
                 opacity: 0.24;
             }
         }
+
+        .account-area {
+            position: relative;
+            margin-left: 18px;
+        }
+
+        .account-button {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid rgba(216, 177, 106, 0.35);
+            border-radius: 50%;
+            background: rgba(4, 29, 22, 0.8);
+            color: var(--gold);
+            padding: 0;
+        }
+
+        .account-initials {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            place-items: center;
+            border-radius: inherit;
+            background: linear-gradient(145deg, #0b5f3b, #4a111c);
+            color: var(--gold);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            line-height: 1;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .auth-overlay[hidden] {
+            display: none;
+        }
+
+        .auth-submit,
+        .auth-switch {
+            width: 100%;
+            border: 0;
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .auth-switch {
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+        }
+
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(8px);
+        }
+
+        .auth-dialog {
+            width: min(440px, 100%);
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(9, 45, 32, 0.98), rgba(4, 29, 22, 0.99));
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-dialog h2 {
+            margin: 0 32px 8px 0;
+            color: var(--gold);
+            font-size: 25px;
+        }
+
+        .auth-dialog > p {
+            margin: 0 0 22px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .auth-close {
+            float: right;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .auth-form label {
+            display: block;
+            margin: 14px 0 6px;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.18);
+            color: var(--text);
+        }
+
+        .auth-submit {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #168b58, #0b5f3b);
+            color: white;
+        }
+
+        .auth-submit:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .auth-google {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 11px 14px;
+            border: 1px solid rgba(216, 177, 106, 0.24);
+            border-radius: 7px;
+            background: #fff;
+            color: #202124;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .auth-google:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .auth-google-mark {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+        }
+
+        .auth-switch {
+            margin-top: 10px;
+        }
+
+        .auth-status {
+            min-height: 20px;
+            margin: 12px 0 0 !important;
+            color: var(--gold) !important;
+            font-size: 13px !important;
+        }
+
+        .auth-status.error {
+            color: #ff9b9b !important;
+        }
+
+        @media (max-width: 850px) {
+            .account-area {
+                margin-left: 10px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .brand-text span {
+                font-size: 9px;
+            }
+
+            .account-area {
+                margin-left: 6px;
+            }
+
+            .account-button {
+                width: 38px;
+                height: 38px;
+                flex-basis: 38px;
+            }
+
+            .auth-dialog {
+                padding: 24px 20px;
+            }
+        }
     </style>
 </head>
 
@@ -1329,10 +1522,63 @@
 
             </div>
 
+            <div class="account-area">
+                <div
+                    class="account-button"
+                    id="accountButton"
+                    role="img"
+                    aria-label="Account initials"
+                    title="Signed-in account"
+                >
+                    <span class="account-initials" id="accountInitials" hidden></span>
+                </div>
+            </div>
+
         </div>
 
     </nav>
 
+    <div class="auth-overlay" id="authOverlay" hidden>
+        <section
+            class="auth-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="authTitle"
+        >
+            <button type="button" class="auth-close" id="authClose" aria-label="Close">×</button>
+            <h2 id="authTitle">Welcome back</h2>
+            <p id="authDescription">Sign in to continue to delegate registration.</p>
+
+            <form class="auth-form" id="authForm">
+                <label for="authEmail">Email address</label>
+                <input type="email" id="authEmail" autocomplete="email" required>
+
+                <label for="authPassword">Password</label>
+                <input
+                    type="password"
+                    id="authPassword"
+                    autocomplete="current-password"
+                    minlength="6"
+                    required
+                >
+
+                <button class="auth-submit" id="authSubmit" type="submit">Sign in</button>
+                <button class="auth-google" id="googleSignInButton" type="button">
+                    <svg class="auth-google-mark" viewBox="0 0 48 48" aria-hidden="true">
+                        <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"/>
+                        <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44Z"/>
+                        <path fill="#FBBC05" d="M12.6 27.7a12 12 0 0 1 0-7.4V15H5.8a20 20 0 0 0 0 18Z"/>
+                        <path fill="#EA4335" d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 6 29.5 4 24 4A20 20 0 0 0 5.8 15l6.8 5.3C14.2 15.5 18.7 11.9 24 11.9Z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+                <button class="auth-switch" id="authSwitch" type="button">
+                    Create an account
+                </button>
+                <p class="auth-status" id="authStatus" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </div>
 
     <!-- HERO -->
 
@@ -1916,8 +2162,261 @@
 
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
+
+        const SUPABASE_URL = "https://gxtmwoeusikehczprbvv.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
+        const authClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const accountInitials = document.getElementById("accountInitials");
+        const authOverlay = document.getElementById("authOverlay");
+        const authForm = document.getElementById("authForm");
+        const authEmail = document.getElementById("authEmail");
+        const authPassword = document.getElementById("authPassword");
+        const authSubmit = document.getElementById("authSubmit");
+        const googleSignInButton = document.getElementById("googleSignInButton");
+        const authSwitch = document.getElementById("authSwitch");
+        const authStatus = document.getElementById("authStatus");
+        const registrationLinks = [
+            ...document.querySelectorAll('a[href="registration.html"]')
+        ];
+
+        let currentUser = null;
+        let authMode = "signin";
+        let continueToRegistration = false;
+
+        function setAuthStatus(message, isError = false) {
+            authStatus.textContent = message;
+            authStatus.classList.toggle("error", isError);
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            const signingUp = mode === "signup";
+            document.getElementById("authTitle").textContent =
+                signingUp ? "Create your account" : "Welcome back";
+            document.getElementById("authDescription").textContent =
+                signingUp
+                    ? "Create an account to register as an AMUN delegate."
+                    : "Sign in to continue to delegate registration.";
+            authSubmit.textContent = signingUp ? "Sign up" : "Sign in";
+            authSwitch.textContent = signingUp
+                ? "Already have an account? Sign in"
+                : "Create an account";
+            authPassword.autocomplete = signingUp
+                ? "new-password"
+                : "current-password";
+            if (signingUp) {
+                authPassword.setAttribute("minlength", "8");
+            } else {
+                authPassword.removeAttribute("minlength");
+            }
+            setAuthStatus("");
+        }
+
+        function openAuthDialog(mode = "signin", registerAfterAuth = false) {
+            continueToRegistration = registerAfterAuth;
+            setAuthMode(mode);
+            authOverlay.hidden = false;
+            document.body.style.overflow = "hidden";
+            authEmail.focus();
+        }
+
+        function closeAuthDialog() {
+            authOverlay.hidden = true;
+            document.body.style.overflow = "";
+            continueToRegistration = false;
+        }
+
+        function getUserInitials(user) {
+            const metadata = user?.user_metadata || {};
+            const name = metadata.full_name || metadata.name || user?.email || "";
+            return name
+                .split(/\s+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0].toUpperCase())
+                .join("") || "?";
+        }
+
+        function updateAccountUI(user) {
+            currentUser = user;
+            accountInitials.textContent = user ? getUserInitials(user) : "AM";
+            accountInitials.hidden = false;
+            const accessibleName = user
+                ? `Account initials: ${accountInitials.textContent}`
+                : "AMUN account";
+            document.getElementById("accountButton").setAttribute("aria-label", accessibleName);
+            document.getElementById("accountButton").setAttribute("title", accessibleName);
+        }
+
+        async function goToRegistration() {
+            const { data, error } = await authClient.auth.getSession();
+            if (error) {
+                setAuthStatus(`Could not check your sign-in: ${error.message}`, true);
+                return;
+            }
+
+            if (data.session?.user?.email) {
+                window.location.href = "registration.html";
+                return;
+            }
+
+            openAuthDialog("signin", true);
+            setAuthStatus("Sign in or create an account to register.");
+        }
+
+        authSwitch.addEventListener("click", () => {
+            setAuthMode(authMode === "signin" ? "signup" : "signin");
+        });
+
+        googleSignInButton.addEventListener("click", async () => {
+            googleSignInButton.disabled = true;
+            setAuthStatus("Connecting to Google...");
+
+            try {
+                const redirectUrl = new URL(window.location.href);
+                redirectUrl.search = "";
+                redirectUrl.hash = "";
+
+                if (continueToRegistration) {
+                    redirectUrl.searchParams.set("next", "registration");
+                }
+
+                const { error } = await authClient.auth.signInWithOAuth({
+                    provider: "google",
+                    options: {
+                        redirectTo: redirectUrl.toString()
+                    }
+                });
+
+                if (error) {
+                    throw error;
+                }
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                setAuthStatus(`Could not start Google sign-in: ${error.message}`, true);
+                googleSignInButton.disabled = false;
+            }
+        });
+
+        document.getElementById("authClose").addEventListener("click", closeAuthDialog);
+
+        authOverlay.addEventListener("click", event => {
+            if (event.target === authOverlay) {
+                closeAuthDialog();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && !authOverlay.hidden) {
+                closeAuthDialog();
+            }
+        });
+
+        registrationLinks.forEach(link => {
+            link.addEventListener("click", event => {
+                event.preventDefault();
+                document.getElementById("navLinks").classList.remove("open");
+                goToRegistration().catch(error => {
+                    console.error("Registration navigation error:", error);
+                    openAuthDialog("signin", true);
+                    setAuthStatus(`Could not open registration: ${error.message}`, true);
+                });
+            });
+        });
+
+        authForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            authSubmit.disabled = true;
+            authSubmit.textContent = authMode === "signup" ? "Creating account..." : "Signing in...";
+
+            const email = authEmail.value.trim().toLowerCase();
+            const password = authPassword.value;
+            const redirectToRegistration = continueToRegistration;
+
+            try {
+                if (authMode === "signup") {
+                    const { data, error } = await authClient.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            emailRedirectTo: `${window.location.origin}/index.html`
+                        }
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (!data.session) {
+                        setAuthStatus(
+                            "Account created. Check your email to confirm it, then sign in."
+                        );
+                        return;
+                    }
+
+                    updateAccountUI(data.user);
+                } else {
+                    const { data, error } = await authClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    updateAccountUI(data.user);
+                }
+
+                closeAuthDialog();
+                if (redirectToRegistration) {
+                    window.location.href = "registration.html";
+                }
+            } catch (error) {
+                console.error("Account authentication error:", error);
+                setAuthStatus(error.message, true);
+            } finally {
+                authSubmit.disabled = false;
+                authSubmit.textContent = authMode === "signup" ? "Sign up" : "Sign in";
+            }
+        });
+
+        authClient.auth.getSession()
+            .then(({ data, error }) => {
+                if (error) {
+                    throw error;
+                }
+                updateAccountUI(data.session?.user || null);
+
+                const params = new URLSearchParams(window.location.search);
+                if (
+                    data.session?.user?.email &&
+                    params.get("next") === "registration"
+                ) {
+                    window.location.replace("registration.html");
+                    return;
+                }
+
+                if (params.get("auth") === "required") {
+                    openAuthDialog("signin", params.get("next") === "registration");
+                    setAuthStatus("Sign in or create an account to register.");
+                }
+            })
+            .catch(error => {
+                console.error("Could not restore account session:", error);
+                updateAccountUI(null);
+                if (new URLSearchParams(window.location.search).get("auth") === "required") {
+                    openAuthDialog("signin", true);
+                    setAuthStatus(`Could not restore your sign-in: ${error.message}`, true);
+                }
+            });
+
+        authClient.auth.onAuthStateChange((_event, session) => {
+            updateAccountUI(session?.user || null);
+        });
 
         /* NAVBAR */
 
