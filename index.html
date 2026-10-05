@@ -1158,7 +1158,6 @@
             background: linear-gradient(135deg, rgba(22, 139, 88, 0.18), rgba(7, 48, 34, 0.34));
         }
 
-        .navbar,
         .hero,
         .section,
         .stats,
@@ -1320,6 +1319,13 @@
             background: rgba(4, 29, 22, 0.8);
             color: var(--gold);
             padding: 0;
+            cursor: pointer;
+        }
+
+        .account-button:focus-visible,
+        .account-menu button:focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
         }
 
         .account-initials {
@@ -1336,6 +1342,56 @@
             letter-spacing: 0.4px;
             line-height: 1;
             text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .account-menu {
+            position: fixed;
+            top: 88px;
+            right: max(4vw, calc((100% - 1180px) / 2));
+            z-index: 1101;
+            width: min(260px, calc(100vw - 32px));
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(7, 29, 21, 0.98);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+        }
+
+        .account-menu[hidden] {
+            display: none;
+        }
+
+        .account-email {
+            overflow-wrap: anywhere;
+            padding: 6px 8px 12px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .account-menu button {
+            width: 100%;
+            padding: 9px 10px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            background: rgba(139, 30, 45, 0.24);
+            color: #ffdede;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .account-menu button:hover {
+            background: rgba(139, 30, 45, 0.42);
+        }
+
+        .account-menu button:disabled {
+            cursor: wait;
+            opacity: 0.7;
+        }
+
+        .account-menu-status {
+            margin: 8px 2px 0;
+            color: #ff9b9b;
+            font-size: 12px;
         }
 
         .auth-overlay[hidden] {
@@ -1534,14 +1590,23 @@
             </div>
 
             <div class="account-area">
-                <div
+                <button
+                    type="button"
                     class="account-button"
                     id="accountButton"
-                    role="img"
                     aria-label="Account initials"
                     title="Signed-in account"
+                    aria-expanded="false"
+                    aria-controls="accountMenu"
                 >
                     <span class="account-initials" id="accountInitials" hidden></span>
+                </button>
+                <div class="account-menu" id="accountMenu" aria-label="Account options" hidden>
+                    <p class="account-email" id="accountEmail"></p>
+                    <button type="button" id="signOutButton">
+                        Sign out
+                    </button>
+                    <p class="account-menu-status" id="accountMenuStatus" role="status" aria-live="polite" hidden></p>
                 </div>
             </div>
 
@@ -1698,11 +1763,7 @@
 
                         <div>
                             <small>Location</small>
-                            <strong>APSACS</strong>
-                        </div>
-
-                        <div class="event-value">
-                            TBA
+                            <strong>APSAC RYK Cantt<br>near Riffle Chowk, Chowk Bahadurpur</strong>
                         </div>
 
                     </div>
@@ -2024,6 +2085,10 @@
                     APSACS Model United Nations 2026
                 </p>
 
+                <p>
+                    <strong>Venue:</strong> APSAC RYK Cantt, near Riffle Chowk, Chowk Bahadurpur
+                </p>
+
             </div>
 
             <div class="footer-right">
@@ -2046,6 +2111,11 @@
         const SUPABASE_KEY = "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
         const authClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const accountInitials = document.getElementById("accountInitials");
+        const accountButton = document.getElementById("accountButton");
+        const accountMenu = document.getElementById("accountMenu");
+        const accountEmail = document.getElementById("accountEmail");
+        const signOutButton = document.getElementById("signOutButton");
+        const accountMenuStatus = document.getElementById("accountMenuStatus");
         const authOverlay = document.getElementById("authOverlay");
         const authForm = document.getElementById("authForm");
         const authEmail = document.getElementById("authEmail");
@@ -2123,9 +2193,65 @@
             const accessibleName = user
                 ? `Account initials: ${accountInitials.textContent}`
                 : "AMUN account";
-            document.getElementById("accountButton").setAttribute("aria-label", accessibleName);
-            document.getElementById("accountButton").setAttribute("title", accessibleName);
+            accountButton.setAttribute("aria-label", accessibleName);
+            accountButton.setAttribute("title", user ? user.email : "Sign in or create an account");
+            accountMenu.hidden = true;
+            accountButton.setAttribute("aria-expanded", "false");
+            accountEmail.textContent = user?.email || "";
+            accountMenuStatus.textContent = "";
+            accountMenuStatus.hidden = true;
         }
+
+        accountButton.addEventListener("click", () => {
+            if (!currentUser) {
+                openAuthDialog("signin");
+                return;
+            }
+
+            accountMenu.hidden = !accountMenu.hidden;
+            accountButton.setAttribute("aria-expanded", String(!accountMenu.hidden));
+            if (!accountMenu.hidden) {
+                signOutButton.focus();
+            }
+        });
+
+        signOutButton.addEventListener("click", async () => {
+            signOutButton.disabled = true;
+            signOutButton.textContent = "Signing out...";
+            accountMenuStatus.hidden = true;
+
+            try {
+                const { error } = await authClient.auth.signOut();
+                if (error) {
+                    throw error;
+                }
+                accountMenu.hidden = true;
+                accountButton.setAttribute("aria-expanded", "false");
+                accountButton.focus();
+            } catch (error) {
+                console.error("Account sign-out error:", error);
+                accountMenuStatus.textContent = `Could not sign out: ${error.message}`;
+                accountMenuStatus.hidden = false;
+            } finally {
+                signOutButton.disabled = false;
+                signOutButton.textContent = "Sign out";
+            }
+        });
+
+        document.addEventListener("click", event => {
+            if (!accountMenu.hidden && !event.target.closest(".account-area")) {
+                accountMenu.hidden = true;
+                accountButton.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && !accountMenu.hidden) {
+                accountMenu.hidden = true;
+                accountButton.setAttribute("aria-expanded", "false");
+                accountButton.focus();
+            }
+        });
 
         async function goToRegistration() {
             const { data, error } = await authClient.auth.getSession();
