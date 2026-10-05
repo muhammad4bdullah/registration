@@ -547,6 +547,18 @@
             color: #edf6ff;
         }
 
+        .venue-link {
+            text-decoration: underline;
+            text-decoration-color: rgba(169, 247, 200, 0.55);
+            text-underline-offset: 3px;
+        }
+
+        .venue-link:hover,
+        .venue-link:focus-visible {
+            color: var(--cyan);
+            text-decoration-color: currentColor;
+        }
+
         .event-value {
             color: var(--cyan);
             font-weight: 700;
@@ -1763,7 +1775,15 @@
 
                         <div>
                             <small>Location</small>
-                            <strong>APSAC RYK Cantt<br>near Riffle Chowk, Chowk Bahadurpur</strong>
+                            <strong>
+                                <a
+                                    class="venue-link"
+                                    href="https://maps.app.goo.gl/eXzbKNhf6m34Z1Rh6"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Open APSAC RYK Cantt, near Riffle Chowk, Chowk Bahadurpur in Google Maps"
+                                >APSAC RYK Cantt<br>near Riffle Chowk, Chowk Bahadurpur</a>
+                            </strong>
                         </div>
 
                     </div>
@@ -2086,7 +2106,14 @@
                 </p>
 
                 <p>
-                    <strong>Venue:</strong> APSAC RYK Cantt, near Riffle Chowk, Chowk Bahadurpur
+                    <strong>Venue:</strong>
+                    <a
+                        class="venue-link"
+                        href="https://maps.app.goo.gl/eXzbKNhf6m34Z1Rh6"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Open APSAC RYK Cantt, near Riffle Chowk, Chowk Bahadurpur in Google Maps"
+                    >APSAC RYK Cantt, near Riffle Chowk, Chowk Bahadurpur</a>
                 </p>
 
             </div>
