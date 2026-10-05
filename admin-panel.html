@@ -1627,8 +1627,11 @@ function filterRegistrations() {
                     row.full_name,
                     row.email,
                     row.phone,
+                    row.cnic_b_form,
+                    row.guardian_phone,
                     row.committee_1,
                     row.committee_2,
+                    row.preferred_personality_country,
                     row.status
 
                 ]
@@ -1816,6 +1819,16 @@ function showRegistrationDetails(row) {
                 )}
 
                 ${detail(
+                    "CNIC / B-Form Number",
+                    row.cnic_b_form
+                )}
+
+                ${detail(
+                    "Guardian Contact Number",
+                    row.guardian_phone
+                )}
+
+                ${detail(
                     "Gender",
                     row.gender
                 )}
@@ -1847,6 +1860,11 @@ function showRegistrationDetails(row) {
                 ${detail(
                     "Second Preference",
                     row.committee_2
+                )}
+
+                ${detail(
+                    "Preferred Personality/Country",
+                    row.preferred_personality_country
                 )}
 
             </div>
