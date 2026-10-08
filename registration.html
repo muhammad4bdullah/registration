@@ -1606,6 +1606,18 @@ const publicDb = createClient(
 let currentStep = 0;
 let authenticatedEmail = "";
 
+const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
+    "member1@mun.com": "m10abdullah09@gmail.com",
+    "member2@mun.com": "chabilock61@gmail.com",
+    "member3@mun.com": "abdulrehmanch10978@gmail.com",
+    "member4@mun.com": "amberfatto0.o@gmail.com"
+};
+
+function getOfficialRegistrationEmail(email) {
+    const normalizedEmail = email.trim().toLowerCase();
+    return OFFICIAL_EMAIL_BY_MEMBER_LOGIN[normalizedEmail] || normalizedEmail;
+}
+
 const steps =
     document.querySelectorAll(".form-step");
 
@@ -1950,7 +1962,7 @@ function createReview() {
 
             items: [
                 ["Full Name", document.getElementById("fullName").value],
-                ["Email", authenticatedEmail],
+                ["Email", getOfficialRegistrationEmail(authenticatedEmail)],
                 ["Phone", document.getElementById("phone").value],
                 ["CNIC / B-Form Number", document.getElementById("cnicBForm").value.trim()],
                 ["Guardian Contact Number", document.getElementById("guardianPhone").value.trim()],
@@ -2097,6 +2109,8 @@ async function submitRegistration() {
 
         authenticatedEmail = enteredEmail;
         emailInput.value = authenticatedEmail;
+        const registrationEmail =
+            getOfficialRegistrationEmail(authenticatedEmail);
 
         /*
          * Generate the ID BEFORE inserting.
@@ -2149,7 +2163,7 @@ async function submitRegistration() {
                 document.getElementById("fullName").value.trim(),
 
             email:
-                authenticatedEmail,
+                registrationEmail,
 
             phone:
                 document.getElementById("phone").value.trim(),
@@ -2211,7 +2225,7 @@ async function submitRegistration() {
                 error.message.includes("registrations_email_unique_idx")
             ) {
                 throw new Error(
-                    "This email address already has a registration. Each email address/account may register only once."
+                    "This official email address already has a registration. We can't submit another one because it may already exist. Please contact the AMUN team if you believe this is a mistake."
                 );
             }
 
