@@ -1161,13 +1161,12 @@ body {
                             <input
                                 type="email"
                                 id="email"
-                                placeholder="Sign in to load your email"
-                                readonly
+                                placeholder="Enter your email address"
                                 required
                             >
 
                             <small class="email-account-hint">
-                                Using your account email. It cannot be changed here.
+                                Uses your account email if signed in.
                             </small>
 
                         </div>
@@ -1468,7 +1467,8 @@ body {
 
                             I confirm that my information is accurate, and that I have read,
                             understood, and agree to follow these APSACS MUN Rules &amp;
-                            Regulations.
+                            Regulations. I understand that I may submit only one registration
+                            per email address/account.
 
                         </label>
 
@@ -1634,7 +1634,9 @@ const errorBox =
     document.getElementById("errorMessage");
 
 async function initializeRegistrationAuth() {
-    nextBtn.disabled = true;
+    const emailInput = document.getElementById("email");
+    emailInput.value = "";
+    nextBtn.disabled = false;
 
     try {
         const { data, error } = await db.auth.getSession();
@@ -1644,22 +1646,18 @@ async function initializeRegistrationAuth() {
         }
 
         const user = data.session?.user;
-        if (!user?.email) {
-            window.location.replace(
-                "index.html?auth=required&next=registration"
-            );
+        if (user?.email) {
+            authenticatedEmail = user.email;
+            emailInput.value = authenticatedEmail;
+            emailInput.readOnly = true;
             return;
         }
-
-        authenticatedEmail = user.email;
-        document.getElementById("email").value = authenticatedEmail;
-        nextBtn.disabled = false;
     } catch (error) {
-        console.error("Could not load signed-in user:", error);
-        errorBox.textContent =
-            `Could not confirm your sign-in: ${error.message}`;
-        errorBox.style.display = "block";
+        console.warn("No active sign-in session for registration:", error);
     }
+
+    emailInput.readOnly = false;
+    emailInput.placeholder = "Enter your email address";
 }
 
 initializeRegistrationAuth();
@@ -2090,19 +2088,15 @@ async function submitRegistration() {
 
     try {
 
-        const { data: authData, error: authError } =
-            await db.auth.getUser();
+        const emailInput = document.getElementById("email");
+        const enteredEmail = (emailInput.value || authenticatedEmail || "").trim().toLowerCase();
 
-        if (authError) {
-            throw authError;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enteredEmail)) {
+            throw new Error("Please enter a valid email address.");
         }
 
-        if (!authData.user?.email) {
-            throw new Error("Your session has expired. Sign in again to submit.");
-        }
-
-        authenticatedEmail = authData.user.email;
-        document.getElementById("email").value = authenticatedEmail;
+        authenticatedEmail = enteredEmail;
+        emailInput.value = authenticatedEmail;
 
         /*
          * Generate the ID BEFORE inserting.
@@ -2211,6 +2205,15 @@ async function submitRegistration() {
                 "Supabase error:",
                 error
             );
+
+            if (
+                error.code === "23505" &&
+                error.message.includes("registrations_email_unique_idx")
+            ) {
+                throw new Error(
+                    "This email address already has a registration. Each email address/account may register only once."
+                );
+            }
 
             throw new Error(
                 `${error.message}. The proof was uploaded as ${registrationID}; contact the AMUN team if it remains unlinked.`
