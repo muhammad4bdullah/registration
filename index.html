@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#071d15">
+    <meta name="description" content="AMUN is APSACS Model United Nations 2026, bringing students together for diplomacy, public speaking, leadership and international debate.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="AMUN | APSACS Model United Nations">
+    <meta property="og:description" content="AMUN is APSACS Model United Nations 2026, bringing students together for diplomacy, public speaking, leadership and international debate.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="apsacs-logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AMUN | APSACS Model United Nations">
+    <meta name="twitter:description" content="AMUN is APSACS Model United Nations 2026, bringing students together for diplomacy, public speaking, leadership and international debate.">
 
     <title>AMUN | APSACS Model United Nations</title>
     <link rel="icon" type="image/png" href="apsacs-logo.png">
@@ -78,6 +87,49 @@
             mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
             pointer-events: none;
             z-index: -1;
+        }
+
+        .page-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: grid;
+            place-items: center;
+            background: rgba(5, 20, 17, 0.96);
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 26px 28px;
+            border: 1px solid rgba(125, 232, 255, 0.18);
+            border-radius: 16px;
+            background: rgba(10, 35, 29, 0.85);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .loader-ring {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 3px solid rgba(125, 232, 255, 0.2);
+            border-top-color: var(--cyan);
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         a {
@@ -1571,6 +1623,13 @@
 
     <!-- NAVIGATION -->
 
+    <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading AMUN page">
+        <div class="loader-card">
+            <div class="loader-ring"></div>
+            <div>Loading AMUN...</div>
+        </div>
+    </div>
+
     <nav class="navbar" id="navbar">
 
         <div class="nav-inner">
@@ -2063,6 +2122,44 @@
 
     
 
+    <!-- SUPPORT -->
+
+    <section class="section alt" id="support">
+
+        <div class="container reveal">
+
+            <div class="section-heading" style="margin-bottom: 18px;">
+
+                <div class="section-kicker">
+                    Support
+                </div>
+
+                <h2>
+                    Need help with registration or event details?
+                </h2>
+
+                <p>
+                    Our support channels are being finalized. For now, use the AMUN support page to get the latest help options and watch for the official contact details before launch.
+                </p>
+
+            </div>
+
+            <div class="about-box" style="max-width: 760px; margin: 0 auto; border-left: 4px solid var(--gold);">
+                <strong>
+                    Support desk opening soon
+                </strong>
+                <p>
+                    Email and phone details will be added later. In the meantime, this page is here as the official support touchpoint for delegates and families.
+                </p>
+                <p style="margin-top: 10px;">
+                    <a href="support.html" class="primary-button" style="display:inline-block; margin-top: 8px;">View support page →</a>
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
     <!-- CTA -->
 
     <section class="section cta">
@@ -2121,7 +2218,9 @@
             <div class="footer-right">
 
                 <a class="footer-link" href="registration.html">Register</a>
-                <a class="footer-link" href="mailto:info@">Email Us</a>
+                <a class="footer-link" href="support.html">Support</a>
+                <a class="footer-link" href="privacy-policy.html">Privacy Policy</a>
+                <a class="footer-link" href="terms.html">Terms</a>
                 <a class="footer-link" href="#contact">Contact Us</a>
                 <a class="footer-link" href="#">Made by Muhammad Abdullah</a>
             </div>
@@ -2640,6 +2739,13 @@
 
 
         /* COUNTERS */
+
+        const pageLoader = document.getElementById("pageLoader");
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                pageLoader.classList.add("hidden");
+            }, 250);
+        });
 
         const counters =
             document.querySelectorAll("[data-count]");
