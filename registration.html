@@ -495,6 +495,128 @@ textarea {
     line-height: 1.6;
 }
 
+.agreement-links {
+    margin: 9px 0 0 27px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.agreement-links a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.legal-dialog {
+    width: min(720px, calc(100% - 32px));
+    max-height: min(82vh, 760px);
+    padding: 0;
+    color: var(--text);
+    background: linear-gradient(150deg, rgba(10, 52, 38, 0.99), rgba(5, 32, 24, 0.99));
+    border: 1px solid rgba(216, 177, 106, 0.32);
+    border-radius: 20px;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.62);
+}
+
+.legal-dialog::backdrop {
+    background: rgba(1, 10, 7, 0.78);
+    backdrop-filter: blur(8px);
+}
+
+.legal-dialog[open] {
+    display: flex;
+    flex-direction: column;
+}
+
+.legal-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.legal-dialog-header h2 {
+    margin: 0;
+    color: var(--white);
+    font-size: 24px;
+}
+
+.legal-dialog-close {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(4, 29, 22, 0.76);
+    color: var(--text);
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.legal-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 14px 24px 0;
+}
+
+.legal-tab {
+    padding: 9px 13px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: rgba(4, 29, 22, 0.66);
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.legal-tab[aria-selected="true"] {
+    border-color: rgba(216, 177, 106, 0.55);
+    background: rgba(139, 30, 45, 0.36);
+    color: var(--white);
+}
+
+.legal-tab:focus-visible,
+.legal-dialog-close:focus-visible,
+.agreement-links a:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+}
+
+.legal-content {
+    overflow-y: auto;
+    padding: 18px 24px 26px;
+    line-height: 1.65;
+}
+
+.legal-content h3 {
+    margin: 22px 0 7px;
+    color: var(--gold);
+    font-size: 15px;
+}
+
+.legal-content h3:first-child {
+    margin-top: 0;
+}
+
+.legal-content p,
+.legal-content li {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.legal-content ul {
+    padding-left: 20px;
+}
+
+.legal-panel[hidden] {
+    display: none;
+}
+
 /* =========================
    REVIEW
 ========================= */
@@ -779,7 +901,7 @@ body {
     width: min(100vw, 1280px);
     height: auto;
     transform: translateY(-50%);
-    opacity: 0.3;
+    opacity: 0.12;
     pointer-events: none;
     z-index: 0;
 }
@@ -1472,6 +1594,12 @@ body {
 
                         </label>
 
+                        <p class="agreement-links">
+                            Review the <a href="privacy-policy.html" data-legal-open="privacy">Privacy Policy</a>
+                            and <a href="terms.html" data-legal-open="terms">Terms &amp; Conditions</a>
+                            without leaving this form.
+                        </p>
+
                     </div>
 
 
@@ -1556,6 +1684,49 @@ body {
 </div>
 
 </main>
+
+<dialog class="legal-dialog" id="legalDialog" aria-labelledby="legalDialogTitle">
+    <div class="legal-dialog-header">
+        <h2 id="legalDialogTitle">AMUN policies</h2>
+        <button type="button" class="legal-dialog-close" id="legalDialogClose" aria-label="Close policies">×</button>
+    </div>
+    <div class="legal-tabs" role="tablist" aria-label="AMUN policies">
+        <button type="button" class="legal-tab" id="privacyTab" role="tab" data-legal-tab="privacy" tabindex="0" aria-selected="true" aria-controls="privacyPanel">Privacy Policy</button>
+        <button type="button" class="legal-tab" id="termsTab" role="tab" data-legal-tab="terms" tabindex="-1" aria-selected="false" aria-controls="termsPanel">Terms &amp; Conditions</button>
+    </div>
+    <div class="legal-content">
+        <section class="legal-panel" id="privacyPanel" role="tabpanel" aria-labelledby="privacyTab">
+            <p>AMUN is committed to protecting the personal information of delegates, guardians and participants. This page will be finalized before public launch.</p>
+            <h3>Information we may collect</h3>
+            <ul>
+                <li>Name, email address, phone number and guardian contact details.</li>
+                <li>Registration and committee preference information.</li>
+                <li>Proof of payment and relevant event records.</li>
+            </ul>
+            <h3>How we use it</h3>
+            <p>Information is used to process delegate registration, maintain event records, contact participants, and ensure smooth operations for the conference.</p>
+            <h3>Data protection</h3>
+            <p>We will handle personal data responsibly and store it securely using approved systems. Only necessary information will be accessed by authorized AMUN organizers.</p>
+            <h3>Consent</h3>
+            <p>By submitting a registration form, participants consent to the processing of information necessary for delegate registration and conference administration.</p>
+            <h3>Changes</h3>
+            <p>This privacy policy may be updated before launch and after the event begins. The latest version will remain available on this page.</p>
+        </section>
+        <section class="legal-panel" id="termsPanel" role="tabpanel" aria-labelledby="termsTab" hidden>
+            <p>These terms govern delegate participation in the AMUN conference and will be finalized before launch.</p>
+            <h3>Eligibility</h3>
+            <p>Participation is subject to eligibility requirements, committee availability, and registration confirmation by the organizers.</p>
+            <h3>Registration</h3>
+            <p>All registrations must be submitted accurately and honestly. Duplicate, incomplete or fraudulent registrations may be rejected or removed.</p>
+            <h3>Conduct</h3>
+            <p>Delegates are expected to uphold respectful behavior, follow conference rules, and act with professionalism throughout the event.</p>
+            <h3>Payments</h3>
+            <p>Payment details and deadlines will be published in the official registration process. Any fee arrangement is subject to organizer confirmation.</p>
+            <h3>Changes</h3>
+            <p>AMUN reserves the right to update event details, committee assignments and rules as needed. Participants will be informed of material changes as they arise.</p>
+        </section>
+    </div>
+</dialog>
 
 
 <!-- =====================================================
@@ -2081,7 +2252,7 @@ async function submitRegistration() {
     ) {
 
         errorBox.textContent =
-            "Please confirm your information is accurate and agree to the APSACS MUN Rules & Regulations.";
+            "Please confirm your information is accurate and agree to the APSACS MUN Rules & Regulations, Privacy Policy, and Terms & Conditions.";
 
         errorBox.style.display =
             "block";
@@ -2313,6 +2484,58 @@ document
         }
     );
 
+const legalDialog = document.getElementById("legalDialog");
+const privacyTab = document.getElementById("privacyTab");
+const termsTab = document.getElementById("termsTab");
+const privacyPanel = document.getElementById("privacyPanel");
+const termsPanel = document.getElementById("termsPanel");
+
+function showLegalPolicy(policy) {
+    const showPrivacy = policy === "privacy";
+    privacyTab.setAttribute("aria-selected", String(showPrivacy));
+    termsTab.setAttribute("aria-selected", String(!showPrivacy));
+    privacyTab.tabIndex = showPrivacy ? 0 : -1;
+    termsTab.tabIndex = showPrivacy ? -1 : 0;
+    privacyPanel.hidden = !showPrivacy;
+    termsPanel.hidden = showPrivacy;
+
+    if (!legalDialog.open) {
+        legalDialog.showModal();
+    }
+
+    (showPrivacy ? privacyTab : termsTab).focus();
+}
+
+document.querySelectorAll("[data-legal-open]").forEach(link => {
+    link.addEventListener("click", event => {
+        event.preventDefault();
+        showLegalPolicy(link.dataset.legalOpen);
+    });
+});
+
+privacyTab.addEventListener("click", () => showLegalPolicy("privacy"));
+termsTab.addEventListener("click", () => showLegalPolicy("terms"));
+[privacyTab, termsTab].forEach((tab, index, tabs) => {
+    tab.addEventListener("keydown", event => {
+        const nextIndex = event.key === "ArrowRight"
+            ? (index + 1) % tabs.length
+            : event.key === "ArrowLeft"
+                ? (index + tabs.length - 1) % tabs.length
+                : event.key === "Home"
+                    ? 0
+                    : event.key === "End"
+                        ? tabs.length - 1
+                        : -1;
+
+        if (nextIndex !== -1) {
+            event.preventDefault();
+            showLegalPolicy(tabs[nextIndex].dataset.legalTab);
+        }
+    });
+});
+document.getElementById("legalDialogClose").addEventListener("click", () => {
+    legalDialog.close();
+});
 
 /* =====================================================
    INITIALIZE
