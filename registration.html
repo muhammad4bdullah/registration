@@ -6,6 +6,11 @@
 
 <title>AMUN — Registration</title>
 
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/css/intlTelInput.css"
+>
+
 <style>
 :root {
     --blue: #1ea76b;
@@ -370,6 +375,35 @@ textarea {
     font-size: 13px;
     font-weight: bold;
     color: #dfeaff;
+}
+
+.field-hint {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.iti {
+    width: 100%;
+}
+
+.iti__country-list {
+    background: var(--panel-strong);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.iti__country.iti__highlight {
+    background: var(--blue-light);
+}
+
+.iti__dial-code {
+    color: var(--muted);
+}
+
+.iti__search-input {
+    background: var(--bg);
+    color: var(--text);
 }
 
 .required {
@@ -1303,9 +1337,12 @@ body {
                             <input
                                 type="tel"
                                 id="phone"
-                                placeholder="03XX XXXXXXX"
+                                placeholder="Enter phone number"
+                                autocomplete="tel"
+                                inputmode="tel"
                                 required
                             >
+                            <small class="field-hint">Choose a country code, then enter your phone number.</small>
 
                         </div>
 
@@ -1318,10 +1355,13 @@ body {
                             <input
                                 type="text"
                                 id="cnicBForm"
-                                placeholder="Enter your CNIC or B-Form number"
+                                placeholder="XXXXX-XXXXXXX-X"
                                 autocomplete="off"
+                                inputmode="numeric"
+                                maxlength="15"
                                 required
                             >
+                            <small class="field-hint">Enter all 13 digits of your CNIC or B-Form number.</small>
 
                         </div>
 
@@ -1334,9 +1374,12 @@ body {
                             <input
                                 type="tel"
                                 id="guardianPhone"
-                                placeholder="03XX XXXXXXX"
+                                placeholder="Enter phone number"
+                                autocomplete="tel"
+                                inputmode="tel"
                                 required
                             >
+                            <small class="field-hint">Choose a country code, then enter the guardian's phone number.</small>
 
                         </div>
 
@@ -1734,6 +1777,7 @@ body {
 ====================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/intlTelInput.min.js"></script>
 
 
 <script>
@@ -1817,6 +1861,25 @@ const nextBtn =
 const errorBox =
     document.getElementById("errorMessage");
 
+const phoneInputs = Object.fromEntries(
+    ["phone", "guardianPhone"].map(id => {
+        const input = document.getElementById(id);
+        const instance = window.intlTelInput(input, {
+            initialCountry: "pk",
+            nationalMode: true,
+            separateDialCode: true,
+            loadUtils: () =>
+                import("https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/utils.js")
+        });
+
+        return [id, { input, instance }];
+    })
+);
+
+function getPhoneNumber(id) {
+    return phoneInputs[id].instance.getNumber();
+}
+
 async function initializeRegistrationAuth() {
     const emailInput = document.getElementById("email");
     emailInput.value = "";
@@ -1861,6 +1924,29 @@ document
         document.getElementById("paymentProofName").textContent =
             file ? file.name : "No file selected.";
     });
+
+function normalizeCnicBForm(value) {
+    if (!/^[\d\s-]+$/.test(value)) {
+        return null;
+    }
+
+    const digits = value.replace(/\D/g, "");
+
+    if (!/^\d{13}$/.test(digits)) {
+        return null;
+    }
+
+    return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`;
+}
+
+document.getElementById("cnicBForm").addEventListener("blur", event => {
+    const input = event.target;
+    const normalized = normalizeCnicBForm(input.value.trim());
+
+    if (normalized) {
+        input.value = normalized;
+    }
+});
 
 
 /* =====================================================
@@ -1950,7 +2036,7 @@ function updateStep() {
    VALIDATION
 ====================================================== */
 
-function validateCurrentStep() {
+async function validateCurrentStep() {
 
     const current =
         steps[currentStep];
@@ -1978,6 +2064,38 @@ function validateCurrentStep() {
 
         }
 
+    }
+
+    if (currentStep === 0) {
+        try {
+            await Promise.all(
+                Object.values(phoneInputs).map(({ instance }) => instance.promise)
+            );
+        } catch (error) {
+            console.error("Phone-number validation could not be loaded:", error);
+            alert("Phone-number validation could not be loaded. Check your connection and try again.");
+            return false;
+        }
+
+        for (const { input, instance } of Object.values(phoneInputs)) {
+            if (!instance.isValidNumber()) {
+                input.focus();
+                alert("Enter a valid phone number for the selected country code.");
+                return false;
+            }
+
+        }
+
+        const cnicInput = document.getElementById("cnicBForm");
+        const cnicBForm = normalizeCnicBForm(cnicInput.value.trim());
+
+        if (!cnicBForm) {
+            cnicInput.focus();
+            alert("Enter a valid 13-digit CNIC or B-Form number, such as 12345-1234567-1.");
+            return false;
+        }
+
+        cnicInput.value = cnicBForm;
     }
 
 
@@ -2037,7 +2155,7 @@ function validateCurrentStep() {
 
 async function nextStep() {
 
-    if (!validateCurrentStep()) {
+    if (!await validateCurrentStep()) {
         return;
     }
 
@@ -2135,9 +2253,9 @@ function createReview() {
             items: [
                 ["Full Name", document.getElementById("fullName").value],
                 ["Email", getOfficialRegistrationEmail(authenticatedEmail)],
-                ["Phone", document.getElementById("phone").value],
+                ["Phone", getPhoneNumber("phone")],
                 ["CNIC / B-Form Number", document.getElementById("cnicBForm").value.trim()],
-                ["Guardian Contact Number", document.getElementById("guardianPhone").value.trim()],
+                ["Guardian Contact Number", getPhoneNumber("guardianPhone")],
                 ["Gender", document.getElementById("gender").value],
                 ["Date of Birth", document.getElementById("dob").value]
             ]
@@ -2338,13 +2456,13 @@ async function submitRegistration() {
                 registrationEmail,
 
             phone:
-                document.getElementById("phone").value.trim(),
+                getPhoneNumber("phone"),
 
             cnic_b_form:
                 document.getElementById("cnicBForm").value.trim(),
 
             guardian_phone:
-                document.getElementById("guardianPhone").value.trim(),
+                getPhoneNumber("guardianPhone"),
 
             gender:
                 document.getElementById("gender").value,
