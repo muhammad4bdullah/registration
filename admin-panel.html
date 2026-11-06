@@ -1134,6 +1134,9 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
 
+const ADMIN_EMAIL =
+    "registeration-team@mun.com";
+
 const db =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -1258,6 +1261,21 @@ loginForm.addEventListener(
             return;
         }
 
+        if (!isAdminUser(data.user)) {
+            const { error: signOutError } =
+                await db.auth.signOut();
+
+            if (signOutError) {
+                console.error("Unable to end unauthorized session:", signOutError);
+            }
+
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Sign In";
+            showLoginError(
+                "This account is not authorized to access the AMUN admin panel."
+            );
+            return;
+        }
 
         showDashboard();
 
@@ -1305,6 +1323,21 @@ async function checkSession() {
 
         showLogin();
 
+        return;
+    }
+
+    if (!isAdminUser(user)) {
+        const { error } =
+            await db.auth.signOut();
+
+        if (error) {
+            console.error("Unable to end unauthorized session:", error);
+        }
+
+        showLogin();
+        showLoginError(
+            "This account is not authorized to access the AMUN admin panel."
+        );
         return;
     }
 
@@ -2147,6 +2180,10 @@ function showLogin() {
     dashboard.style.display =
         "none";
 
+}
+
+function isAdminUser(user) {
+    return user?.email?.trim().toLowerCase() === ADMIN_EMAIL;
 }
 
 
