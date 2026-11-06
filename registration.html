@@ -793,19 +793,6 @@ textarea {
     line-height: 1.7;
 }
 
-.registration-id {
-    display: inline-block;
-    margin: 20px 0;
-    padding: 15px 24px;
-    border-radius: 10px;
-    background: var(--blue-light);
-    border: 1px solid rgba(125, 232, 255, 0.24);
-    color: var(--cyan);
-    font-size: 20px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
 /* =========================
    ERROR
 ========================= */
@@ -1144,11 +1131,6 @@ body {
 .success-icon {
     background: rgba(22, 139, 88, 0.18);
     color: var(--success);
-}
-
-.registration-id {
-    color: var(--gold);
-    border-color: rgba(216, 177, 106, 0.28);
 }
 
 @media (max-width: 700px) {
@@ -1700,17 +1682,6 @@ body {
 
             <p>
                 Your AMUN registration has been successfully received.
-            </p>
-
-            <div
-                class="registration-id"
-                id="registrationID"
-            >
-                AMUN-000000
-            </div>
-
-            <p>
-                Please save your registration ID for future reference.
             </p>
 
             <button
@@ -2337,24 +2308,6 @@ function createReview() {
 
 
 /* =====================================================
-   REGISTRATION ID
-====================================================== */
-
-function generateRegistrationID() {
-
-    const random =
-        Math.random()
-            .toString(36)
-            .substring(2, 8)
-            .toUpperCase();
-
-
-    return "AMUN-" + random;
-
-}
-
-
-/* =====================================================
    SUBMIT REGISTRATION
 ====================================================== */
 
@@ -2402,16 +2355,6 @@ async function submitRegistration() {
         const registrationEmail =
             getOfficialRegistrationEmail(authenticatedEmail);
 
-        /*
-         * Generate the ID BEFORE inserting.
-         * We don't use .select() after INSERT,
-         * because the public registration flow
-         * only needs INSERT permission.
-         */
-
-        const registrationID =
-            generateRegistrationID();
-
         const proofFile =
             document.getElementById("paymentProof").files[0];
 
@@ -2419,7 +2362,7 @@ async function submitRegistration() {
             proofFile.name.split(".").pop().toLowerCase();
 
         const paymentProofPath =
-            `${registrationID}/proof`;
+            `proofs/${encodeURIComponent(registrationEmail)}/${encodeURIComponent(proofFile.name)}`;
 
         const proofContentType = {
             jpg: "image/jpeg",
@@ -2445,9 +2388,6 @@ async function submitRegistration() {
 
 
         const registrationData = {
-
-            registration_id:
-                registrationID,
 
             full_name:
                 document.getElementById("fullName").value.trim(),
@@ -2520,7 +2460,7 @@ async function submitRegistration() {
             }
 
             throw new Error(
-                `${error.message}. The proof was uploaded as ${registrationID}; contact the AMUN team if it remains unlinked.`
+                `${error.message}. The payment proof may have uploaded without a linked registration. Please contact the AMUN team before retrying.`
             );
 
         }
@@ -2529,12 +2469,6 @@ async function submitRegistration() {
         /* =============================================
            SUCCESS
         ============================================== */
-
-        document.getElementById(
-            "registrationID"
-        ).textContent =
-            registrationID;
-
 
         document.getElementById(
             "registrationForm"

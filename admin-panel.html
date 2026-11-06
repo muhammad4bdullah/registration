@@ -394,11 +394,6 @@ tbody tr:hover {
     background: rgba(125, 232, 255, 0.07);
 }
 
-.registration-id {
-    color: var(--blue);
-    font-weight: 800;
-}
-
 .delegate-name {
     font-weight: 700;
     white-space: nowrap;
@@ -748,7 +743,7 @@ tbody tr:hover {
     thead { background: rgba(139, 30, 45, 0.24); }
     td { color: var(--text); border-bottom-color: rgba(216, 177, 106, 0.12); }
     tbody tr:hover { background: rgba(22, 139, 88, 0.12); }
-    .registration-id, .stat-number, .detail-section h3 { color: var(--gold); }
+    .stat-number, .detail-section h3 { color: var(--gold); }
     .detail-item { background: rgba(4, 29, 22, 0.68); border-color: rgba(216, 177, 106, 0.16); }
     .detail-value a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
     .modal-overlay { background: rgba(2, 15, 11, 0.78); }
@@ -1030,10 +1025,6 @@ tbody tr:hover {
                         <tr>
 
                             <th>
-                                Registration ID
-                            </th>
-
-                            <th>
                                 Delegate
                             </th>
 
@@ -1071,7 +1062,7 @@ tbody tr:hover {
                         <tr>
 
                             <td
-                                colspan="8"
+                                colspan="7"
                                 style="text-align:center;padding:50px;color:#687386"
                             >
                                 Loading registrations...
@@ -1357,7 +1348,7 @@ async function loadRegistrations() {
         <tr>
 
             <td
-                colspan="8"
+                colspan="7"
                 style="text-align:center;padding:50px;color:#687386"
             >
                 Loading registrations...
@@ -1396,7 +1387,7 @@ async function loadRegistrations() {
             <tr>
 
                 <td
-                    colspan="8"
+                    colspan="7"
                     style="text-align:center;padding:50px;color:#c93636"
                 >
                     Unable to load registrations.
@@ -1471,7 +1462,7 @@ function renderTable(rows) {
             <tr>
 
                 <td
-                    colspan="8"
+                    colspan="7"
                     style="text-align:center;padding:50px;color:#687386"
                 >
                     No registrations found.
@@ -1502,14 +1493,8 @@ function renderTable(rows) {
                 return `
 
                     <tr
-                        onclick="openDetails('${escapeAttribute(row.id)}')"
+                        onclick="openDetails('${escapeAttribute(row.email)}')"
                     >
-
-                        <td>
-                            <span class="registration-id">
-                                ${escapeHTML(row.registration_id)}
-                            </span>
-                        </td>
 
 
                         <td>
@@ -1555,7 +1540,7 @@ function renderTable(rows) {
 
                                 <button
                                     class="approve-btn"
-                                    onclick="changeStatus('${escapeAttribute(row.id)}','Approved')"
+                                    onclick="changeStatus('${escapeAttribute(row.email)}','Approved')"
                                     ${status.toLowerCase() === "approved" ? "disabled" : ""}
                                 >
                                     Approve
@@ -1564,7 +1549,7 @@ function renderTable(rows) {
 
                                 <button
                                     class="reject-btn"
-                                    onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')"
+                                    onclick="changeStatus('${escapeAttribute(row.email)}','Rejected')"
                                     ${status.toLowerCase() === "rejected" ? "disabled" : ""}
                                 >
                                     Reject
@@ -1623,7 +1608,6 @@ function filterRegistrations() {
 
                 const searchable = [
 
-                    row.registration_id,
                     row.full_name,
                     row.email,
                     row.phone,
@@ -1656,14 +1640,14 @@ function filterRegistrations() {
 ===================================================== */
 
 async function changeStatus(
-    id,
+    email,
     newStatus
 ) {
 
     const row =
         allRegistrations.find(
             item =>
-                String(item.id) === String(id)
+                item.email === email
         );
 
 
@@ -1698,8 +1682,8 @@ async function changeStatus(
                 status: newStatus
             })
             .eq(
-                "id",
-                id
+                "email",
+                email
             );
 
 
@@ -1736,7 +1720,7 @@ async function changeStatus(
 
     if (
         selectedRegistration &&
-        String(selectedRegistration.id) === String(id)
+        selectedRegistration.email === email
     ) {
 
         selectedRegistration.status =
@@ -1755,12 +1739,12 @@ async function changeStatus(
    DETAILS MODAL
 ===================================================== */
 
-function openDetails(id) {
+function openDetails(email) {
 
     const row =
         allRegistrations.find(
             item =>
-                String(item.id) === String(id)
+                item.email === email
         );
 
 
@@ -1784,7 +1768,7 @@ function openDetails(id) {
 function showRegistrationDetails(row) {
 
     modalTitle.textContent =
-        row.registration_id || "Registration Details";
+        row.full_name || "Registration Details";
 
 
     const status =
@@ -1883,7 +1867,7 @@ function showRegistrationDetails(row) {
                 <div class="detail-item detail-wide payment-proof-detail">
                     <div class="detail-label">Proof of Payment</div>
                     <div class="detail-value" id="paymentProofLink">
-                        ${row.registration_id ? "Preparing secure link…" : "Not available"}
+                        ${row.payment_proof_path ? "Preparing secure link…" : "Not available"}
                     </div>
                 </div>
             </div>
@@ -1899,11 +1883,6 @@ function showRegistrationDetails(row) {
             </h3>
 
             <div class="detail-grid">
-
-                ${detail(
-                    "Registration ID",
-                    row.registration_id
-                )}
 
                 ${detail(
                     "Current Status",
@@ -1925,7 +1904,7 @@ function showRegistrationDetails(row) {
 
             <button
                 class="modal-approve"
-                onclick="changeStatus('${escapeAttribute(row.id)}','Approved')"
+                onclick="changeStatus('${escapeAttribute(row.email)}','Approved')"
                 ${status.toLowerCase() === "approved" ? "disabled" : ""}
             >
                 ✓ Approve Application
@@ -1934,7 +1913,7 @@ function showRegistrationDetails(row) {
 
             <button
                 class="modal-reject"
-                onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')"
+                onclick="changeStatus('${escapeAttribute(row.email)}','Rejected')"
                 ${status.toLowerCase() === "rejected" ? "disabled" : ""}
             >
                 ✕ Reject Application
@@ -1962,13 +1941,16 @@ async function loadPaymentProofLink(path) {
     linkContainer.dataset.path = path;
 
     try {
+        const pathSeparator = path.lastIndexOf("/");
+        const folder = path.slice(0, pathSeparator);
+        const fileName = path.slice(pathSeparator + 1);
         const { data: files, error: listError } =
             await db
                 .storage
                 .from("payment-proofs")
-                .list(registrationID, {
+                .list(folder, {
                     limit: 100,
-                    search: "proof"
+                    search: fileName
                 });
 
         const currentContainer =
@@ -1984,7 +1966,7 @@ async function loadPaymentProofLink(path) {
             return;
         }
 
-        if (!files.some(file => file.name === "proof")) {
+        if (!files.some(file => file.name === fileName)) {
             currentContainer.textContent = "Not provided";
             return;
         }
