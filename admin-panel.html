@@ -1140,7 +1140,12 @@ const ADMIN_EMAIL =
 const db =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+            auth: {
+                storageKey: "amun-admin-auth"
+            }
+        }
     );
 
 
