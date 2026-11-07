@@ -577,6 +577,20 @@ tbody tr:hover {
     color: #edf6ff;
 }
 
+.detail-item select {
+    width: 100%;
+    padding: 8px 9px;
+    border: 1px solid rgba(160, 197, 255, 0.18);
+    border-radius: 7px;
+    background: rgba(5, 17, 31, 0.82);
+    color: #edf6ff;
+}
+
+.detail-item select:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
 .detail-wide {
     grid-column: 1 / -1;
 }
@@ -1611,7 +1625,6 @@ function renderTable(rows) {
 
 }
 
-
 /* =====================================================
    SEARCH
 ===================================================== */
@@ -1650,7 +1663,6 @@ function filterRegistrations() {
                     row.email,
                     row.phone,
                     row.cnic_b_form,
-                    row.guardian_phone,
                     row.committee_1,
                     row.committee_2,
                     row.preferred_personality_country,
@@ -1772,7 +1784,6 @@ async function changeStatus(
 
 }
 
-
 /* =====================================================
    DETAILS MODAL
 ===================================================== */
@@ -1846,11 +1857,6 @@ function showRegistrationDetails(row) {
                 )}
 
                 ${detail(
-                    "Guardian Contact Number",
-                    row.guardian_phone
-                )}
-
-                ${detail(
                     "Gender",
                     row.gender
                 )}
@@ -1859,6 +1865,13 @@ function showRegistrationDetails(row) {
                     "Date of Birth",
                     row.dob
                 )}
+
+                <div class="detail-item detail-wide payment-proof-detail">
+                    <div class="detail-label">B-Form / CNIC Photo</div>
+                    <div class="detail-value" id="bFormImageLink">
+                        ${row.b_form_image_path ? "Preparing secure link…" : "Not available"}
+                    </div>
+                </div>
 
             </div>
 
@@ -1962,15 +1975,29 @@ function showRegistrationDetails(row) {
     `;
 
     if (row.payment_proof_path) {
-        loadPaymentProofLink(row.payment_proof_path);
+        loadSecureDocumentLink(
+            "payment-proofs",
+            "paymentProofLink",
+            row.payment_proof_path,
+            "payment proof"
+        );
+    }
+
+    if (row.b_form_image_path) {
+        loadSecureDocumentLink(
+            "b-form-images",
+            "bFormImageLink",
+            row.b_form_image_path,
+            "B-Form / CNIC photo"
+        );
     }
 
 }
 
 
-async function loadPaymentProofLink(path) {
+async function loadSecureDocumentLink(bucket, containerId, path, documentName) {
     const linkContainer =
-        modalBody.querySelector("#paymentProofLink");
+        modalBody.querySelector(`#${containerId}`);
 
     if (!linkContainer) {
         return;
@@ -1985,21 +2012,21 @@ async function loadPaymentProofLink(path) {
         const { data: files, error: listError } =
             await db
                 .storage
-                .from("payment-proofs")
+                .from(bucket)
                 .list(folder, {
                     limit: 100,
                     search: fileName
                 });
 
         const currentContainer =
-            modalBody.querySelector("#paymentProofLink");
+            modalBody.querySelector(`#${containerId}`);
 
         if (!currentContainer || currentContainer.dataset.path !== path) {
             return;
         }
 
         if (listError) {
-            console.error("Unable to find payment proof:", listError);
+            console.error(`Unable to find ${documentName}:`, listError);
             currentContainer.textContent = "Unable to create secure link.";
             return;
         }
@@ -2012,11 +2039,11 @@ async function loadPaymentProofLink(path) {
         const { data, error } =
             await db
                 .storage
-                .from("payment-proofs")
+                .from(bucket)
                 .createSignedUrl(path, 300);
 
         if (error) {
-            console.error("Unable to create payment proof link:", error);
+            console.error(`Unable to create ${documentName} link:`, error);
             currentContainer.textContent = "Unable to create secure link.";
             return;
         }
@@ -2025,12 +2052,12 @@ async function loadPaymentProofLink(path) {
         link.href = data.signedUrl;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.textContent = "Open payment proof (link expires in 5 minutes)";
+        link.textContent = `Open ${documentName} (link expires in 5 minutes)`;
         currentContainer.replaceChildren(link);
     } catch (error) {
-        console.error("Unable to create payment proof link:", error);
+        console.error(`Unable to create ${documentName} link:`, error);
         const currentContainer =
-            modalBody.querySelector("#paymentProofLink");
+            modalBody.querySelector(`#${containerId}`);
 
         if (currentContainer && currentContainer.dataset.path === path) {
             currentContainer.textContent = "Unable to create secure link.";

@@ -210,51 +210,6 @@ textarea {
 }
 
 /* =========================
-   PROGRESS
-========================= */
-
-.progress-area {
-    padding: 26px 30px 22px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(14, 25, 39, 0.82);
-}
-
-.progress-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.progress-label {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--cyan);
-}
-
-.progress-percent {
-    font-size: 12px;
-    color: var(--muted);
-}
-
-.progress-track {
-    width: 100%;
-    height: 7px;
-    background: rgba(160, 197, 255, 0.12);
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 25%;
-    background: linear-gradient(90deg, var(--cyan), var(--blue));
-    border-radius: 20px;
-    transition: width 0.35s ease;
-    box-shadow: 0 0 18px rgba(125, 232, 255, 0.4);
-}
-
-/* =========================
    STEP INDICATORS
 ========================= */
 
@@ -836,10 +791,6 @@ textarea {
         padding: 25px 20px;
     }
 
-    .progress-area {
-        padding: 20px;
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
         gap: 18px;
@@ -947,13 +898,11 @@ body {
 .brand-text span,
 .heading p,
 .step-heading p,
-.progress-percent,
 .success-screen p {
     color: var(--muted);
 }
 
 .heading .eyebrow,
-.progress-label,
 .review-title {
     color: var(--gold);
 }
@@ -977,18 +926,8 @@ body {
     opacity: 0.4;
 }
 
-.progress-area {
-    background: rgba(4, 29, 22, 0.72);
-}
-
-.progress-track,
 .step-line {
     background-color: rgba(216, 177, 106, 0.16);
-}
-
-.progress-bar {
-    background: linear-gradient(90deg, #8b1e2d, var(--gold));
-    box-shadow: 0 0 18px rgba(139, 30, 45, 0.3);
 }
 
 .step-dot {
@@ -1196,47 +1135,13 @@ body {
 
         <p>
             Complete the registration form below to participate
-            in APSACS Model United Nations.
+            in APSACS Model United Nations, 21–23 December 2026.
         </p>
 
     </div>
 
 
     <div class="form-card tilt-card">
-
-        <!-- PROGRESS -->
-
-        <div class="progress-area">
-
-            <div class="progress-top">
-
-                <span
-                    class="progress-label"
-                    id="progressLabel"
-                >
-                    Personal Information
-                </span>
-
-                <span
-                    class="progress-percent"
-                    id="progressPercent"
-                >
-                    25%
-                </span>
-
-            </div>
-
-            <div class="progress-track">
-
-                <div
-                    class="progress-bar"
-                    id="progressBar"
-                ></div>
-
-            </div>
-
-        </div>
-
 
         <!-- STEPS -->
 
@@ -1348,21 +1253,20 @@ body {
                         </div>
 
                         <div class="field">
-
-                            <label for="guardianPhone">
-                                Guardian Contact Number <span class="required">*</span>
+                            <label for="bFormImage">
+                                B-Form / CNIC Photo <span class="required">*</span>
                             </label>
-
                             <input
-                                type="tel"
-                                id="guardianPhone"
-                                placeholder="Enter phone number"
-                                autocomplete="tel"
-                                inputmode="tel"
+                                type="file"
+                                id="bFormImage"
+                                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                                aria-describedby="bFormImageHelp bFormImageName"
                                 required
                             >
-                            <small class="field-hint">Choose a country code, then enter the guardian's phone number.</small>
-
+                            <small id="bFormImageHelp" class="field-hint">
+                                Attach a clear JPG or PNG image, up to 5 MB.
+                            </small>
+                            <small id="bFormImageName" class="field-hint">No file selected.</small>
                         </div>
 
 
@@ -1384,10 +1288,6 @@ body {
 
                                 <option value="Female">
                                     Female
-                                </option>
-
-                                <option value="Other">
-                                    Other
                                 </option>
 
                             </select>
@@ -1461,8 +1361,8 @@ body {
                                     ICJ (International Court of Justice)
                                 </option>
 
-                                <option value="Unknown">
-                                    Unknown (Committee 05)
+                                <option value="UNW">
+                                    UNW (UN Women)
                                 </option>
 
                             </select>
@@ -1498,8 +1398,8 @@ body {
                                     ICJ (International Court of Justice)
                                 </option>
 
-                                <option value="Unknown">
-                                    Unknown (Committee 05)
+                                <option value="UNW">
+                                    UNW (UN Women)
                                 </option>
 
                             </select>
@@ -1592,7 +1492,7 @@ body {
                     ></div>
 
                     <div class="conduct-box">
-                        <h3>APSACS MUN - Participant Eligibility Criteria</h3>
+                        <h3>APSACS MUN - Code of Conduct</h3>
                         <ol>
                             <li><strong>Age Limit:</strong> Participants must be between 12 - 20 years of age. Age will be verified via B-Form / School ID at registration.</li>
                             <li><strong>Class / Grade Requirement:</strong> Open for students of Class VI to Class XII only. Students below Class VI and above Class XII are not eligible.</li>
@@ -1814,15 +1714,6 @@ const stepDots =
 const stepLines =
     document.querySelectorAll(".step-line");
 
-const progressBar =
-    document.getElementById("progressBar");
-
-const progressLabel =
-    document.getElementById("progressLabel");
-
-const progressPercent =
-    document.getElementById("progressPercent");
-
 const backBtn =
     document.getElementById("backBtn");
 
@@ -1833,7 +1724,7 @@ const errorBox =
     document.getElementById("errorMessage");
 
 const phoneInputs = Object.fromEntries(
-    ["phone", "guardianPhone"].map(id => {
+    ["phone"].map(id => {
         const input = document.getElementById(id);
         const instance = window.intlTelInput(input, {
             initialCountry: "pk",
@@ -1881,18 +1772,19 @@ async function initializeRegistrationAuth() {
 initializeRegistrationAuth();
 
 
-const stepNames = [
-    "Personal Information",
-    "Committee Preferences",
-    "Payment Details",
-    "Review & Submit"
-];
-
 document
     .getElementById("paymentProof")
     .addEventListener("change", event => {
         const file = event.target.files[0];
         document.getElementById("paymentProofName").textContent =
+            file ? file.name : "No file selected.";
+    });
+
+document
+    .getElementById("bFormImage")
+    .addEventListener("change", event => {
+        const file = event.target.files[0];
+        document.getElementById("bFormImageName").textContent =
             file ? file.name : "No file selected.";
     });
 
@@ -1960,20 +1852,6 @@ function updateStep() {
         );
 
     });
-
-
-    const percent =
-        ((currentStep + 1) / steps.length) * 100;
-
-
-    progressBar.style.width =
-        percent + "%";
-
-    progressPercent.textContent =
-        Math.round(percent) + "%";
-
-    progressLabel.textContent =
-        stepNames[currentStep];
 
 
     backBtn.style.display =
@@ -2067,6 +1945,21 @@ async function validateCurrentStep() {
         }
 
         cnicInput.value = cnicBForm;
+
+        const bFormImage = document.getElementById("bFormImage").files[0];
+        const allowedImageTypes = ["image/jpeg", "image/png"];
+        const allowedImageExtensions = /\.(jpe?g|png)$/i;
+
+        if (
+            !bFormImage ||
+            bFormImage.size > 5 * 1024 * 1024 ||
+            (bFormImage.type && !allowedImageTypes.includes(bFormImage.type)) ||
+            !allowedImageExtensions.test(bFormImage.name)
+        ) {
+            document.getElementById("bFormImage").focus();
+            alert("Attach a JPG or PNG image of your B-Form / CNIC, up to 5 MB.");
+            return false;
+        }
     }
 
 
@@ -2216,6 +2109,9 @@ function createReview() {
     const paymentProof =
         document.getElementById("paymentProof").files[0];
 
+    const bFormImage =
+        document.getElementById("bFormImage").files[0];
+
     const sections = [
 
         {
@@ -2226,7 +2122,7 @@ function createReview() {
                 ["Email", getOfficialRegistrationEmail(authenticatedEmail)],
                 ["Phone", getPhoneNumber("phone")],
                 ["CNIC / B-Form Number", document.getElementById("cnicBForm").value.trim()],
-                ["Guardian Contact Number", getPhoneNumber("guardianPhone")],
+                ["B-Form / CNIC Photo", bFormImage ? bFormImage.name : ""],
                 ["Gender", document.getElementById("gender").value],
                 ["Date of Birth", document.getElementById("dob").value]
             ]
@@ -2358,11 +2254,23 @@ async function submitRegistration() {
         const proofFile =
             document.getElementById("paymentProof").files[0];
 
+        const bFormImage =
+            document.getElementById("bFormImage").files[0];
+
         const proofExtension =
             proofFile.name.split(".").pop().toLowerCase();
 
         const paymentProofPath =
             `proofs/${encodeURIComponent(registrationEmail)}/${encodeURIComponent(proofFile.name)}`;
+
+        const bFormImagePath =
+            `b-forms/${encodeURIComponent(registrationEmail)}/${encodeURIComponent(bFormImage.name)}`;
+
+        const bFormImageContentType = {
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png"
+        }[bFormImage.name.split(".").pop().toLowerCase()];
 
         const proofContentType = {
             jpg: "image/jpeg",
@@ -2386,6 +2294,21 @@ async function submitRegistration() {
             );
         }
 
+        const { error: bFormUploadError } =
+            await publicDb
+                .storage
+                .from("b-form-images")
+                .upload(bFormImagePath, bFormImage, {
+                    contentType: bFormImageContentType,
+                    upsert: false
+                });
+
+        if (bFormUploadError) {
+            throw new Error(
+                `B-Form / CNIC photo upload failed: ${bFormUploadError.message}`
+            );
+        }
+
 
         const registrationData = {
 
@@ -2401,8 +2324,8 @@ async function submitRegistration() {
             cnic_b_form:
                 document.getElementById("cnicBForm").value.trim(),
 
-            guardian_phone:
-                getPhoneNumber("guardianPhone"),
+            b_form_image_path:
+                bFormImagePath,
 
             gender:
                 document.getElementById("gender").value,
@@ -2460,7 +2383,7 @@ async function submitRegistration() {
             }
 
             throw new Error(
-                `${error.message}. The payment proof may have uploaded without a linked registration. Please contact the AMUN team before retrying.`
+                `${error.message}. One or more uploaded documents may not be linked to a registration. Please contact the AMUN team before retrying.`
             );
 
         }

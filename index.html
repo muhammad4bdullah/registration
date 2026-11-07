@@ -169,18 +169,6 @@
             transition: 0.25s ease;
         }
 
-        .scroll-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            z-index: 1100;
-            background: linear-gradient(90deg, var(--cyan), var(--gold));
-            box-shadow: 0 0 14px rgba(125, 232, 255, 0.65);
-            transition: width 0.08s linear;
-        }
-
         .navbar.scrolled {
             border-bottom-color: rgba(125, 232, 255, 0.2);
             box-shadow: 0 8px 26px rgba(2, 8, 18, 0.32);
@@ -614,7 +602,8 @@
         .event-value {
             color: var(--cyan);
             font-weight: 700;
-            white-space: nowrap;
+            white-space: normal;
+            text-align: right;
             font-size: 13px;
         }
 
@@ -806,6 +795,12 @@
             box-shadow: 0 22px 45px rgba(5, 17, 31, 0.42);
         }
 
+        .committee-card.open {
+            transform: translateY(-6px) scale(1.015);
+            border-color: rgba(169, 247, 200, 0.68);
+            box-shadow: 0 26px 52px rgba(5, 17, 31, 0.52), 0 0 24px rgba(169, 247, 200, 0.12);
+        }
+
         .committee-top {
             min-height: 112px;
             padding: 22px;
@@ -851,8 +846,17 @@
         .committee-details {
             max-height: 0;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition:
+                max-height 0.4s ease,
+                opacity 0.25s ease,
+                transform 0.3s ease;
+        }
 
-            transition: max-height 0.3s ease;
+        .committee-card.open .committee-details {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .committee-details-inner {
@@ -860,6 +864,18 @@
             color: var(--muted);
             font-size: 14px;
             text-align: left;
+        }
+
+        .committee-details-inner p + p {
+            margin-top: 10px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .committee-card,
+            .committee-details,
+            .committee-arrow {
+                transition: none;
+            }
         }
 
         /* ================= STATS ================= */
@@ -1421,6 +1437,23 @@
             box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
         }
 
+        .account-menu:not([hidden]) {
+            animation: account-menu-drop 0.2s ease-out;
+            transform-origin: top right;
+        }
+
+        @keyframes account-menu-drop {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .account-menu[hidden] {
             display: none;
         }
@@ -1435,15 +1468,26 @@
         .account-menu button {
             width: 100%;
             padding: 9px 10px;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            background: rgba(139, 30, 45, 0.24);
-            color: #ffdede;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
             text-align: left;
             cursor: pointer;
         }
 
         .account-menu button:hover {
+            background: rgba(216, 177, 106, 0.12);
+        }
+
+        .account-menu #signOutButton {
+            margin-top: 5px;
+            border-color: rgba(255, 107, 107, 0.3);
+            background: rgba(139, 30, 45, 0.24);
+            color: #ffdede;
+        }
+
+        .account-menu #signOutButton:hover {
             background: rgba(139, 30, 45, 0.42);
         }
 
@@ -1517,6 +1561,213 @@
             color: var(--muted);
             font-size: 24px;
             cursor: pointer;
+        }
+
+        .portal-overlay[hidden] {
+            display: none;
+        }
+
+        .portal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2100;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.74);
+            backdrop-filter: blur(8px);
+        }
+
+        .portal-dialog {
+            width: min(660px, 100%);
+            max-height: min(780px, calc(100vh - 40px));
+            overflow-y: auto;
+            padding: 28px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(9, 45, 32, 0.99), rgba(4, 29, 22, 0.99));
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+            animation: portal-enter 0.22s ease-out;
+        }
+
+        @keyframes portal-enter {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.985);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .portal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .portal-header h2 {
+            margin: 0;
+            color: var(--gold);
+            font-size: 25px;
+        }
+
+        .portal-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .portal-close {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .portal-tabs {
+            display: flex;
+            gap: 8px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .portal-tab {
+            padding: 9px 13px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .portal-tab[aria-selected="true"] {
+            border-color: var(--border);
+            background: rgba(216, 177, 106, 0.12);
+            color: var(--gold);
+        }
+
+        .portal-panel {
+            display: none;
+            padding-top: 20px;
+        }
+
+        .portal-panel.active {
+            display: block;
+            animation: portal-enter 0.18s ease-out;
+        }
+
+        .portal-form-grid,
+        .portal-status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .portal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .portal-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .portal-field label {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .portal-field input,
+        .portal-field select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text);
+        }
+
+        .portal-field option {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .portal-submit {
+            margin-top: 18px;
+            padding: 11px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .portal-submit:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
+
+        .portal-message {
+            min-height: 20px;
+            margin: 14px 0 0;
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        .portal-message.error {
+            color: #ff9b9b;
+        }
+
+        .portal-status-card {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .portal-status-card h3 {
+            margin: 0 0 6px;
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        .portal-status-card p {
+            margin: 0;
+            color: var(--text);
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 520px) {
+            .portal-dialog {
+                padding: 22px 18px;
+            }
+
+            .portal-form-grid,
+            .portal-status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .portal-field.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .account-menu:not([hidden]),
+            .portal-dialog,
+            .portal-panel.active {
+                animation: none;
+            }
         }
 
         .auth-form label {
@@ -1619,8 +1870,6 @@
 
 <body>
 
-    <div class="scroll-progress" id="scrollProgress"></div>
-
     <!-- NAVIGATION -->
 
     <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading AMUN page">
@@ -1674,6 +1923,12 @@
                 </button>
                 <div class="account-menu" id="accountMenu" aria-label="Account options" hidden>
                     <p class="account-email" id="accountEmail"></p>
+                    <button type="button" id="editProfileButton">
+                        Edit profile
+                    </button>
+                    <button type="button" id="myApplicationButton">
+                        My application
+                    </button>
                     <button type="button" id="signOutButton">
                         Sign out
                     </button>
@@ -1724,6 +1979,79 @@
                 </button>
                 <p class="auth-status" id="authStatus" role="status" aria-live="polite"></p>
             </form>
+        </section>
+    </div>
+
+    <div class="portal-overlay" id="portalOverlay" hidden>
+        <section
+            class="portal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="portalTitle"
+        >
+            <header class="portal-header">
+                <div>
+                    <h2 id="portalTitle">Delegate portal</h2>
+                    <p id="portalEmail"></p>
+                </div>
+                <button type="button" class="portal-close" id="portalClose" aria-label="Close delegate portal">×</button>
+            </header>
+
+            <div class="portal-tabs" role="tablist" aria-label="Delegate portal">
+                <button type="button" class="portal-tab" id="profileTab" role="tab" aria-selected="true" aria-controls="profilePanel">
+                    Edit profile
+                </button>
+                <button type="button" class="portal-tab" id="applicationTab" role="tab" aria-selected="false" aria-controls="applicationPanel">
+                    My application
+                </button>
+            </div>
+
+            <section class="portal-panel active" id="profilePanel" role="tabpanel" aria-labelledby="profileTab">
+                <form id="profileForm">
+                    <div class="portal-form-grid">
+                        <div class="portal-field full">
+                            <label for="profileName">Full name</label>
+                            <input id="profileName" name="full_name" autocomplete="name" required>
+                        </div>
+                        <div class="portal-field">
+                            <label for="profilePhone">Phone number</label>
+                            <input id="profilePhone" name="phone" type="tel" autocomplete="tel" required>
+                        </div>
+                        <div class="portal-field">
+                            <label for="profileDob">Date of birth</label>
+                            <input id="profileDob" name="dob" placeholder="e.g. 15 August 2008" required>
+                        </div>
+                        <div class="portal-field">
+                            <label for="profileGender">Gender</label>
+                            <select id="profileGender" name="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="portal-submit" id="profileSaveButton" type="submit">Save profile</button>
+                    <p class="portal-message" id="profileMessage" role="status" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="portal-panel" id="applicationPanel" role="tabpanel" aria-labelledby="applicationTab">
+                <div class="portal-status-grid">
+                    <div class="portal-status-card">
+                        <h3>Application status</h3>
+                        <p id="applicationStatus">Loading…</p>
+                    </div>
+                    <div class="portal-status-card">
+                        <h3>First preference</h3>
+                        <p id="applicationCommittee1">Loading…</p>
+                    </div>
+                    <div class="portal-status-card">
+                        <h3>Second preference</h3>
+                        <p id="applicationCommittee2">Loading…</p>
+                    </div>
+                </div>
+                <p class="portal-message" id="applicationMessage" role="status" aria-live="polite"></p>
+            </section>
         </section>
     </div>
 
@@ -1825,7 +2153,7 @@
                         </div>
 
                         <div class="event-value">
-                            TBA
+                            21–23 December 2026
                         </div>
 
                     </div>
@@ -1963,7 +2291,7 @@
                     <path class="committee-rope-twist" d="M 250 150 C 400 125 600 125 750 150 C 770 260 770 390 750 500 C 690 650 590 790 500 850 C 410 790 310 650 250 500 C 230 390 230 260 250 150 Z" />
                 </svg>
 
-                <div class="committee-card reveal">
+                <div class="committee-card reveal" role="button" tabindex="0" aria-expanded="false" aria-controls="committeeDetails1">
 
                     <div class="committee-top">
 
@@ -1982,10 +2310,11 @@
 
                     </div>
 
-                    <div class="committee-details">
+                    <div class="committee-details" id="committeeDetails1" aria-hidden="true">
 
                         <div class="committee-details-inner">
-                            Debate international human rights issues and explore ways to protect fundamental freedoms.
+                            <p>Delegates represent countries and examine how governments and international institutions can protect human rights.</p>
+                            <p>Expect evidence-based speeches, moderated debate, negotiation and collaborative work on resolutions. This committee is a good fit for delegates interested in humanitarian issues and diplomacy.</p>
                         </div>
 
                     </div>
@@ -1994,7 +2323,7 @@
                 </div>
 
 
-                <div class="committee-card reveal">
+                <div class="committee-card reveal" role="button" tabindex="0" aria-expanded="false" aria-controls="committeeDetails2">
 
                     <div class="committee-top">
 
@@ -2013,10 +2342,11 @@
 
                     </div>
 
-                    <div class="committee-details">
+                    <div class="committee-details" id="committeeDetails2" aria-hidden="true">
 
                         <div class="committee-details-inner">
-                            Address international peace and security through negotiation and diplomatic debate.
+                            <p>The Security Council focuses on international peace and security, with delegates balancing national interests and the need for collective action.</p>
+                            <p>Sessions involve formal debate, negotiation and drafting practical responses to the issue under discussion. Delegates should be ready to build alliances and defend their country's position.</p>
                         </div>
 
                     </div>
@@ -2025,7 +2355,7 @@
                 </div>
 
 
-                <div class="committee-card reveal">
+                <div class="committee-card reveal" role="button" tabindex="0" aria-expanded="false" aria-controls="committeeDetails3">
 
                     <div class="committee-top">
 
@@ -2043,10 +2373,11 @@
 
                     </div>
 
-                    <div class="committee-details">
+                    <div class="committee-details" id="committeeDetails3" aria-hidden="true">
 
                         <div class="committee-details-inner">
-                            Respond to fast-moving scenarios and shape events through collaborative decisions.
+                            <p>Crisis delegates respond to a developing scenario as new information and events change the situation.</p>
+                            <p>In addition to debate, delegates work through updates, negotiate with other participants and propose timely actions. Adaptability, teamwork and clear decision-making are especially useful here.</p>
                         </div>
 
                     </div>
@@ -2054,7 +2385,7 @@
                 </div>
 
 
-                <div class="committee-card reveal">
+                <div class="committee-card reveal" role="button" tabindex="0" aria-expanded="false" aria-controls="committeeDetails4">
 
                     <div class="committee-top">
 
@@ -2073,10 +2404,11 @@
 
                     </div>
 
-                    <div class="committee-details">
+                    <div class="committee-details" id="committeeDetails4" aria-hidden="true">
 
                         <div class="committee-details-inner">
-                            Hear legal disputes between states and consider questions of international law.
+                            <p>The International Court of Justice considers legal disputes between states and questions of international law.</p>
+                            <p>Participants take part in structured legal proceedings, presenting arguments and examining the positions of the parties. Careful research, logical reasoning and respectful advocacy are central to this committee.</p>
                         </div>
 
                     </div>
@@ -2084,7 +2416,7 @@
                 </div>
 
 
-                <div class="committee-card reveal">
+                <div class="committee-card reveal" role="button" tabindex="0" aria-expanded="false" aria-controls="committeeDetails5">
 
                     <div class="committee-top">
 
@@ -2093,8 +2425,8 @@
                                 COMMITTEE 05
                             </div>
 
-                            <h3>Unknown</h3>
-                            <span class="committee-full-name">Not finalized</span>
+                            <h3>UNW</h3>
+                            <span class="committee-full-name">UN Women</span>
                         </div>
 
                         <div class="committee-arrow">
@@ -2103,10 +2435,11 @@
 
                     </div>
 
-                    <div class="committee-details">
+                    <div class="committee-details" id="committeeDetails5" aria-hidden="true">
 
                         <div class="committee-details-inner">
-                            Committee name and information have not been finalized yet.
+                            <p>UN Women focuses on gender equality and the empowerment of women and girls around the world.</p>
+                            <p>Delegates examine barriers to equal participation, explore policy responses and negotiate practical solutions. Research, inclusive discussion and collaborative resolution-writing are central to this committee.</p>
                         </div>
 
                     </div>
@@ -2222,7 +2555,6 @@
                 <a class="footer-link" href="privacy-policy.html">Privacy Policy</a>
                 <a class="footer-link" href="terms.html">Terms</a>
                 <a class="footer-link" href="#contact">Contact Us</a>
-                <a class="footer-link" href="#">Made by Muhammad Abdullah</a>
             </div>
 
         </div>
@@ -2240,8 +2572,20 @@
         const accountButton = document.getElementById("accountButton");
         const accountMenu = document.getElementById("accountMenu");
         const accountEmail = document.getElementById("accountEmail");
+        const editProfileButton = document.getElementById("editProfileButton");
+        const myApplicationButton = document.getElementById("myApplicationButton");
         const signOutButton = document.getElementById("signOutButton");
         const accountMenuStatus = document.getElementById("accountMenuStatus");
+        const portalOverlay = document.getElementById("portalOverlay");
+        const portalClose = document.getElementById("portalClose");
+        const profileTab = document.getElementById("profileTab");
+        const applicationTab = document.getElementById("applicationTab");
+        const profilePanel = document.getElementById("profilePanel");
+        const applicationPanel = document.getElementById("applicationPanel");
+        const profileForm = document.getElementById("profileForm");
+        const profileSaveButton = document.getElementById("profileSaveButton");
+        const profileMessage = document.getElementById("profileMessage");
+        const applicationMessage = document.getElementById("applicationMessage");
         const authOverlay = document.getElementById("authOverlay");
         const authForm = document.getElementById("authForm");
         const authEmail = document.getElementById("authEmail");
@@ -2257,6 +2601,19 @@
         let currentUser = null;
         let authMode = "signin";
         let continueToRegistration = false;
+
+        const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
+            "member1@mun.com": "m10abdullah09@gmail.com",
+            "member2@mun.com": "chabilock61@gmail.com",
+            "member3@mun.com": "abdulrehmanch10978@gmail.com",
+            "member4@mun.com": "amberfatto0.o@gmail.com",
+            "member5@mun.com": "zeemaleshmal103@gmail.com"
+        };
+
+        function getOfficialRegistrationEmail(email) {
+            const normalizedEmail = email.trim().toLowerCase();
+            return OFFICIAL_EMAIL_BY_MEMBER_LOGIN[normalizedEmail] || normalizedEmail;
+        }
 
         function setAuthStatus(message, isError = false) {
             authStatus.textContent = message;
@@ -2326,6 +2683,9 @@
             accountEmail.textContent = user?.email || "";
             accountMenuStatus.textContent = "";
             accountMenuStatus.hidden = true;
+            if (!user) {
+                portalOverlay.hidden = true;
+            }
         }
 
         accountButton.addEventListener("click", () => {
@@ -2337,7 +2697,195 @@
             accountMenu.hidden = !accountMenu.hidden;
             accountButton.setAttribute("aria-expanded", String(!accountMenu.hidden));
             if (!accountMenu.hidden) {
-                signOutButton.focus();
+                editProfileButton.focus();
+            }
+        });
+
+        function setPortalPanel(panel) {
+            const showProfile = panel === "profile";
+            profileTab.setAttribute("aria-selected", String(showProfile));
+            applicationTab.setAttribute("aria-selected", String(!showProfile));
+            profilePanel.classList.toggle("active", showProfile);
+            applicationPanel.classList.toggle("active", !showProfile);
+        }
+
+        function setPortalMessage(element, message, isError = false) {
+            element.textContent = message;
+            element.classList.toggle("error", isError);
+        }
+
+        function setProfileFormEnabled(enabled) {
+            profileForm.querySelectorAll("input, select, button").forEach(control => {
+                control.disabled = !enabled;
+            });
+        }
+
+        function populateDelegatePortal(registration) {
+            if (!registration) {
+                document.getElementById("applicationStatus").textContent = "No registration found";
+                document.getElementById("applicationCommittee1").textContent = "—";
+                document.getElementById("applicationCommittee2").textContent = "—";
+                setPortalMessage(applicationMessage, "");
+                return;
+            }
+
+            document.getElementById("applicationStatus").textContent =
+                registration.status || "Pending";
+            document.getElementById("applicationCommittee1").textContent =
+                registration.committee_1 || "—";
+            document.getElementById("applicationCommittee2").textContent =
+                registration.committee_2 || "—";
+
+            setPortalMessage(applicationMessage, "");
+        }
+
+        async function loadDelegateRegistration() {
+            setPortalMessage(applicationMessage, "Loading your application…");
+            document.getElementById("applicationStatus").textContent = "Loading…";
+            document.getElementById("applicationCommittee1").textContent = "Loading…";
+            document.getElementById("applicationCommittee2").textContent = "Loading…";
+
+            try {
+                const email = getOfficialRegistrationEmail(currentUser.email);
+                const { data, error } = await authClient
+                    .from("registrations")
+                    .select("committee_1,committee_2,status")
+                    .eq("email", email)
+                    .maybeSingle();
+
+                if (error) {
+                    throw error;
+                }
+
+                populateDelegatePortal(data);
+                return true;
+            } catch (error) {
+                console.error("Could not load delegate registration:", error);
+                setPortalMessage(applicationMessage, `Could not load your application: ${error.message}`, true);
+                document.getElementById("applicationStatus").textContent = "Unable to load";
+                document.getElementById("applicationCommittee1").textContent = "—";
+                document.getElementById("applicationCommittee2").textContent = "—";
+                return false;
+            }
+        }
+
+        function populateDelegateProfile(profile) {
+            const profileFields = {
+                profileName: profile?.full_name || "",
+                profilePhone: profile?.phone || "",
+                profileDob: profile?.dob || "",
+                profileGender: profile?.gender || ""
+            };
+
+            Object.entries(profileFields).forEach(([id, value]) => {
+                document.getElementById(id).value = value;
+            });
+
+            setProfileFormEnabled(true);
+            setPortalMessage(
+                profileMessage,
+                profile
+                    ? ""
+                    : "No saved profile yet. Add your details and save; this profile is separate from your application."
+            );
+        }
+
+        async function loadDelegateProfile() {
+            setProfileFormEnabled(false);
+            setPortalMessage(profileMessage, "Loading your separate profile…");
+
+            try {
+                const { data, error } = await authClient
+                    .from("delegate_profiles")
+                    .select("full_name,phone,dob,gender")
+                    .eq("user_id", currentUser.id)
+                    .maybeSingle();
+
+                if (error) {
+                    throw error;
+                }
+
+                populateDelegateProfile(data);
+                return true;
+            } catch (error) {
+                console.error("Could not load delegate profile:", error);
+                setPortalMessage(profileMessage, `Could not load your profile: ${error.message}`, true);
+                return false;
+            }
+        }
+
+        function openDelegatePortal(panel) {
+            accountMenu.hidden = true;
+            accountButton.setAttribute("aria-expanded", "false");
+            document.getElementById("portalEmail").textContent = currentUser.email || "";
+            setPortalPanel(panel);
+            portalOverlay.hidden = false;
+            loadDelegateRegistration();
+            loadDelegateProfile();
+            profileTab.focus();
+        }
+
+        function closeDelegatePortal() {
+            portalOverlay.hidden = true;
+            accountButton.focus();
+        }
+
+        editProfileButton.addEventListener("click", () => openDelegatePortal("profile"));
+        myApplicationButton.addEventListener("click", () => openDelegatePortal("application"));
+        profileTab.addEventListener("click", () => setPortalPanel("profile"));
+        applicationTab.addEventListener("click", () => setPortalPanel("application"));
+        portalClose.addEventListener("click", closeDelegatePortal);
+
+        portalOverlay.addEventListener("click", event => {
+            if (event.target === portalOverlay) {
+                closeDelegatePortal();
+            }
+        });
+
+        profileForm.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (!currentUser) {
+                setPortalMessage(profileMessage, "Sign in to save your profile.", true);
+                return;
+            }
+
+            profileSaveButton.disabled = true;
+            profileSaveButton.textContent = "Saving…";
+            setPortalMessage(profileMessage, "");
+
+            try {
+                const { error } = await authClient
+                    .from("delegate_profiles")
+                    .upsert({
+                        user_id: currentUser.id,
+                        full_name: document.getElementById("profileName").value.trim(),
+                        phone: document.getElementById("profilePhone").value.trim(),
+                        dob: document.getElementById("profileDob").value.trim(),
+                        gender: document.getElementById("profileGender").value
+                    }, {
+                        onConflict: "user_id"
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (await loadDelegateProfile()) {
+                    setPortalMessage(profileMessage, "Your profile has been updated.");
+                } else {
+                    setPortalMessage(
+                        profileMessage,
+                        "Your profile was saved, but could not be refreshed. Close and reopen the portal.",
+                        true
+                    );
+                }
+            } catch (error) {
+                console.error("Could not save delegate profile:", error);
+                setPortalMessage(profileMessage, `Could not save your profile: ${error.message}`, true);
+            } finally {
+                profileSaveButton.disabled = false;
+                profileSaveButton.textContent = "Save profile";
             }
         });
 
@@ -2375,6 +2923,11 @@
             if (event.key === "Escape" && !accountMenu.hidden) {
                 accountMenu.hidden = true;
                 accountButton.setAttribute("aria-expanded", "false");
+                accountButton.focus();
+            }
+
+            if (event.key === "Escape" && !portalOverlay.hidden) {
+                closeDelegatePortal();
                 accountButton.focus();
             }
         });
@@ -2573,20 +3126,12 @@
         /* NAVBAR */
 
         const navbar = document.getElementById("navbar");
-        const scrollProgress = document.getElementById("scrollProgress");
         const sectionLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
         const pageSections = sectionLinks
             .map(link => document.querySelector(link.getAttribute("href")))
             .filter(Boolean);
 
         window.addEventListener("scroll", () => {
-
-            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = scrollableHeight > 0
-                ? (window.scrollY / scrollableHeight) * 100
-                : 0;
-
-            scrollProgress.style.width = `${progress}%`;
 
             if (window.scrollY > 20) {
                 navbar.classList.add("scrolled");
@@ -2667,42 +3212,35 @@
 
         /* COMMITTEE ACCORDION */
 
-        document.querySelectorAll(".committee-card")
-            .forEach(card => {
+        function toggleCommitteeCard(card) {
+            const shouldOpen = !card.classList.contains("open");
 
-                card.addEventListener("click", () => {
-
-                    const details =
-                        card.querySelector(".committee-details");
-
-                    const isOpen =
-                        card.classList.contains("open");
-
-
-                    document
-                        .querySelectorAll(".committee-card")
-                        .forEach(other => {
-
-                            other.classList.remove("open");
-
-                            other.querySelector(".committee-details")
-                                .style.maxHeight = null;
-
-                        });
-
-
-                    if (!isOpen) {
-
-                        card.classList.add("open");
-
-                        details.style.maxHeight =
-                            details.scrollHeight + "px";
-
-                    }
-
-                });
-
+            document.querySelectorAll(".committee-card").forEach(other => {
+                other.classList.remove("open");
+                other.setAttribute("aria-expanded", "false");
+                const otherDetails = other.querySelector(".committee-details");
+                otherDetails.setAttribute("aria-hidden", "true");
+                otherDetails.style.maxHeight = null;
             });
+
+            if (shouldOpen) {
+                const details = card.querySelector(".committee-details");
+                card.classList.add("open");
+                card.setAttribute("aria-expanded", "true");
+                details.setAttribute("aria-hidden", "false");
+                details.style.maxHeight = `${details.scrollHeight}px`;
+            }
+        }
+
+        document.querySelectorAll(".committee-card").forEach(card => {
+            card.addEventListener("click", () => toggleCommitteeCard(card));
+            card.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    toggleCommitteeCard(card);
+                }
+            });
+        });
 
 
         /* SCROLL REVEAL */
