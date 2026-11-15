@@ -730,8 +730,8 @@
                             </select>
                         </div>
                         <div class="field">
-                            <label for="delegateCnic${index}">CNIC / Passport No. <span class="required">*</span></label>
-                            <input id="delegateCnic${index}" name="delegateCnic${index}" type="text" maxlength="40" placeholder="XXXXX-XXXXXXX-X or passport number" required>
+                            <label for="delegateCnic${index}">B-Form / CNIC Number <span class="required">*</span></label>
+                            <input id="delegateCnic${index}" name="delegateCnic${index}" type="text" maxlength="40" placeholder="Enter B-Form or CNIC number" required>
                         </div>
                         <div class="field">
                             <label for="delegateDob${index}">Date of Birth <span class="required">*</span></label>
@@ -1033,7 +1033,7 @@
             const delegateSections = delegateCards.map((card, index) => addReviewSection(`Delegate ${index + 1}`, [
                 ["Name", card.querySelector(`#delegateName${index}`).value],
                 ["Gender", card.querySelector(`#delegateGender${index}`).value],
-                ["CNIC / Passport", card.querySelector(`#delegateCnic${index}`).value],
+                ["B-Form / CNIC Number", card.querySelector(`#delegateCnic${index}`).value],
                 ["Date of Birth", card.querySelector(`#delegateDob${index}`).value],
                 ["Phone Number", delegatePhoneWidgets.get(index).getNumber()],
                 ["Email", card.querySelector(`#delegateEmail${index}`).value],
