@@ -798,6 +798,7 @@ tbody tr:hover {
         .theme-map { right: -52%; width: 130vw; opacity: 0.16; }
     }
 </style>
+<link rel="stylesheet" href="site-motion.css">
 </head>
 
 
@@ -810,7 +811,10 @@ tbody tr:hover {
                 0 0 0 0 0.55
                 0 0 0 0 0.045
                 0 0 0 0 0.08
-                -0.2126 -0.7152 -0.0722 0 1" />
+                -0.2126 -0.7152 -0.0722 1 0" />
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="3" intercept="-0.75" />
+            </feComponentTransfer>
         </filter>
     </defs>
     <image href="world-map.webp" width="460" height="345" filter="url(#admin-red-map)" />
@@ -1619,14 +1623,18 @@ function renderTable(rows) {
         return;
     }
 
-    if (activeRegistrationType === "delegations") {
-        registrationTable.innerHTML = rows.map(row => {
-            const status = String(row.status || "Pending");
-            const statusClass = status.toLowerCase();
-            const delegateCount = Number(row.delegates_count) || (Array.isArray(row.delegates) ? row.delegates.length : 0);
+    const isDelegation = activeRegistrationType === "delegations";
+    registrationTable.innerHTML = rows.map(row => {
+        const status = String(row.status || "Pending");
+        const normalizedStatus = status.toLowerCase();
+        const statusClass = ["pending", "approved", "rejected"].includes(normalizedStatus)
+            ? normalizedStatus
+            : "pending";
 
+        if (isDelegation) {
+            const delegateCount = Number(row.delegates_count) || (Array.isArray(row.delegates) ? row.delegates.length : 0);
             return `
-                <tr onclick="openDetails('${escapeAttribute(row.id)}')">
+                <tr>
                     <td>
                         <span class="delegate-name">${escapeHTML(row.institution_name || "Unnamed institution")}</span><br>
                         ${escapeHTML([row.city, row.country].filter(Boolean).join(", "))}
@@ -1639,112 +1647,51 @@ function renderTable(rows) {
                     <td>${delegateCount} students</td>
                     <td><span class="status ${statusClass}">${escapeHTML(status)}</span></td>
                     <td>
-                        <div class="actions" onclick="event.stopPropagation()">
-                            <button class="approve-btn" onclick="changeStatus('${escapeAttribute(row.id)}','Approved')" ${statusClass === "approved" ? "disabled" : ""}>Approve</button>
-                            <button class="reject-btn" onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')" ${statusClass === "rejected" ? "disabled" : ""}>Reject</button>
+                        <div class="actions">
+                            <button class="approve-btn" type="button" data-status-action="Approved" ${statusClass === "approved" ? "disabled" : ""}>Approve</button>
+                            <button class="reject-btn" type="button" data-status-action="Rejected" ${statusClass === "rejected" ? "disabled" : ""}>Reject</button>
                         </div>
                     </td>
-                    <td>${formatDate(row.created_at)}</td>
+                    <td>${escapeHTML(formatDate(row.created_at))}</td>
                 </tr>
             `;
-        }).join("");
-        return;
-    }
+        }
 
-    registrationTable.innerHTML =
-        rows.map(
-            row => {
+        return `
+            <tr>
+                <td><span class="delegate-name">${escapeHTML(row.full_name)}</span></td>
+                <td>${escapeHTML(row.email || "")}<br>${escapeHTML(row.phone || "")}</td>
+                <td>${escapeHTML(row.committee_1 || "—")}</td>
+                <td>${escapeHTML(row.committee_2 || "—")}</td>
+                <td><span class="status ${statusClass}">${escapeHTML(status)}</span></td>
+                <td>
+                    <div class="actions">
+                        <button class="approve-btn" type="button" data-status-action="Approved" ${statusClass === "approved" ? "disabled" : ""}>Approve</button>
+                        <button class="reject-btn" type="button" data-status-action="Rejected" ${statusClass === "rejected" ? "disabled" : ""}>Reject</button>
+                    </div>
+                </td>
+                <td>${escapeHTML(formatDate(row.created_at))}</td>
+            </tr>
+        `;
+    }).join("");
 
-                const status =
-                    String(
-                        row.status || "Pending"
-                    );
+    registrationTable.querySelectorAll("tr").forEach((tableRow, index) => {
+        const row = rows[index];
+        const identifier = isDelegation ? row.id : row.email;
 
-
-                const statusClass =
-                    status.toLowerCase();
-
-
-                return `
-
-                    <tr
-                        onclick="openDetails('${escapeAttribute(row.email)}')"
-                    >
-
-
-                        <td>
-                            <span class="delegate-name">
-                                ${escapeHTML(row.full_name)}
-                            </span>
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(row.email || "")}<br>
-                            ${escapeHTML(row.phone || "")}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(row.committee_1 || "—")}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(row.committee_2 || "—")}
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="status ${statusClass}"
-                            >
-                                ${escapeHTML(status)}
-                            </span>
-
-                        </td>
-
-
-                        <td>
-
-                            <div
-                                class="actions"
-                                onclick="event.stopPropagation()"
-                            >
-
-                                <button
-                                    class="approve-btn"
-                                    onclick="changeStatus('${escapeAttribute(row.email)}','Approved')"
-                                    ${status.toLowerCase() === "approved" ? "disabled" : ""}
-                                >
-                                    Approve
-                                </button>
-
-
-                                <button
-                                    class="reject-btn"
-                                    onclick="changeStatus('${escapeAttribute(row.email)}','Rejected')"
-                                    ${status.toLowerCase() === "rejected" ? "disabled" : ""}
-                                >
-                                    Reject
-                                </button>
-
-                            </div>
-
-                        </td>
-
-
-                        <td>
-                            ${formatDate(row.created_at)}
-                        </td>
-
-                    </tr>
-
-                `;
-
+        tableRow.addEventListener("click", event => {
+            if (!event.target.closest(".actions")) {
+                openDetails(identifier);
             }
-        ).join("");
+        });
+
+        tableRow.querySelectorAll("[data-status-action]").forEach(button => {
+            button.addEventListener("click", event => {
+                event.stopPropagation();
+                changeStatus(identifier, button.dataset.statusAction);
+            });
+        });
+    });
 
 }
 
@@ -2028,14 +1975,20 @@ function showDelegationDetails(row) {
         </div>
 
         <div class="modal-actions">
-            <button class="modal-approve" onclick="changeStatus('${escapeAttribute(row.id)}','Approved')" ${status.toLowerCase() === "approved" ? "disabled" : ""}>
+            <button class="modal-approve" type="button" data-status-action="Approved" ${status.toLowerCase() === "approved" ? "disabled" : ""}>
                 ✓ Approve Delegation
             </button>
-            <button class="modal-reject" onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')" ${status.toLowerCase() === "rejected" ? "disabled" : ""}>
+            <button class="modal-reject" type="button" data-status-action="Rejected" ${status.toLowerCase() === "rejected" ? "disabled" : ""}>
                 ✕ Reject Delegation
             </button>
         </div>
     `;
+
+    modalBody.querySelectorAll("[data-status-action]").forEach(button => {
+        button.addEventListener("click", () => {
+            changeStatus(row.id, button.dataset.statusAction);
+        });
+    });
 
     if (row.payment_proof_path) {
         loadSecureDocumentLink(
@@ -2194,7 +2147,8 @@ function showRegistrationDetails(row) {
 
             <button
                 class="modal-approve"
-                onclick="changeStatus('${escapeAttribute(row.email)}','Approved')"
+                type="button"
+                data-status-action="Approved"
                 ${status.toLowerCase() === "approved" ? "disabled" : ""}
             >
                 ✓ Approve Application
@@ -2203,7 +2157,8 @@ function showRegistrationDetails(row) {
 
             <button
                 class="modal-reject"
-                onclick="changeStatus('${escapeAttribute(row.email)}','Rejected')"
+                type="button"
+                data-status-action="Rejected"
                 ${status.toLowerCase() === "rejected" ? "disabled" : ""}
             >
                 ✕ Reject Application
@@ -2212,6 +2167,12 @@ function showRegistrationDetails(row) {
         </div>
 
     `;
+
+    modalBody.querySelectorAll("[data-status-action]").forEach(button => {
+        button.addEventListener("click", () => {
+            changeStatus(row.email, button.dataset.statusAction);
+        });
+    });
 
     if (row.payment_proof_path) {
         loadSecureDocumentLink(
@@ -2547,21 +2508,6 @@ function escapeHTML(value) {
         .replace(
             /'/g,
             "&#039;"
-        );
-
-}
-
-
-function escapeAttribute(value) {
-
-    return String(value)
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-        .replace(
-            /'/g,
-            "\\'"
         );
 
 }

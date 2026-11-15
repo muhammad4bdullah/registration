@@ -2019,6 +2019,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="site-motion.css">
 </head>
 
 <body>
@@ -2220,7 +2221,10 @@
                             0 0 0 0 0.55
                             0 0 0 0 0.045
                             0 0 0 0 0.08
-                            -0.2126 -0.7152 -0.0722 0 1" />
+                            -0.2126 -0.7152 -0.0722 1 0" />
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="3" intercept="-0.75" />
+                        </feComponentTransfer>
                     </filter>
                 </defs>
                 <image href="world-map.webp" width="460" height="345" filter="url(#red-map)" />
@@ -3455,11 +3459,19 @@
         /* COUNTERS */
 
         const pageLoader = document.getElementById("pageLoader");
-        window.addEventListener("load", () => {
-            setTimeout(() => {
-                pageLoader.classList.add("hidden");
-            }, 250);
-        });
+        if (pageLoader) {
+            const hidePageLoader = () => {
+                window.setTimeout(() => {
+                    pageLoader.classList.add("hidden");
+                }, 250);
+            };
+
+            if (document.readyState === "complete") {
+                hidePageLoader();
+            } else {
+                window.addEventListener("load", hidePageLoader, { once: true });
+            }
+        }
 
         const counters =
             document.querySelectorAll("[data-count]");
@@ -3517,9 +3529,10 @@
                 }
             );
 
-        counterObserver.observe(
-            document.querySelector(".stats")
-        );
+        const statsSection = document.querySelector(".stats");
+        if (statsSection) {
+            counterObserver.observe(statsSection);
+        }
 
     </script>
 

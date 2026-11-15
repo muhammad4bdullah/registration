@@ -1083,6 +1083,7 @@ body {
     }
 }
 </style>
+<link rel="stylesheet" href="site-motion.css">
 </head>
 
 <body>
@@ -1695,6 +1696,7 @@ const publicDb = createClient(
 ====================================================== */
 
 let currentStep = 0;
+let registrationSubmissionInProgress = false;
 let authenticatedEmail = "";
 
 const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
@@ -2234,6 +2236,11 @@ async function submitRegistration() {
 
     }
 
+    if (registrationSubmissionInProgress) {
+        return;
+    }
+
+    registrationSubmissionInProgress = true;
 
     /* Prevent double-click */
 
@@ -2422,6 +2429,8 @@ async function submitRegistration() {
 
 
     } catch (error) {
+
+        registrationSubmissionInProgress = false;
 
         console.error(
             "Registration error:",

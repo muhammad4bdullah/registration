@@ -1,0 +1,137 @@
+:root {
+    scroll-behavior: smooth;
+}
+
+@keyframes amun-page-enter {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 8px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes amun-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes amun-step-enter {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 6px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+body > nav,
+body > .topbar,
+body > header.hero {
+    animation: amun-fade-in 220ms ease-out both;
+}
+
+body > main,
+body > header.hero .hero-inner,
+.login-card {
+    animation: amun-page-enter 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+main .form-step.active {
+    animation: amun-step-enter 220ms ease-out both;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 180ms ease,
+        transform 160ms ease,
+        opacity 160ms ease;
+}
+
+button:not(:disabled):hover,
+.primary-button:hover,
+.secondary-button:hover,
+.wizard-button:hover,
+.login-btn:hover,
+.modal-approve:hover,
+.modal-reject:hover,
+.registration-type-button:hover {
+    transform: translateY(-1px);
+}
+
+button:not(:disabled):active,
+.primary-button:active,
+.secondary-button:active,
+.wizard-button:active,
+.login-btn:active,
+.modal-approve:active,
+.modal-reject:active,
+.registration-type-button:active {
+    transform: translateY(0) scale(0.99);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid rgba(216, 177, 106, 0.9);
+    outline-offset: 3px;
+}
+
+.login-error:not(:empty),
+.dashboard-error:not(:empty),
+[role="alert"]:not(:empty) {
+    animation: amun-step-enter 180ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    button:not(:disabled):hover,
+    .primary-button:hover,
+    .secondary-button:hover,
+    .wizard-button:hover,
+    .login-btn:hover,
+    .modal-approve:hover,
+    .modal-reject:hover,
+    .registration-type-button:hover,
+    button:not(:disabled):active,
+    .primary-button:active,
+    .secondary-button:active,
+    .wizard-button:active,
+    .login-btn:active,
+    .modal-approve:active,
+    .modal-reject:active,
+    .registration-type-button:active {
+        transform: none !important;
+    }
+}

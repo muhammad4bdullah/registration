@@ -462,6 +462,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="site-motion.css">
 </head>
 <body>
     <svg class="theme-map" viewBox="0 0 460 345" aria-hidden="true">
@@ -952,6 +953,7 @@
         const continueButton = document.getElementById("continueButton");
         const wizardStatus = document.getElementById("wizardStatus");
         let currentStep = 0;
+        let submissionInProgress = false;
 
         document.getElementById("paymentProof").addEventListener("change", event => {
             document.getElementById("paymentProofName").textContent = event.target.files[0]?.name || "No file selected.";
@@ -1242,9 +1244,13 @@
 
         wizard.addEventListener("submit", async event => {
             event.preventDefault();
+            if (submissionInProgress) return;
             if (currentStep !== wizardSteps.length - 1) return;
             if (!await validateCurrentStep()) return;
+            if (submissionInProgress) return;
 
+            submissionInProgress = true;
+            backButton.disabled = true;
             continueButton.disabled = true;
             continueButton.textContent = "Submitting...";
             wizardStatus.textContent = "Submitting your delegation...";
@@ -1254,11 +1260,13 @@
                 wizardStatus.textContent = "Delegation submitted successfully.";
                 continueButton.textContent = "Submitted";
             } catch (error) {
+                submissionInProgress = false;
                 console.error("Delegation submission failed:", error);
                 const message = error.message && error.message.includes("Could not find the table")
                     ? "The delegations table is not set up yet. Run supabase-delegation-schema.sql in Supabase SQL Editor."
                     : `Submission failed: ${error.message}`;
                 wizardStatus.textContent = message;
+                backButton.disabled = false;
                 continueButton.disabled = false;
                 continueButton.textContent = "Submit Registration";
             }
