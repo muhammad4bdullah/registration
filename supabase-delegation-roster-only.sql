@@ -23,6 +23,7 @@ create index if not exists delegations_submitted_by_user_id_idx
 grant usage on schema public to authenticated;
 grant insert, select, update on public.delegations to authenticated;
 
+drop policy if exists "amun_temporary_pause_delegations_insert" on public.delegations;
 drop policy if exists "Submit own delegation" on public.delegations;
 
 create policy "Submit own delegation"
