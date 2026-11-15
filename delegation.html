@@ -520,11 +520,10 @@
             <form class="form-content" id="delegationWizard" novalidate>
                 <section class="form-step active" aria-labelledby="institutionHeading">
                     <div class="step-heading">
-                        <h3 id="institutionHeading">Institution &amp; Head Delegate</h3>
-                        <p>Enter your institution and the person coordinating the delegation.</p>
+                        <h3 id="institutionHeading">Institution Details</h3>
+                        <p>Enter your institution details, then add 5–6 delegates.</p>
                     </div>
                     <div class="form-section">
-                        <div class="section-heading"><h3>Institution Details</h3></div>
                         <div class="field-grid">
                             <div class="field full">
                                 <label for="institutionName">Institution / Organization Name <span class="required">*</span></label>
@@ -537,24 +536,6 @@
                             <div class="field">
                                 <label for="city">City <span class="required">*</span></label>
                                 <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" placeholder="Enter your city" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-section">
-                        <div class="section-heading"><h3>Head Delegate Information</h3></div>
-                        <div class="field-grid">
-                            <div class="field full">
-                                <label for="headDelegateName">Head Delegate Full Name <span class="required">*</span></label>
-                                <input id="headDelegateName" name="headDelegateName" type="text" autocomplete="name" maxlength="120" placeholder="Enter your full name" required>
-                            </div>
-                            <div class="field">
-                                <label for="email">Email Address <span class="required">*</span></label>
-                                <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="Enter your email address" required>
-                            </div>
-                            <div class="field">
-                                <label for="phone">Phone Number <span class="required">*</span></label>
-                                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="Enter phone number" aria-describedby="phoneHint" required>
-                                <small class="field-hint" id="phoneHint">Choose a country code, then enter the contact number.</small>
                             </div>
                         </div>
                     </div>
@@ -701,15 +682,6 @@
         const SUPABASE_URL = "https://gxtmwoeusikehczprbvv.supabase.co";
         const SUPABASE_KEY = "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
         const authClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const phoneInput = document.getElementById("phone");
-        const phoneWidget = window.intlTelInput(phoneInput, {
-            initialCountry: "pk",
-            nationalMode: true,
-            separateDialCode: true,
-            loadUtils: () =>
-                import("https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/utils.js")
-        });
 
         const delegateCountInput = document.getElementById("delegateCount");
         const delegateDetailsContainer = document.getElementById("delegateDetails");
@@ -1013,23 +985,6 @@
                 }
             }
 
-            if (currentStep === 0) {
-                try {
-                    await phoneWidget.promise;
-                } catch {
-                    phoneInput.focus();
-                    wizardStatus.textContent = "Phone validation needs an internet connection. Please try again.";
-                    return false;
-                }
-
-                if (!phoneWidget.isValidNumber()) {
-                    phoneInput.setCustomValidity("Enter a valid phone number for the selected country.");
-                    phoneInput.reportValidity();
-                    phoneInput.focus();
-                    return false;
-                }
-            }
-
             if (currentStep === 1) {
                 const cards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
 
@@ -1121,13 +1076,10 @@
             ]));
 
             const reviewSections = [
-                addReviewSection("Institution & Head Delegate", [
+                addReviewSection("Institution", [
                     ["Institution", document.getElementById("institutionName").value],
                     ["Country", document.getElementById("country").value],
-                    ["City", document.getElementById("city").value],
-                    ["Head Delegate", document.getElementById("headDelegateName").value],
-                    ["Email", document.getElementById("email").value],
-                    ["Phone", phoneWidget.getNumber()]
+                    ["City", document.getElementById("city").value]
                 ]),
                 ...delegateSections,
                 addReviewSection("Delegation Details", [
@@ -1161,13 +1113,10 @@
             });
 
             return {
-                head_delegate_user_id: user.id,
+                submitted_by_user_id: user.id,
                 institution_name: document.getElementById("institutionName").value.trim(),
                 country: document.getElementById("country").value.trim(),
                 city: document.getElementById("city").value.trim(),
-                head_delegate_name: document.getElementById("headDelegateName").value.trim(),
-                head_delegate_email: user.email.toLowerCase(),
-                head_delegate_phone: phoneWidget.getNumber(),
                 delegates_count: delegates.length,
                 delegates,
                 additional_notes: document.getElementById("additionalNotes").value.trim(),
@@ -1180,7 +1129,7 @@
             const { data, error: sessionError } = await authClient.auth.getSession();
             if (sessionError) throw sessionError;
             const user = data.session?.user;
-            if (!user?.id || !user.email) {
+            if (!user?.id) {
                 throw new Error("Your sign-in expired. Sign in again before submitting.");
             }
 
@@ -1343,15 +1292,12 @@
                 if (error) throw error;
 
                 const user = data.session?.user;
-                if (!user?.email) {
+                if (!user?.id) {
                     loginGate.hidden = false;
                     formShell.hidden = true;
                     return;
                 }
 
-                const emailInput = document.getElementById("email");
-                emailInput.value = user.email;
-                emailInput.readOnly = true;
                 loginGate.hidden = true;
                 formShell.hidden = false;
             } catch (error) {

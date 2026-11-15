@@ -1531,14 +1531,13 @@ function updateRegistrationTypeUI() {
 
     totalLabel.textContent = isDelegationsView ? "Total Delegations" : "Total Delegates";
     searchBox.placeholder = isDelegationsView
-        ? "Search institution, head delegate, student, email..."
+        ? "Search institution, delegate, email..."
         : "Search delegate name, email, phone, committee...";
 
     registrationTableHead.innerHTML = isDelegationsView
         ? `
             <tr>
                 <th>Institution</th>
-                <th>Head Delegate</th>
                 <th>Delegates</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -1603,7 +1602,7 @@ function renderTable(rows) {
 
     if (!rows.length) {
 
-        const columnCount = activeRegistrationType === "delegations" ? 6 : 7;
+        const columnCount = activeRegistrationType === "delegations" ? 5 : 7;
 
         registrationTable.innerHTML = `
 
@@ -1639,12 +1638,7 @@ function renderTable(rows) {
                         <span class="delegate-name">${escapeHTML(row.institution_name || "Unnamed institution")}</span><br>
                         ${escapeHTML([row.city, row.country].filter(Boolean).join(", "))}
                     </td>
-                    <td>
-                        ${escapeHTML(row.head_delegate_name || "—")}<br>
-                        ${escapeHTML(row.head_delegate_email || "")}<br>
-                        ${escapeHTML(row.head_delegate_phone || "")}
-                    </td>
-                    <td>${delegateCount} students</td>
+                    <td>${delegateCount} delegates</td>
                     <td><span class="status ${statusClass}">${escapeHTML(status)}</span></td>
                     <td>
                         <div class="actions">
@@ -1755,9 +1749,6 @@ function filterRegistrations() {
                         row.institution_name,
                         row.country,
                         row.city,
-                        row.head_delegate_name,
-                        row.head_delegate_email,
-                        row.head_delegate_phone,
                         row.delegates_count,
                         row.additional_notes,
                         row.status,
@@ -1939,15 +1930,6 @@ function showDelegationDetails(row) {
                 ${detail("Country", row.country)}
                 ${detail("City", row.city)}
                 ${detail("Number of Delegates", row.delegates_count)}
-            </div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Head Delegate</h3>
-            <div class="detail-grid">
-                ${detail("Name", row.head_delegate_name)}
-                ${detail("Email", row.head_delegate_email)}
-                ${detail("Phone", row.head_delegate_phone)}
             </div>
         </div>
 
