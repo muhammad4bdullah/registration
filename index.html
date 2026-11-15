@@ -105,6 +105,10 @@
             pointer-events: none;
         }
 
+        .page-loader[hidden] {
+            display: none;
+        }
+
         .loader-card {
             display: flex;
             flex-direction: column;
@@ -3463,6 +3467,9 @@
             const hidePageLoader = () => {
                 window.setTimeout(() => {
                     pageLoader.classList.add("hidden");
+                    window.setTimeout(() => {
+                        pageLoader.hidden = true;
+                    }, 350);
                 }, 250);
             };
 
