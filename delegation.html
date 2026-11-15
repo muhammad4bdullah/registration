@@ -335,8 +335,26 @@
         .payment-detail-grid strong { color: var(--white); font-size: 14px; }
         .payment-note { margin: 16px 0 0; color: var(--muted); font-size: 13px; }
         .payment-proof-field { margin-top: 24px; }
-        .payment-proof-field input[type="file"] { padding: 8px; }
-        .delegate-photo-field input[type="file"] { padding: 8px; }
+        .field input[type="file"] { min-height: 46px; padding: 8px 10px; cursor: pointer; }
+        .field input[type="file"]::file-selector-button,
+        .field input[type="file"]::-webkit-file-upload-button {
+            margin-right: 12px;
+            padding: 9px 14px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--gold);
+            color: #10251a;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .field input[type="file"]::file-selector-button:hover,
+        .field input[type="file"]::-webkit-file-upload-button:hover { background: #e5c27b; }
+        .field input[type="file"]::file-selector-button:active,
+        .field input[type="file"]::-webkit-file-upload-button:active { transform: scale(0.98); }
+        .field input[type="file"]:focus-visible { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(216, 177, 106, 0.2); }
 
         .review-box { overflow: hidden; border: 1px solid rgba(216, 177, 106, 0.18); border-radius: 12px; background: rgba(4, 29, 22, 0.76); }
         .review-section + .review-section { border-top: 1px solid var(--border); }
