@@ -911,7 +911,7 @@
             background:
                 linear-gradient(90deg, rgba(4, 24, 17, 0.96), rgba(4, 24, 17, 0.72) 58%, rgba(4, 24, 17, 0.38)),
                 linear-gradient(0deg, rgba(4, 24, 17, 0.3), rgba(4, 24, 17, 0.15)),
-                url("world-map.webp") center 48% / cover;
+                var(--committee-header-image, url("world-map.webp")) center 48% / cover;
         }
 
         .committee-dialog-heading {
@@ -981,16 +981,6 @@
             color: var(--muted);
             font-size: 15px;
             line-height: 1.8;
-        }
-
-        .committee-dialog-body .committee-context-image {
-            display: block;
-            width: 100%;
-            max-height: 260px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            object-fit: cover;
         }
 
         .committee-dialog-body p + p {
@@ -1421,55 +1411,13 @@
             z-index: 0;
         }
 
-        .hero-committee-collage {
+        .world-map-art {
             position: absolute;
             inset: 0;
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            grid-template-rows: repeat(2, minmax(0, 1fr));
-            gap: clamp(6px, 1vw, 14px);
-            padding: clamp(8px, 1.2vw, 18px);
-            opacity: 0.68;
-        }
-
-        .hero-committee-collage::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(90deg, rgba(4, 24, 17, 0.68), rgba(4, 24, 17, 0.45) 55%, rgba(4, 24, 17, 0.5)),
-                linear-gradient(0deg, rgba(4, 24, 17, 0.24), transparent 48%, rgba(4, 24, 17, 0.2));
-            pointer-events: none;
-        }
-
-        .hero-committee-photo {
             width: 100%;
             height: 100%;
-            min-width: 0;
-            object-fit: cover;
-            border: 1px solid rgba(216, 177, 106, 0.28);
-            border-radius: 14px;
-            filter: saturate(0.78);
-        }
-
-        .hero-committee-photo:nth-child(1) {
-            grid-area: 1 / 1 / 3 / 3;
-        }
-
-        .hero-committee-photo:nth-child(2) {
-            grid-area: 1 / 3 / 2 / 4;
-        }
-
-        .hero-committee-photo:nth-child(3) {
-            grid-area: 1 / 4 / 2 / 5;
-        }
-
-        .hero-committee-photo:nth-child(4) {
-            grid-area: 2 / 3 / 3 / 4;
-        }
-
-        .hero-committee-photo:nth-child(5) {
-            grid-area: 2 / 4 / 3 / 5;
+            opacity: 0.34;
+            z-index: 0;
         }
 
         .hero h1 { color: var(--white); }
@@ -1580,56 +1528,14 @@
                 background: rgba(4, 29, 22, 0.98);
             }
 
-            .hero-committee-collage {
-                grid-template-rows: repeat(3, minmax(0, 1fr));
-                opacity: 0.54;
-            }
-
-            .hero-committee-photo:nth-child(1) {
-                grid-area: 1 / 1 / 3 / 3;
-            }
-
-            .hero-committee-photo:nth-child(2) {
-                grid-area: 1 / 3 / 2 / 5;
-            }
-
-            .hero-committee-photo:nth-child(3) {
-                grid-area: 2 / 3 / 3 / 5;
-            }
-
-            .hero-committee-photo:nth-child(4) {
-                grid-area: 3 / 1 / 4 / 3;
-            }
-
-            .hero-committee-photo:nth-child(5) {
-                grid-area: 3 / 3 / 4 / 5;
+            .world-map-art {
+                opacity: 0.3;
             }
         }
 
         @media (max-width: 520px) {
-            .hero-committee-collage {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                opacity: 0.42;
-            }
-
-            .hero-committee-photo:nth-child(1) {
-                grid-area: 1 / 1 / 3 / 2;
-            }
-
-            .hero-committee-photo:nth-child(2) {
-                grid-area: 1 / 2 / 2 / 3;
-            }
-
-            .hero-committee-photo:nth-child(3) {
-                grid-area: 2 / 2 / 3 / 3;
-            }
-
-            .hero-committee-photo:nth-child(4) {
-                grid-area: 3 / 1 / 4 / 2;
-            }
-
-            .hero-committee-photo:nth-child(5) {
-                grid-area: 3 / 2 / 4 / 3;
+            .world-map-art {
+                opacity: 0.24;
             }
         }
 
@@ -2320,13 +2226,21 @@
     <header class="hero">
 
         <div class="hero-art" aria-hidden="true">
-            <div class="hero-committee-collage">
-                <img class="hero-committee-photo" src="committee-images/unhrc.jpeg" alt="" decoding="async">
-                <img class="hero-committee-photo" src="committee-images/unsc.jpg" alt="" decoding="async">
-                <img class="hero-committee-photo" src="committee-images/crisis.jpg" alt="" decoding="async">
-                <img class="hero-committee-photo" src="committee-images/icj.webp" alt="" decoding="async">
-                <img class="hero-committee-photo" src="committee-images/unw.jpg" alt="" decoding="async">
-            </div>
+            <svg class="world-map-art" viewBox="0 0 460 345" preserveAspectRatio="xMidYMid slice" role="presentation">
+                <defs>
+                    <filter id="red-map" color-interpolation-filters="sRGB">
+                        <feColorMatrix type="matrix" values="
+                            0 0 0 0 0.55
+                            0 0 0 0 0.045
+                            0 0 0 0 0.08
+                            -0.2126 -0.7152 -0.0722 1 0" />
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="3" intercept="-0.75" />
+                        </feComponentTransfer>
+                    </filter>
+                </defs>
+                <image href="world-map.webp" width="460" height="345" filter="url(#red-map)" />
+            </svg>
         </div>
 
         <div class="hero-inner">
@@ -3587,17 +3501,27 @@
         const committeeDialogNumber = document.getElementById("committeeDialogNumber");
         const committeeDialogTitle = document.getElementById("committeeDialogTitle");
         const committeeDialogFullName = document.getElementById("committeeDialogFullName");
+        const committeeDialogHeader = document.querySelector(".committee-dialog-header");
         const committeeDialogBody = document.getElementById("committeeDialogBody");
 
         function openCommitteeDialog(card) {
             const details = card.querySelector(".committee-details-inner");
             const fullName = card.querySelector(".committee-full-name");
+            const detailsClone = details.cloneNode(true);
+            const committeeImage = detailsClone.querySelector(".committee-context-image");
+            const committeeImageSource = committeeImage ? committeeImage.getAttribute("src") : null;
 
             committeeDialogNumber.textContent = card.querySelector(".committee-number").textContent.trim();
             committeeDialogTitle.textContent = card.querySelector("h3").textContent.trim();
             committeeDialogFullName.textContent = fullName ? fullName.textContent.trim() : "";
             committeeDialogFullName.hidden = !committeeDialogFullName.textContent;
-            committeeDialogBody.replaceChildren(details.cloneNode(true));
+            if (committeeImageSource) {
+                committeeDialogHeader.style.setProperty("--committee-header-image", `url("${committeeImageSource}")`);
+                committeeImage.remove();
+            } else {
+                committeeDialogHeader.style.removeProperty("--committee-header-image");
+            }
+            committeeDialogBody.replaceChildren(detailsClone);
             committeeDialog.showModal();
         }
 
