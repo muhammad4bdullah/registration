@@ -1143,8 +1143,12 @@ body {
 
     </div>
 
+    <div class="registration-pause-notice" role="status">
+        <strong>Registration temporarily paused</strong>
+        <p>We are verifying our data-protection settings. No registration information or documents can be submitted from this page right now.</p>
+    </div>
 
-    <div class="form-card tilt-card">
+    <div class="form-card tilt-card" hidden>
 
         <!-- STEPS -->
 
@@ -1698,6 +1702,7 @@ const publicDb = createClient(
 let currentStep = 0;
 let registrationSubmissionInProgress = false;
 let authenticatedEmail = "";
+const REGISTRATION_PAUSED = true;
 
 const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
     "member1@mun.com": "m10abdullah09@gmail.com",
@@ -2026,6 +2031,10 @@ async function validateCurrentStep() {
 
 async function nextStep() {
 
+    if (REGISTRATION_PAUSED) {
+        return;
+    }
+
     if (!await validateCurrentStep()) {
         return;
     }
@@ -2216,6 +2225,10 @@ function createReview() {
 
 async function submitRegistration() {
 
+    if (REGISTRATION_PAUSED) {
+        return;
+    }
+
     errorBox.style.display = "none";
     errorBox.textContent = "";
 
@@ -2248,6 +2261,10 @@ async function submitRegistration() {
     nextBtn.textContent =
         "Submitting...";
 
+    let uploadedPaymentProofPath = null;
+    let uploadedBFormImagePath = null;
+    let registrationInsertInFlight = false;
+    let registrationInserted = false;
 
     try {
 
@@ -2272,11 +2289,17 @@ async function submitRegistration() {
         const proofExtension =
             proofFile.name.split(".").pop().toLowerCase();
 
+        const uploadId = crypto.randomUUID();
+        const safeProofFileName =
+            proofFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const safeBFormFileName =
+            bFormImage.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
         const paymentProofPath =
-            `proofs/${encodeURIComponent(registrationEmail)}/${encodeURIComponent(proofFile.name)}`;
+            `proofs/${encodeURIComponent(registrationEmail)}/${uploadId}-${safeProofFileName}`;
 
         const bFormImagePath =
-            `b-forms/${encodeURIComponent(registrationEmail)}/${encodeURIComponent(bFormImage.name)}`;
+            `b-forms/${encodeURIComponent(registrationEmail)}/${uploadId}-${safeBFormFileName}`;
 
         const bFormImageContentType = {
             jpg: "image/jpeg",
@@ -2305,6 +2328,7 @@ async function submitRegistration() {
                 `Proof upload failed: ${uploadError.message}`
             );
         }
+        uploadedPaymentProofPath = paymentProofPath;
 
         const { error: bFormUploadError } =
             await publicDb
@@ -2320,6 +2344,7 @@ async function submitRegistration() {
                 `B-Form / CNIC photo upload failed: ${bFormUploadError.message}`
             );
         }
+        uploadedBFormImagePath = bFormImagePath;
 
 
         const registrationData = {
@@ -2370,12 +2395,14 @@ async function submitRegistration() {
          * No SELECT permission required.
          */
 
+        registrationInsertInFlight = true;
         const { error } =
             await publicDb
                 .from("registrations")
                 .insert([
                     registrationData
                 ]);
+        registrationInsertInFlight = false;
 
 
         if (error) {
@@ -2400,6 +2427,7 @@ async function submitRegistration() {
 
         }
 
+        registrationInserted = true;
 
         /* =============================================
            SUCCESS
@@ -2430,6 +2458,33 @@ async function submitRegistration() {
 
     } catch (error) {
 
+        let cleanupFailed = false;
+        if (!registrationInsertInFlight && !registrationInserted) {
+            const uploadedFiles = [
+                ["payment-proofs", uploadedPaymentProofPath, "payment proof"],
+                ["b-form-images", uploadedBFormImagePath, "B-Form / CNIC image"]
+            ];
+
+            for (const [bucket, path, label] of uploadedFiles) {
+                if (!path) continue;
+
+                try {
+                    const { error: cleanupError } = await publicDb
+                        .storage
+                        .from(bucket)
+                        .remove([path]);
+
+                    if (cleanupError) {
+                        cleanupFailed = true;
+                        console.error(`Could not remove unlinked ${label}:`, cleanupError);
+                    }
+                } catch (cleanupError) {
+                    cleanupFailed = true;
+                    console.error(`Could not remove unlinked ${label}:`, cleanupError);
+                }
+            }
+        }
+
         registrationSubmissionInProgress = false;
 
         console.error(
@@ -2440,7 +2495,10 @@ async function submitRegistration() {
 
         errorBox.textContent =
             "Registration failed: " +
-            error.message;
+            error.message +
+            (cleanupFailed
+                ? " Some uploaded files could not be removed automatically; please contact the AMUN team before retrying."
+                : "");
 
 
         errorBox.style.display =

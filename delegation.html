@@ -498,7 +498,12 @@
             <p>Submit your institution and delegate details for AMUN 2026.</p>
         </section>
 
-        <section class="form-shell reveal" id="loginGate" aria-labelledby="loginGateTitle">
+        <div class="registration-pause-notice reveal" role="status">
+            <strong>Registration temporarily paused</strong>
+            <p>We are verifying our data-protection settings. No delegation information or documents can be submitted from this page right now.</p>
+        </div>
+
+        <section class="form-shell reveal" id="loginGate" aria-labelledby="loginGateTitle" hidden>
             <div class="form-head">
                 <h2 id="loginGateTitle">Sign in required</h2>
                 <p>Sign in to your AMUN account before starting a delegation registration.</p>
@@ -1177,6 +1182,10 @@
         }
 
         async function submitDelegationRegistration() {
+            if (REGISTRATION_PAUSED) {
+                throw new Error("Delegation registration is temporarily paused.");
+            }
+
             const { data, error: sessionError } = await authClient.auth.getSession();
             if (sessionError) throw sessionError;
             const user = data.session?.user;
@@ -1320,6 +1329,8 @@
         });
         document.getElementById("legalDialogClose").addEventListener("click", () => legalDialog.close());
 
+        const REGISTRATION_PAUSED = true;
+
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1337,6 +1348,12 @@
             const loginGate = document.getElementById("loginGate");
             const formShell = document.getElementById("delegationFormShell");
             const gateStatus = document.getElementById("loginGateStatus");
+
+            if (REGISTRATION_PAUSED) {
+                loginGate.hidden = true;
+                formShell.hidden = true;
+                return;
+            }
 
             try {
                 const { data, error } = await authClient.auth.getSession();

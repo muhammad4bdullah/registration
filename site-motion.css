@@ -2,6 +2,31 @@
     scroll-behavior: smooth;
 }
 
+.registration-pause-notice {
+    max-width: 760px;
+    margin: 0 auto 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(255, 216, 145, 0.45);
+    border-radius: 12px;
+    background: rgba(67, 45, 15, 0.55);
+    color: #fff1cf;
+}
+
+.registration-pause-notice strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #ffe0a6;
+}
+
+.registration-pause-notice p {
+    margin: 0;
+}
+
+.form-card[hidden],
+.form-shell[hidden] {
+    display: none !important;
+}
+
 @keyframes amun-page-enter {
     from {
         opacity: 0;
