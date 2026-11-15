@@ -530,10 +530,6 @@
                                 <input id="institutionName" name="institutionName" type="text" autocomplete="organization" maxlength="120" placeholder="Enter your institution or organization name" required>
                             </div>
                             <div class="field">
-                                <label for="country">Country <span class="required">*</span></label>
-                                <input id="country" name="country" type="text" autocomplete="country-name" maxlength="80" placeholder="Enter your country" required>
-                            </div>
-                            <div class="field">
                                 <label for="city">City <span class="required">*</span></label>
                                 <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" placeholder="Enter your city" required>
                             </div>
@@ -1031,7 +1027,6 @@
             const reviewSections = [
                 addReviewSection("Institution", [
                     ["Institution", document.getElementById("institutionName").value],
-                    ["Country", document.getElementById("country").value],
                     ["City", document.getElementById("city").value]
                 ]),
                 ...delegateSections,
@@ -1068,7 +1063,7 @@
             return {
                 submitted_by_user_id: user.id,
                 institution_name: document.getElementById("institutionName").value.trim(),
-                country: document.getElementById("country").value.trim(),
+                country: null,
                 city: document.getElementById("city").value.trim(),
                 delegates_count: delegates.length,
                 delegates,

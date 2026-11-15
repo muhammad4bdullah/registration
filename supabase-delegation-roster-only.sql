@@ -1,5 +1,6 @@
 -- Run in the Supabase SQL Editor after public.delegations exists.
 -- Existing head-delegate data is preserved; new submissions use submitted_by_user_id.
+-- Institution country is optional for new delegation submissions.
 
 alter table public.delegations
     add column if not exists submitted_by_user_id uuid
@@ -15,7 +16,8 @@ alter table public.delegations
     alter column head_delegate_user_id drop not null,
     alter column head_delegate_name drop not null,
     alter column head_delegate_email drop not null,
-    alter column head_delegate_phone drop not null;
+    alter column head_delegate_phone drop not null,
+    alter column country drop not null;
 
 create index if not exists delegations_submitted_by_user_id_idx
     on public.delegations (submitted_by_user_id);

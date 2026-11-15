@@ -1,0 +1,29 @@
+name: Deploy AMUN to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site files
+        run: |
+          mkdir -p dist
+          cp 404.html admin-panel.html apsacs-logo.png delegation.html error.html index.html privacy-policy.html registration.html site-motion.css terms.html world-map.webp dist/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 2e15b000dfdc01095e4b455518f2f16a
+          wranglerVersion: "4.156.1"
+          command: pages deploy dist --project-name=amun-ryk --branch=main
