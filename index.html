@@ -1421,13 +1421,55 @@
             z-index: 0;
         }
 
-        .world-map-art {
+        .hero-committee-collage {
             position: absolute;
             inset: 0;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+            gap: clamp(6px, 1vw, 14px);
+            padding: clamp(8px, 1.2vw, 18px);
+            opacity: 0.68;
+        }
+
+        .hero-committee-collage::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(4, 24, 17, 0.68), rgba(4, 24, 17, 0.45) 55%, rgba(4, 24, 17, 0.5)),
+                linear-gradient(0deg, rgba(4, 24, 17, 0.24), transparent 48%, rgba(4, 24, 17, 0.2));
+            pointer-events: none;
+        }
+
+        .hero-committee-photo {
             width: 100%;
             height: 100%;
-            opacity: 0.34;
-            z-index: 0;
+            min-width: 0;
+            object-fit: cover;
+            border: 1px solid rgba(216, 177, 106, 0.28);
+            border-radius: 14px;
+            filter: saturate(0.78);
+        }
+
+        .hero-committee-photo:nth-child(1) {
+            grid-area: 1 / 1 / 3 / 3;
+        }
+
+        .hero-committee-photo:nth-child(2) {
+            grid-area: 1 / 3 / 2 / 4;
+        }
+
+        .hero-committee-photo:nth-child(3) {
+            grid-area: 1 / 4 / 2 / 5;
+        }
+
+        .hero-committee-photo:nth-child(4) {
+            grid-area: 2 / 3 / 3 / 4;
+        }
+
+        .hero-committee-photo:nth-child(5) {
+            grid-area: 2 / 4 / 3 / 5;
         }
 
         .hero h1 { color: var(--white); }
@@ -1538,14 +1580,56 @@
                 background: rgba(4, 29, 22, 0.98);
             }
 
-            .world-map-art {
-                opacity: 0.3;
+            .hero-committee-collage {
+                grid-template-rows: repeat(3, minmax(0, 1fr));
+                opacity: 0.54;
+            }
+
+            .hero-committee-photo:nth-child(1) {
+                grid-area: 1 / 1 / 3 / 3;
+            }
+
+            .hero-committee-photo:nth-child(2) {
+                grid-area: 1 / 3 / 2 / 5;
+            }
+
+            .hero-committee-photo:nth-child(3) {
+                grid-area: 2 / 3 / 3 / 5;
+            }
+
+            .hero-committee-photo:nth-child(4) {
+                grid-area: 3 / 1 / 4 / 3;
+            }
+
+            .hero-committee-photo:nth-child(5) {
+                grid-area: 3 / 3 / 4 / 5;
             }
         }
 
         @media (max-width: 520px) {
-            .world-map-art {
-                opacity: 0.24;
+            .hero-committee-collage {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                opacity: 0.42;
+            }
+
+            .hero-committee-photo:nth-child(1) {
+                grid-area: 1 / 1 / 3 / 2;
+            }
+
+            .hero-committee-photo:nth-child(2) {
+                grid-area: 1 / 2 / 2 / 3;
+            }
+
+            .hero-committee-photo:nth-child(3) {
+                grid-area: 2 / 2 / 3 / 3;
+            }
+
+            .hero-committee-photo:nth-child(4) {
+                grid-area: 3 / 1 / 4 / 2;
+            }
+
+            .hero-committee-photo:nth-child(5) {
+                grid-area: 3 / 2 / 4 / 3;
             }
         }
 
@@ -2236,22 +2320,13 @@
     <header class="hero">
 
         <div class="hero-art" aria-hidden="true">
-            <svg class="world-map-art" viewBox="0 0 460 345" preserveAspectRatio="xMidYMid slice" role="presentation">
-                <defs>
-                    <filter id="red-map" color-interpolation-filters="sRGB">
-                        <feColorMatrix type="matrix" values="
-                            0 0 0 0 0.55
-                            0 0 0 0 0.045
-                            0 0 0 0 0.08
-                            -0.2126 -0.7152 -0.0722 1 0" />
-                        <feComponentTransfer>
-                            <feFuncA type="linear" slope="3" intercept="-0.75" />
-                        </feComponentTransfer>
-                    </filter>
-                </defs>
-                <image href="world-map.webp" width="460" height="345" filter="url(#red-map)" />
-            </svg>
-
+            <div class="hero-committee-collage">
+                <img class="hero-committee-photo" src="committee-images/unhrc.jpeg" alt="" decoding="async">
+                <img class="hero-committee-photo" src="committee-images/unsc.jpg" alt="" decoding="async">
+                <img class="hero-committee-photo" src="committee-images/crisis.jpg" alt="" decoding="async">
+                <img class="hero-committee-photo" src="committee-images/icj.webp" alt="" decoding="async">
+                <img class="hero-committee-photo" src="committee-images/unw.jpg" alt="" decoding="async">
+            </div>
         </div>
 
         <div class="hero-inner">
