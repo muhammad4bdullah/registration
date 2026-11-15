@@ -9,6 +9,9 @@ where id in ('payment-proofs', 'b-form-images');
 drop policy if exists "Registration users upload own documents" on storage.objects;
 drop policy if exists "Registration users read own documents" on storage.objects;
 drop policy if exists "Registration users delete own documents" on storage.objects;
+drop policy if exists "amun_temporary_pause_document_uploads" on storage.objects;
+drop policy if exists "Delegate payment proof uploads" on storage.objects;
+drop policy if exists "Delegate B-Form image uploads" on storage.objects;
 
 create policy "Registration users upload own documents"
     on storage.objects
