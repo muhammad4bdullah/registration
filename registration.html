@@ -1143,7 +1143,16 @@ body {
 
     </div>
 
-    <div class="form-card tilt-card">
+    <div class="form-card tilt-card registration-auth-gate" id="registrationAuthGate">
+        <div class="form-body">
+            <h2>Sign in required</h2>
+            <p>Sign in to your AMUN account to register. Uploaded documents are stored privately under your account.</p>
+            <a class="btn btn-primary" href="index.html?auth=required&amp;next=registration">Sign in to continue</a>
+            <p id="registrationAuthStatus" role="status" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <div class="form-card tilt-card" hidden>
 
         <!-- STEPS -->
 
@@ -1697,6 +1706,7 @@ const publicDb = createClient(
 let currentStep = 0;
 let registrationSubmissionInProgress = false;
 let authenticatedEmail = "";
+let authenticatedUserId = "";
 
 const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
     "member1@mun.com": "m10abdullah09@gmail.com",
@@ -1750,29 +1760,35 @@ function getPhoneNumber(id) {
 
 async function initializeRegistrationAuth() {
     const emailInput = document.getElementById("email");
+    const registrationForm = document.querySelector(".form-card:not(.registration-auth-gate)");
+    const authGate = document.getElementById("registrationAuthGate");
+    const authStatus = document.getElementById("registrationAuthStatus");
+
+    registrationForm.hidden = true;
     emailInput.value = "";
-    nextBtn.disabled = false;
+    nextBtn.disabled = true;
 
     try {
         const { data, error } = await db.auth.getSession();
-
-        if (error) {
-            throw error;
-        }
+        if (error) throw error;
 
         const user = data.session?.user;
-        if (user?.email) {
-            authenticatedEmail = user.email;
-            emailInput.value = authenticatedEmail;
-            emailInput.readOnly = true;
+        if (!user?.id || !user.email) {
+            authStatus.textContent = "Sign in to your AMUN account to continue.";
             return;
         }
-    } catch (error) {
-        console.warn("No active sign-in session for registration:", error);
-    }
 
-    emailInput.readOnly = false;
-    emailInput.placeholder = "Enter your email address";
+        authenticatedUserId = user.id;
+        authenticatedEmail = user.email;
+        emailInput.value = authenticatedEmail;
+        emailInput.readOnly = true;
+        authGate.hidden = true;
+        registrationForm.hidden = false;
+        nextBtn.disabled = false;
+    } catch (error) {
+        console.error("Could not check your sign-in:", error);
+        authStatus.textContent = `Could not check your sign-in: ${error.message}`;
+    }
 }
 
 initializeRegistrationAuth();
@@ -2251,6 +2267,15 @@ async function submitRegistration() {
     let registrationInserted = false;
 
     try {
+        const { data: sessionData, error: sessionError } = await db.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        const user = sessionData.session?.user;
+        if (!user?.id || user.id !== authenticatedUserId || !user.email) {
+            throw new Error("Please sign in to your AMUN account again before submitting.");
+        }
+
+        authenticatedEmail = user.email;
 
         const emailInput = document.getElementById("email");
         const enteredEmail = (emailInput.value || authenticatedEmail || "").trim().toLowerCase();
@@ -2280,10 +2305,10 @@ async function submitRegistration() {
             bFormImage.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
         const paymentProofPath =
-            `proofs/${encodeURIComponent(registrationEmail)}/${uploadId}-${safeProofFileName}`;
+            `registrations/${authenticatedUserId}/proofs/${uploadId}-${safeProofFileName}`;
 
         const bFormImagePath =
-            `b-forms/${encodeURIComponent(registrationEmail)}/${uploadId}-${safeBFormFileName}`;
+            `registrations/${authenticatedUserId}/b-forms/${uploadId}-${safeBFormFileName}`;
 
         const bFormImageContentType = {
             jpg: "image/jpeg",
@@ -2299,7 +2324,7 @@ async function submitRegistration() {
         }[proofExtension];
 
         const { error: uploadError } =
-            await publicDb
+            await db
                 .storage
                 .from("payment-proofs")
                 .upload(paymentProofPath, proofFile, {
@@ -2315,7 +2340,7 @@ async function submitRegistration() {
         uploadedPaymentProofPath = paymentProofPath;
 
         const { error: bFormUploadError } =
-            await publicDb
+            await db
                 .storage
                 .from("b-form-images")
                 .upload(bFormImagePath, bFormImage, {
@@ -2453,7 +2478,7 @@ async function submitRegistration() {
                 if (!path) continue;
 
                 try {
-                    const { error: cleanupError } = await publicDb
+                    const { error: cleanupError } = await db
                         .storage
                         .from(bucket)
                         .remove([path]);
