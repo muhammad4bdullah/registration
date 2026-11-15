@@ -521,7 +521,7 @@
                 <section class="form-step active" aria-labelledby="institutionHeading">
                     <div class="step-heading">
                         <h3 id="institutionHeading">Institution Details</h3>
-                        <p>Enter your institution details, then add 5–6 delegates.</p>
+                        <p>Enter your institution details, then add exactly 5 delegates.</p>
                     </div>
                     <div class="form-section">
                         <div class="field-grid">
@@ -544,17 +544,9 @@
                 <section class="form-step" aria-labelledby="delegationHeading">
                     <div class="step-heading">
                         <h3 id="delegationHeading">Delegation Details</h3>
-                        <p>Choose the delegation size, then open each delegate panel to enter and submit their details.</p>
+                        <p>Open each of the 5 delegate panels to enter and submit their details.</p>
                     </div>
                     <div class="field-grid">
-                        <div class="field">
-                            <label for="delegateCount">Total Number of Delegates <span class="required">*</span></label>
-                            <select id="delegateCount" name="delegateCount" aria-describedby="delegateCountHint" required>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                            </select>
-                            <small class="field-hint" id="delegateCountHint">Choose 5 or 6 delegates.</small>
-                        </div>
                         <div class="field full">
                             <div class="delegate-card-list" id="delegateDetails" aria-live="polite"></div>
                             <small class="field-hint" id="delegateProgress" aria-live="polite"></small>
@@ -683,7 +675,7 @@
         const SUPABASE_KEY = "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
         const authClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const delegateCountInput = document.getElementById("delegateCount");
+        const DELEGATE_COUNT = 5;
         const delegateDetailsContainer = document.getElementById("delegateDetails");
         const delegatePhoneWidgets = new Map();
 
@@ -862,12 +854,12 @@
 
         function updateDelegateProgress() {
             const completedCount = delegateDetailsContainer.querySelectorAll('.delegate-card[data-complete="true"]').length;
-            const targetCount = Number(delegateCountInput.value) || 5;
+            const targetCount = DELEGATE_COUNT;
             delegateProgress.textContent = `${completedCount} of ${targetCount} delegate details submitted`;
         }
 
         function renderDelegateCards() {
-            const targetCount = Number(delegateCountInput.value) || 5;
+            const targetCount = DELEGATE_COUNT;
             let cards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
 
             while (cards.length > targetCount) {
@@ -886,11 +878,6 @@
             if (!expandedCard && cards.length) cards[0].querySelector(".delegate-toggle").click();
             updateDelegateProgress();
         }
-
-        delegateCountInput.addEventListener("change", () => {
-            renderDelegateCards();
-            wizardStatus.textContent = "";
-        });
 
         const wizard = document.getElementById("delegationWizard");
         const wizardSteps = Array.from(wizard.querySelectorAll(".form-step"));
@@ -1049,7 +1036,7 @@
                 ]),
                 ...delegateSections,
                 addReviewSection("Delegation Details", [
-                    ["Number of Delegates", document.getElementById("delegateCount").value],
+                    ["Number of Delegates", delegateCards.length],
                     ["Additional Notes", document.getElementById("additionalNotes").value]
                 ]),
                 addReviewSection("Payment", [
