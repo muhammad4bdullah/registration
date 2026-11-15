@@ -338,8 +338,36 @@ body {
     padding: 18px;
     border-bottom: 1px solid var(--border);
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 15px;
+    flex-wrap: wrap;
+}
+
+.registration-type-switch {
+    display: inline-flex;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(8, 17, 28, 0.8);
+}
+
+.registration-type-button {
+    min-height: 38px;
+    padding: 8px 13px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.registration-type-button[aria-pressed="true"] {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white;
 }
 
 .search-box {
@@ -930,7 +958,7 @@ tbody tr:hover {
             </h1>
 
             <p>
-                Review, approve, or reject AMUN delegate applications.
+                Review, approve, or reject AMUN delegate and delegation applications.
             </p>
 
         </div>
@@ -950,7 +978,7 @@ tbody tr:hover {
             <div class="stat-card">
 
                 <div class="stat-label">
-                    Total Registrations
+                    <span id="totalLabel">Total Delegates</span>
                 </div>
 
                 <div
@@ -1020,11 +1048,16 @@ tbody tr:hover {
 
             <div class="table-header">
 
+                <div class="registration-type-switch" role="group" aria-label="Registration type">
+                    <button class="registration-type-button" type="button" data-registration-type="delegates" aria-pressed="true">Delegates</button>
+                    <button class="registration-type-button" type="button" data-registration-type="delegations" aria-pressed="false">Delegations</button>
+                </div>
+
                 <input
                     id="searchBox"
                     class="search-box"
                     type="text"
-                    placeholder="Search name, email, phone, committee..."
+                    placeholder="Search delegate name, email, phone, committee..."
                 >
 
             </div>
@@ -1034,7 +1067,7 @@ tbody tr:hover {
 
                 <table>
 
-                    <thead>
+                    <thead id="registrationTableHead">
 
                         <tr>
 
@@ -1188,8 +1221,17 @@ const dashboardError =
 const registrationTable =
     document.getElementById("registrationTable");
 
+const registrationTableHead =
+    document.getElementById("registrationTableHead");
+
 const searchBox =
     document.getElementById("searchBox");
+
+const registrationTypeButtons =
+    Array.from(document.querySelectorAll("[data-registration-type]"));
+
+const totalLabel =
+    document.getElementById("totalLabel");
 
 const refreshBtn =
     document.getElementById("refreshBtn");
@@ -1228,6 +1270,8 @@ const closeModal =
 let allRegistrations = [];
 
 let selectedRegistration = null;
+
+let activeRegistrationType = "delegates";
 
 
 /* =====================================================
@@ -1393,6 +1437,13 @@ async function checkSession() {
 async function loadRegistrations() {
 
     hideDashboardError();
+    allRegistrations = [];
+    updateStats();
+
+    const tableName = activeRegistrationType === "delegations"
+        ? "delegations"
+        : "registrations";
+    const columnCount = activeRegistrationType === "delegations" ? 6 : 7;
 
 
     registrationTable.innerHTML = `
@@ -1400,10 +1451,10 @@ async function loadRegistrations() {
         <tr>
 
             <td
-                colspan="7"
+                colspan="${columnCount}"
                 style="text-align:center;padding:50px;color:#687386"
             >
-                Loading registrations...
+                Loading ${activeRegistrationType}...
             </td>
 
         </tr>
@@ -1416,7 +1467,7 @@ async function loadRegistrations() {
         error
     } =
         await db
-            .from("registrations")
+            .from(tableName)
             .select("*")
             .order(
                 "created_at",
@@ -1430,19 +1481,20 @@ async function loadRegistrations() {
 
         console.error(error);
 
-        showDashboardError(
-            "Database access denied. Make sure this account is registered as an AMUN administrator."
-        );
+        const errorMessage = activeRegistrationType === "delegations" && error.code === "PGRST205"
+            ? "The delegations table is missing. Run supabase-delegation-schema.sql in Supabase SQL Editor."
+            : "Database access denied. Make sure this account is registered as an AMUN administrator.";
+        showDashboardError(errorMessage);
 
         registrationTable.innerHTML = `
 
             <tr>
 
                 <td
-                    colspan="7"
+                    colspan="${columnCount}"
                     style="text-align:center;padding:50px;color:#c93636"
                 >
-                    Unable to load registrations.
+                    Unable to load ${activeRegistrationType}.
                 </td>
 
             </tr>
@@ -1462,6 +1514,44 @@ async function loadRegistrations() {
     filterRegistrations();
 
     return true;
+}
+
+function updateRegistrationTypeUI() {
+    const isDelegationsView = activeRegistrationType === "delegations";
+    registrationTypeButtons.forEach(button => {
+        button.setAttribute(
+            "aria-pressed",
+            String(button.dataset.registrationType === activeRegistrationType)
+        );
+    });
+
+    totalLabel.textContent = isDelegationsView ? "Total Delegations" : "Total Delegates";
+    searchBox.placeholder = isDelegationsView
+        ? "Search institution, head delegate, student, email..."
+        : "Search delegate name, email, phone, committee...";
+
+    registrationTableHead.innerHTML = isDelegationsView
+        ? `
+            <tr>
+                <th>Institution</th>
+                <th>Head Delegate</th>
+                <th>Delegates</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Submitted</th>
+            </tr>
+        `
+        : `
+            <tr>
+                <th>Delegate</th>
+                <th>Contact</th>
+                <th>Committee 1</th>
+                <th>Committee 2</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Submitted</th>
+            </tr>
+        `;
 }
 
 
@@ -1509,15 +1599,17 @@ function renderTable(rows) {
 
     if (!rows.length) {
 
+        const columnCount = activeRegistrationType === "delegations" ? 6 : 7;
+
         registrationTable.innerHTML = `
 
             <tr>
 
                 <td
-                    colspan="7"
+                    colspan="${columnCount}"
                     style="text-align:center;padding:50px;color:#687386"
                 >
-                    No registrations found.
+                    No ${activeRegistrationType} found.
                 </td>
 
             </tr>
@@ -1527,6 +1619,37 @@ function renderTable(rows) {
         return;
     }
 
+    if (activeRegistrationType === "delegations") {
+        registrationTable.innerHTML = rows.map(row => {
+            const status = String(row.status || "Pending");
+            const statusClass = status.toLowerCase();
+            const delegateCount = Number(row.delegates_count) || (Array.isArray(row.delegates) ? row.delegates.length : 0);
+
+            return `
+                <tr onclick="openDetails('${escapeAttribute(row.id)}')">
+                    <td>
+                        <span class="delegate-name">${escapeHTML(row.institution_name || "Unnamed institution")}</span><br>
+                        ${escapeHTML([row.city, row.country].filter(Boolean).join(", "))}
+                    </td>
+                    <td>
+                        ${escapeHTML(row.head_delegate_name || "—")}<br>
+                        ${escapeHTML(row.head_delegate_email || "")}<br>
+                        ${escapeHTML(row.head_delegate_phone || "")}
+                    </td>
+                    <td>${delegateCount} students</td>
+                    <td><span class="status ${statusClass}">${escapeHTML(status)}</span></td>
+                    <td>
+                        <div class="actions" onclick="event.stopPropagation()">
+                            <button class="approve-btn" onclick="changeStatus('${escapeAttribute(row.id)}','Approved')" ${statusClass === "approved" ? "disabled" : ""}>Approve</button>
+                            <button class="reject-btn" onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')" ${statusClass === "rejected" ? "disabled" : ""}>Reject</button>
+                        </div>
+                    </td>
+                    <td>${formatDate(row.created_at)}</td>
+                </tr>
+            `;
+        }).join("");
+        return;
+    }
 
     registrationTable.innerHTML =
         rows.map(
@@ -1634,6 +1757,19 @@ searchBox.addEventListener(
     filterRegistrations
 );
 
+registrationTypeButtons.forEach(button => {
+    button.addEventListener("click", async () => {
+        const nextType = button.dataset.registrationType;
+        if (nextType === activeRegistrationType) return;
+
+        closeDetails();
+        activeRegistrationType = nextType;
+        searchBox.value = "";
+        updateRegistrationTypeUI();
+        await loadRegistrations();
+    });
+});
+
 
 function filterRegistrations() {
 
@@ -1657,24 +1793,47 @@ function filterRegistrations() {
         allRegistrations.filter(
             row => {
 
-                const searchable = [
+                const delegateValues = Array.isArray(row.delegates)
+                    ? row.delegates.flatMap(delegate => [
+                        delegate.full_name,
+                        delegate.email,
+                        delegate.phone_number,
+                        delegate.cnic_or_passport,
+                        delegate.committee_1,
+                        delegate.committee_2
+                    ])
+                    : [];
+                const searchable = activeRegistrationType === "delegations"
+                    ? [
+                        row.institution_name,
+                        row.country,
+                        row.city,
+                        row.head_delegate_name,
+                        row.head_delegate_email,
+                        row.head_delegate_phone,
+                        row.delegates_count,
+                        row.additional_notes,
+                        row.status,
+                        ...delegateValues
+                    ]
+                    : [
+                        row.full_name,
+                        row.email,
+                        row.phone,
+                        row.cnic_b_form,
+                        row.committee_1,
+                        row.committee_2,
+                        row.preferred_personality_country,
+                        row.status
+                    ];
 
-                    row.full_name,
-                    row.email,
-                    row.phone,
-                    row.cnic_b_form,
-                    row.committee_1,
-                    row.committee_2,
-                    row.preferred_personality_country,
-                    row.status
-
-                ]
+                const normalizedSearchable = searchable
                 .filter(Boolean)
                 .join(" ")
                 .toLowerCase();
 
 
-                return searchable.includes(query);
+                return normalizedSearchable.includes(query);
 
             }
         );
@@ -1690,15 +1849,13 @@ function filterRegistrations() {
 ===================================================== */
 
 async function changeStatus(
-    email,
+    identifier,
     newStatus
 ) {
 
-    const row =
-        allRegistrations.find(
-            item =>
-                item.email === email
-        );
+    const isDelegation = activeRegistrationType === "delegations";
+    const rowIdentifier = isDelegation ? "id" : "email";
+    const row = allRegistrations.find(item => item[rowIdentifier] === identifier);
 
 
     if (!row) {
@@ -1714,7 +1871,7 @@ async function changeStatus(
 
     const confirmed =
         confirm(
-            `Are you sure you want to ${action} ${row.full_name}?`
+            `Are you sure you want to ${action} ${isDelegation ? `${row.institution_name} delegation` : row.full_name}?`
         );
 
 
@@ -1727,13 +1884,13 @@ async function changeStatus(
         error
     } =
         await db
-            .from("registrations")
+            .from(isDelegation ? "delegations" : "registrations")
             .update({
                 status: newStatus
             })
             .eq(
-                "email",
-                email
+                rowIdentifier,
+                identifier
             );
 
 
@@ -1768,10 +1925,7 @@ async function changeStatus(
        refresh it too.
     */
 
-    if (
-        selectedRegistration &&
-        selectedRegistration.email === email
-    ) {
+    if (selectedRegistration && selectedRegistration[rowIdentifier] === identifier) {
 
         selectedRegistration.status =
             newStatus;
@@ -1788,13 +1942,10 @@ async function changeStatus(
    DETAILS MODAL
 ===================================================== */
 
-function openDetails(email) {
+function openDetails(identifier) {
 
-    const row =
-        allRegistrations.find(
-            item =>
-                item.email === email
-        );
+    const rowIdentifier = activeRegistrationType === "delegations" ? "id" : "email";
+    const row = allRegistrations.find(item => item[rowIdentifier] === identifier);
 
 
     if (!row) {
@@ -1814,7 +1965,95 @@ function openDetails(email) {
 }
 
 
+function showDelegationDetails(row) {
+    modalTitle.textContent = `${row.institution_name || "Delegation"} Details`;
+    const status = String(row.status || "Pending");
+    const delegates = Array.isArray(row.delegates) ? row.delegates : [];
+    const delegateSections = delegates.map((delegate, index) => `
+        <div class="detail-section">
+            <h3>Delegate ${index + 1}: ${escapeHTML(delegate.full_name || "Unnamed")}</h3>
+            <div class="detail-grid">
+                ${detail("Gender", delegate.gender)}
+                ${detail("CNIC / Passport", delegate.cnic_or_passport)}
+                ${detail("Date of Birth", delegate.date_of_birth)}
+                ${detail("Phone", delegate.phone_number)}
+                ${detail("Email", delegate.email)}
+                ${detail("First Preference", delegate.committee_1)}
+                ${detail("Second Preference", delegate.committee_2)}
+            </div>
+        </div>
+    `).join("");
+
+    modalBody.innerHTML = `
+        <div class="detail-section">
+            <h3>Institution</h3>
+            <div class="detail-grid">
+                ${detail("Institution", row.institution_name)}
+                ${detail("Country", row.country)}
+                ${detail("City", row.city)}
+                ${detail("Number of Delegates", row.delegates_count)}
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Head Delegate</h3>
+            <div class="detail-grid">
+                ${detail("Name", row.head_delegate_name)}
+                ${detail("Email", row.head_delegate_email)}
+                ${detail("Phone", row.head_delegate_phone)}
+            </div>
+        </div>
+
+        ${delegateSections}
+
+        <div class="detail-section">
+            <h3>Additional Notes &amp; Payment</h3>
+            <div class="detail-grid">
+                ${detail("Additional Notes", row.additional_notes, true)}
+                <div class="detail-item detail-wide payment-proof-detail">
+                    <div class="detail-label">Proof of Payment</div>
+                    <div class="detail-value" id="delegationPaymentProofLink">
+                        ${row.payment_proof_path ? "Preparing secure link…" : "Not provided"}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Application Status</h3>
+            <div class="detail-grid">
+                ${detail("Current Status", status)}
+                ${detail("Submitted", formatDate(row.created_at))}
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="modal-approve" onclick="changeStatus('${escapeAttribute(row.id)}','Approved')" ${status.toLowerCase() === "approved" ? "disabled" : ""}>
+                ✓ Approve Delegation
+            </button>
+            <button class="modal-reject" onclick="changeStatus('${escapeAttribute(row.id)}','Rejected')" ${status.toLowerCase() === "rejected" ? "disabled" : ""}>
+                ✕ Reject Delegation
+            </button>
+        </div>
+    `;
+
+    if (row.payment_proof_path) {
+        loadSecureDocumentLink(
+            "payment-proofs",
+            "delegationPaymentProofLink",
+            row.payment_proof_path,
+            "delegation payment proof"
+        );
+    }
+}
+
+
 function showRegistrationDetails(row) {
+
+    if (activeRegistrationType === "delegations") {
+        showDelegationDetails(row);
+        return;
+    }
 
     modalTitle.textContent =
         row.full_name || "Registration Details";
@@ -2365,6 +2604,7 @@ function formatDate(value) {
    START
 ===================================================== */
 
+updateRegistrationTypeUI();
 checkSession();
 
 </script>

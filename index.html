@@ -2260,10 +2260,10 @@
                     </a>
 
                     <a
-                        href="#committees"
-                        class="secondary-button"
+                        href="delegation.html"
+                        class="primary-button"
                     >
-                        View Committees
+                        Register as a Delegation
                     </a>
 
                 </div>
@@ -2738,10 +2738,13 @@
         const registrationLinks = [
             ...document.querySelectorAll('a[href="registration.html"]')
         ];
+        const delegationLinks = [
+            ...document.querySelectorAll('a[href="delegation.html"]')
+        ];
 
         let currentUser = null;
         let authMode = "signin";
-        let continueToRegistration = false;
+        let continueTo = "";
 
         const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
             "member1@mun.com": "m10abdullah09@gmail.com",
@@ -2768,8 +2771,12 @@
                 signingUp ? "Create your account" : "Welcome back";
             document.getElementById("authDescription").textContent =
                 signingUp
-                    ? "Create an account to register as an AMUN delegate."
-                    : "Sign in to continue to delegate registration.";
+                    ? continueTo === "delegation"
+                        ? "Create an account to continue to delegation registration."
+                        : "Create an account to register as an AMUN delegate."
+                    : continueTo === "delegation"
+                        ? "Sign in to continue to delegation registration."
+                        : "Sign in to continue to delegate registration.";
             authSubmit.textContent = signingUp ? "Sign up" : "Sign in";
             authSwitch.textContent = signingUp
                 ? "Already have an account? Sign in"
@@ -2785,8 +2792,8 @@
             setAuthStatus("");
         }
 
-        function openAuthDialog(mode = "signin", registerAfterAuth = false) {
-            continueToRegistration = registerAfterAuth;
+        function openAuthDialog(mode = "signin", destination = "") {
+            continueTo = destination === true ? "registration" : destination;
             setAuthMode(mode);
             authOverlay.hidden = false;
             document.body.style.overflow = "hidden";
@@ -2796,7 +2803,7 @@
         function closeAuthDialog() {
             authOverlay.hidden = true;
             document.body.style.overflow = "";
-            continueToRegistration = false;
+            continueTo = "";
         }
 
         function getUserInitials(user) {
@@ -3073,7 +3080,7 @@
             }
         });
 
-        async function goToRegistration() {
+        async function goToProtectedPage(destination) {
             const { data, error } = await authClient.auth.getSession();
             if (error) {
                 setAuthStatus(`Could not check your sign-in: ${error.message}`, true);
@@ -3081,12 +3088,12 @@
             }
 
             if (data.session?.user?.email) {
-                window.location.href = "registration.html";
+                window.location.href = `${destination}.html`;
                 return;
             }
 
-            openAuthDialog("signin", true);
-            setAuthStatus("Sign in or create an account to register.");
+            openAuthDialog("signin", destination);
+            setAuthStatus(`Sign in or create an account to continue to ${destination} registration.`);
         }
 
         authSwitch.addEventListener("click", () => {
@@ -3102,8 +3109,8 @@
                 redirectUrl.search = "";
                 redirectUrl.hash = "";
 
-                if (continueToRegistration) {
-                    redirectUrl.searchParams.set("next", "registration");
+                if (continueTo) {
+                    redirectUrl.searchParams.set("next", continueTo);
                 }
 
                 const { error } = await authClient.auth.signInWithOAuth({
@@ -3137,17 +3144,22 @@
             }
         });
 
-        registrationLinks.forEach(link => {
-            link.addEventListener("click", event => {
-                event.preventDefault();
-                document.getElementById("navLinks").classList.remove("open");
-                goToRegistration().catch(error => {
-                    console.error("Registration navigation error:", error);
-                    openAuthDialog("signin", true);
-                    setAuthStatus(`Could not open registration: ${error.message}`, true);
+        function protectDestinationLinks(links, destination) {
+            links.forEach(link => {
+                link.addEventListener("click", event => {
+                    event.preventDefault();
+                    document.getElementById("navLinks").classList.remove("open");
+                    goToProtectedPage(destination).catch(error => {
+                        console.error(`${destination} navigation error:`, error);
+                        openAuthDialog("signin", destination);
+                        setAuthStatus(`Could not open ${destination} registration: ${error.message}`, true);
+                    });
                 });
             });
-        });
+        }
+
+        protectDestinationLinks(registrationLinks, "registration");
+        protectDestinationLinks(delegationLinks, "delegation");
 
         authForm.addEventListener("submit", async event => {
             event.preventDefault();
@@ -3156,7 +3168,12 @@
 
             const email = authEmail.value.trim().toLowerCase();
             const password = authPassword.value;
-            const redirectToRegistration = continueToRegistration;
+            const redirectDestination = continueTo;
+
+            const emailRedirectUrl = new URL("index.html", window.location.href);
+            if (redirectDestination) {
+                emailRedirectUrl.searchParams.set("next", redirectDestination);
+            }
 
             try {
                 if (authMode === "signup") {
@@ -3164,7 +3181,7 @@
                         email,
                         password,
                         options: {
-                            emailRedirectTo: `${window.location.origin}/index.html`
+                            emailRedirectTo: emailRedirectUrl.toString()
                         }
                     });
 
@@ -3194,8 +3211,8 @@
                 }
 
                 closeAuthDialog();
-                if (redirectToRegistration) {
-                    window.location.href = "registration.html";
+                if (redirectDestination) {
+                    window.location.href = `${redirectDestination}.html`;
                 }
             } catch (error) {
                 console.error("Account authentication error:", error);
@@ -3214,19 +3231,21 @@
                 updateAccountUI(data.session?.user || null);
 
                 const params = new URLSearchParams(window.location.search);
+                const requestedDestination = ["registration", "delegation"].includes(params.get("next"))
+                    ? params.get("next")
+                    : "";
                 const oauthError = params.get("error");
                 if (oauthError) {
                     const errorCode = params.get("error_code");
                     const errorDescription = params.get("error_description");
-                    const retryRegistration =
-                        params.get("next") === "registration" ||
-                        params.get("auth") === "required";
+                    const retryDestination = requestedDestination ||
+                        (params.get("auth") === "required" ? "registration" : "");
                     const cleanUrl = new URL(window.location.href);
                     cleanUrl.search = "";
                     cleanUrl.hash = "";
                     window.history.replaceState({}, "", cleanUrl.toString());
 
-                    openAuthDialog("signin", retryRegistration);
+                    openAuthDialog("signin", retryDestination);
                     setAuthStatus(
                         errorCode === "bad_oauth_state"
                             ? "Google sign-in could not be verified. Start Google sign-in again from this page. If it keeps happening, check the Supabase Site URL and Google callback configuration."
@@ -3238,24 +3257,26 @@
                     return;
                 }
 
-                if (
-                    data.session?.user?.email &&
-                    params.get("next") === "registration"
-                ) {
-                    window.location.replace("registration.html");
+                if (data.session?.user?.email && requestedDestination) {
+                    window.location.replace(`${requestedDestination}.html`);
                     return;
                 }
 
                 if (params.get("auth") === "required") {
-                    openAuthDialog("signin", params.get("next") === "registration");
-                    setAuthStatus("Sign in or create an account to register.");
+                    const destination = requestedDestination || "registration";
+                    openAuthDialog("signin", destination);
+                    setAuthStatus(`Sign in or create an account to continue to ${destination} registration.`);
                 }
             })
             .catch(error => {
                 console.error("Could not restore account session:", error);
                 updateAccountUI(null);
                 if (new URLSearchParams(window.location.search).get("auth") === "required") {
-                    openAuthDialog("signin", true);
+                    const params = new URLSearchParams(window.location.search);
+                    const destination = ["registration", "delegation"].includes(params.get("next"))
+                        ? params.get("next")
+                        : "registration";
+                    openAuthDialog("signin", destination);
                     setAuthStatus(`Could not restore your sign-in: ${error.message}`, true);
                 }
             });
