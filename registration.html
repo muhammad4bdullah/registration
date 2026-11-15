@@ -1143,12 +1143,7 @@ body {
 
     </div>
 
-    <div class="registration-pause-notice" role="status">
-        <strong>Registration temporarily paused</strong>
-        <p>We are verifying our data-protection settings. No registration information or documents can be submitted from this page right now.</p>
-    </div>
-
-    <div class="form-card tilt-card" hidden>
+    <div class="form-card tilt-card">
 
         <!-- STEPS -->
 
@@ -1702,7 +1697,6 @@ const publicDb = createClient(
 let currentStep = 0;
 let registrationSubmissionInProgress = false;
 let authenticatedEmail = "";
-const REGISTRATION_PAUSED = true;
 
 const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
     "member1@mun.com": "m10abdullah09@gmail.com",
@@ -2030,11 +2024,6 @@ async function validateCurrentStep() {
 ====================================================== */
 
 async function nextStep() {
-
-    if (REGISTRATION_PAUSED) {
-        return;
-    }
-
     if (!await validateCurrentStep()) {
         return;
     }
@@ -2224,11 +2213,6 @@ function createReview() {
 ====================================================== */
 
 async function submitRegistration() {
-
-    if (REGISTRATION_PAUSED) {
-        return;
-    }
-
     errorBox.style.display = "none";
     errorBox.textContent = "";
 
