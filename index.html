@@ -1944,6 +1944,13 @@
             color: var(--text);
         }
 
+        .auth-captcha {
+            display: flex;
+            justify-content: center;
+            min-height: 65px;
+            margin-top: 16px;
+        }
+
         .auth-submit {
             margin-top: 20px;
             background: linear-gradient(135deg, #168b58, #0b5f3b);
@@ -2122,6 +2129,7 @@
                     required
                 >
 
+                <div class="auth-captcha" id="authCaptcha" role="group" aria-label="Human verification"></div>
                 <button class="auth-submit" id="authSubmit" type="submit">Sign in</button>
                 <button class="auth-google" id="googleSignInButton" type="button">
                     <svg class="auth-google-mark" viewBox="0 0 48 48" aria-hidden="true">
@@ -2743,6 +2751,7 @@
         const googleSignInButton = document.getElementById("googleSignInButton");
         const authSwitch = document.getElementById("authSwitch");
         const authStatus = document.getElementById("authStatus");
+        const authCaptcha = document.getElementById("authCaptcha");
         const registrationLinks = [
             ...document.querySelectorAll('a[href="registration.html"]')
         ];
@@ -2753,6 +2762,11 @@
         let currentUser = null;
         let authMode = "signin";
         let continueTo = "";
+        let captchaToken = "";
+        let turnstileScriptPromise = null;
+        let turnstileWidgetId = null;
+
+        const TURNSTILE_SITE_KEY = "0x4AAAAAAGCGGsvAcJvgThjW";
 
         const OFFICIAL_EMAIL_BY_MEMBER_LOGIN = {
             "member1@mun.com": "m10abdullah09@gmail.com",
@@ -2770,6 +2784,78 @@
         function setAuthStatus(message, isError = false) {
             authStatus.textContent = message;
             authStatus.classList.toggle("error", isError);
+        }
+
+        function loadTurnstile() {
+            if (window.turnstile) {
+                return Promise.resolve(window.turnstile);
+            }
+
+            if (!turnstileScriptPromise) {
+                turnstileScriptPromise = new Promise((resolve, reject) => {
+                    const script = document.createElement("script");
+                    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+                    script.async = true;
+                    script.defer = true;
+                    script.onload = () => {
+                        if (window.turnstile) {
+                            resolve(window.turnstile);
+                        } else {
+                            reject(new Error("Cloudflare Turnstile did not initialize."));
+                        }
+                    };
+                    script.onerror = () => {
+                        script.remove();
+                        reject(new Error("Cloudflare Turnstile could not be loaded."));
+                    };
+                    document.head.appendChild(script);
+                }).catch(error => {
+                    turnstileScriptPromise = null;
+                    throw error;
+                });
+            }
+
+            return turnstileScriptPromise;
+        }
+
+        function resetAuthCaptcha() {
+            captchaToken = "";
+            if (window.turnstile && turnstileWidgetId !== null) {
+                window.turnstile.reset(turnstileWidgetId);
+            }
+        }
+
+        async function initializeAuthCaptcha() {
+            try {
+                const turnstile = await loadTurnstile();
+                if (authOverlay.hidden) {
+                    return;
+                }
+
+                if (turnstileWidgetId === null) {
+                    turnstileWidgetId = turnstile.render(authCaptcha, {
+                        sitekey: TURNSTILE_SITE_KEY,
+                        theme: "auto",
+                        callback: token => {
+                            captchaToken = token;
+                            setAuthStatus("");
+                        },
+                        "expired-callback": () => {
+                            captchaToken = "";
+                            setAuthStatus("Security check expired. Please complete it again.", true);
+                        },
+                        "error-callback": () => {
+                            captchaToken = "";
+                            setAuthStatus("Security check failed. Please reload the page and try again.", true);
+                        }
+                    });
+                } else {
+                    resetAuthCaptcha();
+                }
+            } catch (error) {
+                console.error("Could not initialize Cloudflare Turnstile:", error);
+                setAuthStatus("Human verification could not load. Please reload the page and try again.", true);
+            }
         }
 
         function setAuthMode(mode) {
@@ -2805,6 +2891,7 @@
             setAuthMode(mode);
             authOverlay.hidden = false;
             document.body.style.overflow = "hidden";
+            initializeAuthCaptcha();
             authEmail.focus();
         }
 
@@ -2812,6 +2899,7 @@
             authOverlay.hidden = true;
             document.body.style.overflow = "";
             continueTo = "";
+            resetAuthCaptcha();
         }
 
         function getUserInitials(user) {
@@ -3106,6 +3194,7 @@
 
         authSwitch.addEventListener("click", () => {
             setAuthMode(authMode === "signin" ? "signup" : "signin");
+            resetAuthCaptcha();
         });
 
         googleSignInButton.addEventListener("click", async () => {
@@ -3171,11 +3260,17 @@
 
         authForm.addEventListener("submit", async event => {
             event.preventDefault();
+            if (!captchaToken) {
+                setAuthStatus("Complete the security check before continuing.", true);
+                return;
+            }
+
             authSubmit.disabled = true;
             authSubmit.textContent = authMode === "signup" ? "Creating account..." : "Signing in...";
 
             const email = authEmail.value.trim().toLowerCase();
             const password = authPassword.value;
+            const captchaTokenForRequest = captchaToken;
             const redirectDestination = continueTo;
 
             const emailRedirectUrl = new URL("index.html", window.location.href);
@@ -3189,7 +3284,8 @@
                         email,
                         password,
                         options: {
-                            emailRedirectTo: emailRedirectUrl.toString()
+                            emailRedirectTo: emailRedirectUrl.toString(),
+                            captchaToken: captchaTokenForRequest
                         }
                     });
 
@@ -3208,7 +3304,10 @@
                 } else {
                     const { data, error } = await authClient.auth.signInWithPassword({
                         email,
-                        password
+                        password,
+                        options: {
+                            captchaToken: captchaTokenForRequest
+                        }
                     });
 
                     if (error) {
@@ -3226,6 +3325,7 @@
                 console.error("Account authentication error:", error);
                 setAuthStatus(error.message, true);
             } finally {
+                resetAuthCaptcha();
                 authSubmit.disabled = false;
                 authSubmit.textContent = authMode === "signup" ? "Sign up" : "Sign in";
             }
