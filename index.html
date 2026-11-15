@@ -2131,7 +2131,7 @@
 
                 <div class="auth-captcha" id="authCaptcha" role="group" aria-label="Human verification"></div>
                 <button class="auth-submit" id="authSubmit" type="submit">Sign in</button>
-                <button class="auth-google" id="googleSignInButton" type="button">
+                <button class="auth-google" id="googleSignInButton" type="button" disabled>
                     <svg class="auth-google-mark" viewBox="0 0 48 48" aria-hidden="true">
                         <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"/>
                         <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44Z"/>
@@ -2820,6 +2820,7 @@
 
         function resetAuthCaptcha() {
             captchaToken = "";
+            googleSignInButton.disabled = true;
             if (window.turnstile && turnstileWidgetId !== null) {
                 window.turnstile.reset(turnstileWidgetId);
             }
@@ -2838,14 +2839,17 @@
                         theme: "auto",
                         callback: token => {
                             captchaToken = token;
+                            googleSignInButton.disabled = false;
                             setAuthStatus("");
                         },
                         "expired-callback": () => {
                             captchaToken = "";
+                            googleSignInButton.disabled = true;
                             setAuthStatus("Security check expired. Please complete it again.", true);
                         },
                         "error-callback": () => {
                             captchaToken = "";
+                            googleSignInButton.disabled = true;
                             setAuthStatus("Security check failed. Please reload the page and try again.", true);
                         }
                     });
@@ -3198,6 +3202,12 @@
         });
 
         googleSignInButton.addEventListener("click", async () => {
+            if (!captchaToken) {
+                googleSignInButton.disabled = true;
+                setAuthStatus("Complete the security check before continuing.", true);
+                return;
+            }
+
             googleSignInButton.disabled = true;
             setAuthStatus("Connecting to Google...");
 
@@ -3223,7 +3233,7 @@
             } catch (error) {
                 console.error("Google sign-in error:", error);
                 setAuthStatus(`Could not start Google sign-in: ${error.message}`, true);
-                googleSignInButton.disabled = false;
+                googleSignInButton.disabled = !captchaToken;
             }
         });
 
