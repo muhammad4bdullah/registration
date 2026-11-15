@@ -1917,6 +1917,12 @@ function showDelegationDetails(row) {
                 ${detail("Date of Birth", delegate.date_of_birth)}
                 ${detail("Phone", delegate.phone_number)}
                 ${detail("Email", delegate.email)}
+                <div class="detail-item detail-wide payment-proof-detail">
+                    <div class="detail-label">Personal Photo</div>
+                    <div class="detail-value" id="delegatePersonalPhotoLink${index}">
+                        ${delegate.personal_photo_path ? "Preparing secure link…" : "Not available"}
+                    </div>
+                </div>
                 ${detail("Preferred Committee", delegate.committee_1)}
                 ${detail("Preferred Country", delegate.preferred_country)}
                 ${delegate.committee_2 ? detail("Legacy Second Committee Preference", delegate.committee_2) : ""}
@@ -1972,6 +1978,17 @@ function showDelegationDetails(row) {
         button.addEventListener("click", () => {
             changeStatus(row.id, button.dataset.statusAction);
         });
+    });
+
+    delegates.forEach((delegate, index) => {
+        if (delegate.personal_photo_path) {
+            loadSecureDocumentLink(
+                "personal-photos",
+                `delegatePersonalPhotoLink${index}`,
+                delegate.personal_photo_path,
+                `Delegate ${index + 1} personal photo`
+            );
+        }
     });
 
     if (row.payment_proof_path) {
@@ -2041,6 +2058,13 @@ function showRegistrationDetails(row) {
                     "Date of Birth",
                     row.dob
                 )}
+
+                <div class="detail-item detail-wide payment-proof-detail">
+                    <div class="detail-label">Personal Photo</div>
+                    <div class="detail-value" id="personalPhotoLink">
+                        ${row.personal_photo_path ? "Preparing secure link…" : "Not available"}
+                    </div>
+                </div>
 
                 <div class="detail-item detail-wide payment-proof-detail">
                     <div class="detail-label">B-Form / CNIC Photo</div>
@@ -2173,6 +2197,15 @@ function showRegistrationDetails(row) {
             "bFormImageLink",
             row.b_form_image_path,
             "B-Form / CNIC photo"
+        );
+    }
+
+    if (row.personal_photo_path) {
+        loadSecureDocumentLink(
+            "personal-photos",
+            "personalPhotoLink",
+            row.personal_photo_path,
+            "personal photo"
         );
     }
 

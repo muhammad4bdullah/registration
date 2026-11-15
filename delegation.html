@@ -336,6 +336,7 @@
         .payment-note { margin: 16px 0 0; color: var(--muted); font-size: 13px; }
         .payment-proof-field { margin-top: 24px; }
         .payment-proof-field input[type="file"] { padding: 8px; }
+        .delegate-photo-field input[type="file"] { padding: 8px; }
 
         .review-box { overflow: hidden; border: 1px solid rgba(216, 177, 106, 0.18); border-radius: 12px; background: rgba(4, 29, 22, 0.76); }
         .review-section + .review-section { border-top: 1px solid var(--border); }
@@ -634,13 +635,14 @@
                     <h3>Information we may collect</h3>
                     <ul>
                         <li>Name, email address, phone number and guardian contact details.</li>
+                        <li>Personal photos for participant identification and conference administration.</li>
                         <li>Registration and committee preference information.</li>
                         <li>Proof of payment and relevant event records.</li>
                     </ul>
                     <h3>How we use it</h3>
                     <p>Information is used to process delegate registration, maintain event records, contact participants, and ensure smooth operations for the conference.</p>
                     <h3>Data protection</h3>
-                    <p>We will handle personal data responsibly and store it securely using approved systems. Only necessary information will be accessed by authorized AMUN organizers.</p>
+                    <p>Delegate photos are collected for participant identification and conference administration. Photos and uploaded identity and payment documents are stored privately and accessed only by authorized AMUN organizers.</p>
                     <h3>Consent</h3>
                     <p>By submitting a registration form, participants consent to the processing of information necessary for delegate registration and conference administration.</p>
                     <h3>Changes</h3>
@@ -733,6 +735,12 @@
                             <label for="delegateEmail${index}">Email <span class="required">*</span></label>
                             <input id="delegateEmail${index}" name="delegateEmail${index}" type="email" maxlength="120" placeholder="Enter your email address" required>
                         </div>
+                        <div class="field full delegate-photo-field">
+                            <label for="delegatePhoto${index}">Personal Photo <span class="required">*</span></label>
+                            <input id="delegatePhoto${index}" name="delegatePhoto${index}" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" aria-describedby="delegatePhotoHint${index} delegatePhotoName${index}" required>
+                            <small class="field-hint" id="delegatePhotoHint${index}">Attach a clear, recent JPG or PNG photo of this delegate, up to 5 MB.</small>
+                            <small class="field-hint" id="delegatePhotoName${index}">No file selected.</small>
+                        </div>
                         <div class="field">
                             <label for="delegateCommitte1${index}">Preferred Committee <span class="required">*</span></label>
                             <select id="delegateCommitte1${index}" name="delegateCommitte1${index}" data-role="committee1" required>
@@ -758,6 +766,8 @@
             const cardStatus = card.querySelector(".delegate-card-status");
             const saveButton = card.querySelector(".save-delegate");
             const delegatePhoneInput = card.querySelector(`#delegatePhone${index}`);
+            const delegatePhotoInput = card.querySelector(`#delegatePhoto${index}`);
+            const delegatePhotoName = card.querySelector(`#delegatePhotoName${index}`);
             const delegatePhoneWidget = window.intlTelInput(delegatePhoneInput, {
                 initialCountry: "pk",
                 nationalMode: true,
@@ -808,6 +818,10 @@
                 field.addEventListener("change", markCardEdited);
             });
             delegatePhoneInput.addEventListener("countrychange", markCardEdited);
+            delegatePhotoInput.addEventListener("change", () => {
+                delegatePhotoInput.setCustomValidity("");
+                delegatePhotoName.textContent = delegatePhotoInput.files[0]?.name || "No file selected.";
+            });
 
             saveButton.addEventListener("click", async () => {
                 const fields = Array.from(body.querySelectorAll("input, select, textarea"));
@@ -818,6 +832,14 @@
                         field.focus();
                         return;
                     }
+                }
+
+                const delegatePhoto = delegatePhotoInput.files[0];
+                if (!isValidPersonalPhoto(delegatePhoto)) {
+                    delegatePhotoInput.setCustomValidity("Attach a JPG or PNG personal photo, up to 5 MB.");
+                    delegatePhotoInput.reportValidity();
+                    delegatePhotoInput.focus();
+                    return;
                 }
 
                 try {
@@ -844,6 +866,25 @@
             });
 
             return card;
+        }
+
+        function getPersonalPhotoContentType(file) {
+            const extension = file?.name.split(".").pop().toLowerCase();
+            return {
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                png: "image/png"
+            }[extension] || null;
+        }
+
+        function isValidPersonalPhoto(file) {
+            const contentType = file ? getPersonalPhotoContentType(file) : null;
+            return Boolean(
+                file &&
+                contentType &&
+                file.size <= 5 * 1024 * 1024 &&
+                (!file.type || file.type === contentType)
+            );
         }
 
         const delegateProgress = document.getElementById("delegateProgress");
@@ -1020,6 +1061,7 @@
                 ["Date of Birth", card.querySelector(`#delegateDob${index}`).value],
                 ["Phone Number", delegatePhoneWidgets.get(index).getNumber()],
                 ["Email", card.querySelector(`#delegateEmail${index}`).value],
+                ["Personal Photo", card.querySelector(`#delegatePhoto${index}`).files[0]?.name || ""],
                 ["Preferred Committee", card.querySelector(`#delegateCommitte1${index}`).value],
                 ["Preferred Country", card.querySelector(`#delegatePreferredCountry${index}`).value.trim()]
             ]));
@@ -1055,6 +1097,7 @@
                     date_of_birth: card.querySelector(`#delegateDob${index}`).value.trim(),
                     phone_number: delegatePhoneWidgets.get(index).getNumber(),
                     email: card.querySelector(`#delegateEmail${index}`).value.trim(),
+                    personal_photo_path: null,
                     committee_1: card.querySelector(`#delegateCommitte1${index}`).value,
                     preferred_country: card.querySelector(`#delegatePreferredCountry${index}`).value.trim()
                 };
@@ -1083,33 +1126,83 @@
 
             const payload = getDelegationPayload(user);
             const paymentProof = document.getElementById("paymentProof").files[0];
-            let uploadedProofPath = null;
+            const uploadedFiles = [];
+            const cleanupUploadedFiles = async () => {
+                for (const uploadedFile of uploadedFiles) {
+                    try {
+                        const { error: cleanupError } = await authClient.storage
+                            .from(uploadedFile.bucket)
+                            .remove([uploadedFile.path]);
+                        if (cleanupError) {
+                            console.error(`Could not remove unlinked ${uploadedFile.label}:`, cleanupError);
+                        }
+                    } catch (cleanupError) {
+                        console.error(`Could not remove unlinked ${uploadedFile.label}:`, cleanupError);
+                    }
+                }
+            };
 
-            if (paymentProof) {
-                const safeFileName = paymentProof.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-                uploadedProofPath = `delegations/${user.id}/${Date.now()}-${safeFileName}`;
-                const { error: uploadError } = await authClient.storage
-                    .from("payment-proofs")
-                    .upload(uploadedProofPath, paymentProof, {
-                        contentType: paymentProof.type || "application/octet-stream",
-                        upsert: false
+            try {
+                if (paymentProof) {
+                    const safeFileName = paymentProof.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                    const paymentProofPath = `delegations/${user.id}/${Date.now()}-${safeFileName}`;
+                    const { error: uploadError } = await authClient.storage
+                        .from("payment-proofs")
+                        .upload(paymentProofPath, paymentProof, {
+                            contentType: paymentProof.type || "application/octet-stream",
+                            upsert: false
+                        });
+
+                    if (uploadError) throw new Error(`Payment proof upload failed: ${uploadError.message}`);
+                    uploadedFiles.push({ bucket: "payment-proofs", path: paymentProofPath, label: "payment proof" });
+                    payload.payment_proof_path = paymentProofPath;
+                }
+
+                for (const [index, delegate] of payload.delegates.entries()) {
+                    const personalPhoto = document.getElementById(`delegatePhoto${index}`).files[0];
+                    const contentType = getPersonalPhotoContentType(personalPhoto);
+                    if (!isValidPersonalPhoto(personalPhoto) || !contentType) {
+                        throw new Error(`Attach a valid JPG or PNG personal photo for Delegate ${index + 1}, up to 5 MB.`);
+                    }
+
+                    const safeFileName = personalPhoto.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                    const photoPath = `delegations/${user.id}/personal-photos/${crypto.randomUUID()}-${safeFileName}`;
+                    const { error: uploadError } = await authClient.storage
+                        .from("personal-photos")
+                        .upload(photoPath, personalPhoto, {
+                            contentType,
+                            upsert: false
+                        });
+
+                    if (uploadError) {
+                        throw new Error(`Delegate ${index + 1} personal photo upload failed: ${uploadError.message}`);
+                    }
+
+                    uploadedFiles.push({
+                        bucket: "personal-photos",
+                        path: photoPath,
+                        label: `Delegate ${index + 1} personal photo`
                     });
-
-                if (uploadError) throw new Error(`Payment proof upload failed: ${uploadError.message}`);
-                payload.payment_proof_path = uploadedProofPath;
+                    delegate.personal_photo_path = photoPath;
+                }
+            } catch (error) {
+                await cleanupUploadedFiles();
+                throw error;
             }
 
-            const { error: insertError } = await authClient
-                .from("delegations")
-                .insert([payload]);
+            let insertError;
+            try {
+                const result = await authClient
+                    .from("delegations")
+                    .insert([payload]);
+                insertError = result.error;
+            } catch (error) {
+                console.error("Could not confirm the delegation insert; keeping uploaded files in case it completed.", error);
+                throw error;
+            }
 
             if (insertError) {
-                if (uploadedProofPath) {
-                    const { error: cleanupError } = await authClient.storage
-                        .from("payment-proofs")
-                        .remove([uploadedProofPath]);
-                    if (cleanupError) console.error("Could not remove unlinked payment proof:", cleanupError);
-                }
+                await cleanupUploadedFiles();
                 throw insertError;
             }
         }

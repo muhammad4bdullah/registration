@@ -1280,6 +1280,23 @@ body {
                             <small id="bFormImageName" class="field-hint">No file selected.</small>
                         </div>
 
+                        <div class="field">
+                            <label for="personalPhoto">
+                                Personal Photo <span class="required">*</span>
+                            </label>
+                            <input
+                                type="file"
+                                id="personalPhoto"
+                                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                                aria-describedby="personalPhotoHelp personalPhotoName"
+                                required
+                            >
+                            <small id="personalPhotoHelp" class="field-hint">
+                                Attach a clear, recent JPG or PNG photo of yourself, up to 5 MB.
+                            </small>
+                            <small id="personalPhotoName" class="field-hint">No file selected.</small>
+                        </div>
+
 
                         <div class="field">
 
@@ -1628,13 +1645,14 @@ body {
             <h3>Information we may collect</h3>
             <ul>
                 <li>Name, email address, phone number and guardian contact details.</li>
+                <li>Personal photos for participant identification and conference administration.</li>
                 <li>Registration and committee preference information.</li>
                 <li>Proof of payment and relevant event records.</li>
             </ul>
             <h3>How we use it</h3>
             <p>Information is used to process delegate registration, maintain event records, contact participants, and ensure smooth operations for the conference.</p>
             <h3>Data protection</h3>
-            <p>We will handle personal data responsibly and store it securely using approved systems. Only necessary information will be accessed by authorized AMUN organizers.</p>
+            <p>Personal photos are collected for participant identification and conference administration. Photos and uploaded identity and payment documents are stored privately and accessed only by authorized AMUN organizers.</p>
             <h3>Consent</h3>
             <p>By submitting a registration form, participants consent to the processing of information necessary for delegate registration and conference administration.</p>
             <h3>Changes</h3>
@@ -1810,6 +1828,14 @@ document
             file ? file.name : "No file selected.";
     });
 
+document
+    .getElementById("personalPhoto")
+    .addEventListener("change", event => {
+        const file = event.target.files[0];
+        document.getElementById("personalPhotoName").textContent =
+            file ? file.name : "No file selected.";
+    });
+
 function normalizeCnicBForm(value) {
     if (!/^[\d\s-]+$/.test(value)) {
         return null;
@@ -1982,6 +2008,20 @@ async function validateCurrentStep() {
             alert("Attach a JPG or PNG image of your B-Form / CNIC, up to 5 MB.");
             return false;
         }
+
+        const personalPhotoInput = document.getElementById("personalPhoto");
+        const personalPhoto = personalPhotoInput.files[0];
+
+        if (
+            !personalPhoto ||
+            personalPhoto.size > 5 * 1024 * 1024 ||
+            (personalPhoto.type && !allowedImageTypes.includes(personalPhoto.type)) ||
+            !allowedImageExtensions.test(personalPhoto.name)
+        ) {
+            personalPhotoInput.focus();
+            alert("Attach a clear JPG or PNG personal photo, up to 5 MB.");
+            return false;
+        }
     }
 
 
@@ -2133,6 +2173,9 @@ function createReview() {
     const bFormImage =
         document.getElementById("bFormImage").files[0];
 
+    const personalPhoto =
+        document.getElementById("personalPhoto").files[0];
+
     const sections = [
 
         {
@@ -2144,6 +2187,7 @@ function createReview() {
                 ["Phone", getPhoneNumber("phone")],
                 ["CNIC / B-Form Number", document.getElementById("cnicBForm").value.trim()],
                 ["B-Form / CNIC Photo", bFormImage ? bFormImage.name : ""],
+                ["Personal Photo", personalPhoto ? personalPhoto.name : ""],
                 ["Gender", document.getElementById("gender").value],
                 ["Date of Birth", document.getElementById("dob").value]
             ]
@@ -2263,6 +2307,7 @@ async function submitRegistration() {
 
     let uploadedPaymentProofPath = null;
     let uploadedBFormImagePath = null;
+    let uploadedPersonalPhotoPath = null;
     let registrationInsertInFlight = false;
     let registrationInserted = false;
 
@@ -2295,6 +2340,9 @@ async function submitRegistration() {
         const bFormImage =
             document.getElementById("bFormImage").files[0];
 
+        const personalPhoto =
+            document.getElementById("personalPhoto").files[0];
+
         const proofExtension =
             proofFile.name.split(".").pop().toLowerCase();
 
@@ -2303,6 +2351,8 @@ async function submitRegistration() {
             proofFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const safeBFormFileName =
             bFormImage.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const safePersonalPhotoFileName =
+            personalPhoto.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 
         const paymentProofPath =
             `registrations/${authenticatedUserId}/proofs/${uploadId}-${safeProofFileName}`;
@@ -2310,11 +2360,20 @@ async function submitRegistration() {
         const bFormImagePath =
             `registrations/${authenticatedUserId}/b-forms/${uploadId}-${safeBFormFileName}`;
 
+        const personalPhotoPath =
+            `registrations/${authenticatedUserId}/personal-photos/${uploadId}-${safePersonalPhotoFileName}`;
+
         const bFormImageContentType = {
             jpg: "image/jpeg",
             jpeg: "image/jpeg",
             png: "image/png"
         }[bFormImage.name.split(".").pop().toLowerCase()];
+
+        const personalPhotoContentType = {
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png"
+        }[personalPhoto.name.split(".").pop().toLowerCase()];
 
         const proofContentType = {
             jpg: "image/jpeg",
@@ -2355,6 +2414,22 @@ async function submitRegistration() {
         }
         uploadedBFormImagePath = bFormImagePath;
 
+        const { error: personalPhotoUploadError } =
+            await db
+                .storage
+                .from("personal-photos")
+                .upload(personalPhotoPath, personalPhoto, {
+                    contentType: personalPhotoContentType,
+                    upsert: false
+                });
+
+        if (personalPhotoUploadError) {
+            throw new Error(
+                `Personal photo upload failed: ${personalPhotoUploadError.message}`
+            );
+        }
+        uploadedPersonalPhotoPath = personalPhotoPath;
+
 
         const registrationData = {
 
@@ -2372,6 +2447,9 @@ async function submitRegistration() {
 
             b_form_image_path:
                 bFormImagePath,
+
+            personal_photo_path:
+                personalPhotoPath,
 
             gender:
                 document.getElementById("gender").value,
@@ -2471,7 +2549,8 @@ async function submitRegistration() {
         if (!registrationInsertInFlight && !registrationInserted) {
             const uploadedFiles = [
                 ["payment-proofs", uploadedPaymentProofPath, "payment proof"],
-                ["b-form-images", uploadedBFormImagePath, "B-Form / CNIC image"]
+                ["b-form-images", uploadedBFormImagePath, "B-Form / CNIC image"],
+                ["personal-photos", uploadedPersonalPhotoPath, "personal photo"]
             ];
 
             for (const [bucket, path, label] of uploadedFiles) {
