@@ -1741,6 +1741,7 @@ function filterRegistrations() {
                         delegate.phone_number,
                         delegate.cnic_or_passport,
                         delegate.committee_1,
+                        delegate.preferred_country,
                         delegate.committee_2
                     ])
                     : [];
@@ -1916,8 +1917,9 @@ function showDelegationDetails(row) {
                 ${detail("Date of Birth", delegate.date_of_birth)}
                 ${detail("Phone", delegate.phone_number)}
                 ${detail("Email", delegate.email)}
-                ${detail("First Preference", delegate.committee_1)}
-                ${detail("Second Preference", delegate.committee_2)}
+                ${detail("Preferred Committee", delegate.committee_1)}
+                ${detail("Preferred Country", delegate.preferred_country)}
+                ${delegate.committee_2 ? detail("Legacy Second Committee Preference", delegate.committee_2) : ""}
             </div>
         </div>
     `).join("");
