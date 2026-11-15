@@ -2406,7 +2406,7 @@ async function submitRegistration() {
 
         registrationInsertInFlight = true;
         const { error } =
-            await publicDb
+            await db
                 .from("registrations")
                 .insert([
                     registrationData

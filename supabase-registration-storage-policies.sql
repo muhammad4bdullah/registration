@@ -54,3 +54,22 @@ create policy "Registration users delete own documents"
             (bucket_id = 'b-form-images' and (storage.foldername(name))[3] = 'b-forms')
         )
     );
+
+grant insert on table public.registrations to authenticated;
+
+drop policy if exists "amun_temporary_pause_registrations_insert" on public.registrations;
+drop policy if exists "AMUN admin access guard" on public.registrations;
+
+create policy "AMUN admin access guard"
+    on public.registrations
+    as restrictive
+    for all
+    to authenticated
+    using (
+        lower(coalesce((select auth.jwt() ->> 'email'), '')) = 'registeration-team@mun.com'
+        or lower(btrim(email)) = amun_registration_email_for_current_user()
+    )
+    with check (
+        lower(coalesce((select auth.jwt() ->> 'email'), '')) = 'registeration-team@mun.com'
+        or lower(btrim(email)) = amun_registration_email_for_current_user()
+    );
