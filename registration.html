@@ -862,7 +862,6 @@ body {
     color: var(--text);
     background:
         radial-gradient(circle at 8% 12%, rgba(104, 13, 24, 0.24), transparent 28%),
-        radial-gradient(circle at 92% 78%, rgba(22, 139, 88, 0.12), transparent 30%),
         linear-gradient(180deg, #041d16 0%, #082b20 52%, #041d16 100%);
 }
 
@@ -1095,7 +1094,10 @@ body {
                 0 0 0 0 0.55
                 0 0 0 0 0.045
                 0 0 0 0 0.08
-                -0.2126 -0.7152 -0.0722 0 1" />
+                -0.2126 -0.7152 -0.0722 1 0" />
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="3" intercept="-0.75" />
+            </feComponentTransfer>
         </filter>
     </defs>
     <image href="world-map.webp" width="460" height="345" filter="url(#registration-red-map)" />

@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#06291e">
+    <meta name="description" content="Contact APSACS Model United Nations to register your school's delegation for AMUN 2026.">
+    <title>AMUN | Delegation Registration</title>
+    <link rel="icon" type="image/png" href="apsacs-logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/css/intlTelInput.css">
+    <style>
+        :root {
+            --bg: #06291e;
+            --bg-soft: #0a3527;
+            --panel: rgba(6, 38, 28, 0.92);
+            --panel-strong: rgba(8, 47, 34, 0.97);
+            --text: #f5ead2;
+            --muted: #c7c0a8;
+            --white: #fff8e9;
+            --green: #168b58;
+            --green-dark: #0b5f3b;
+            --gold: #d8b16a;
+            --danger: #e27678;
+            --border: rgba(216, 177, 106, 0.2);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.55;
+            background:
+                radial-gradient(circle at 8% 12%, rgba(104, 13, 24, 0.24), transparent 28%),
+                linear-gradient(180deg, #041d16 0%, #082b20 52%, #041d16 100%);
+        }
+
+        a { color: inherit; }
+
+        .theme-map {
+            position: fixed;
+            top: 50%;
+            right: -18%;
+            z-index: 0;
+            width: min(100vw, 1280px);
+            height: auto;
+            transform: translateY(-50%);
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            width: 100%;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(216, 177, 106, 0.22);
+            background: rgba(4, 29, 22, 0.9);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+            transition: 0.25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+            width: min(1180px, 92%);
+        }
+
+        .brand img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text strong {
+            display: block;
+            color: var(--white);
+            font-size: 17px;
+            letter-spacing: 0.3px;
+        }
+
+        .brand-text span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        main {
+            position: relative;
+            isolation: isolate;
+            width: min(980px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 120px 0 80px;
+        }
+
+        .intro { max-width: 720px; margin: 0 auto 34px; text-align: center; }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--white);
+            font-size: clamp(38px, 6vw, 58px);
+            line-height: 1.08;
+            text-shadow: 0 8px 28px rgba(216, 177, 106, 0.12);
+        }
+
+        .intro > p:last-child {
+            max-width: 650px;
+            margin: 16px auto 0;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .form-shell {
+            overflow: hidden;
+            border: 1px solid rgba(216, 177, 106, 0.2);
+            border-radius: 22px;
+            background: linear-gradient(150deg, rgba(10, 52, 38, 0.96), rgba(5, 32, 24, 0.97));
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 248, 233, 0.04);
+        }
+
+        .form-head {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(139, 30, 45, 0.12);
+        }
+
+        .form-head h2 { margin: 0; color: var(--white); font-size: 20px; }
+        .form-head p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+        .form-content { padding: 28px; }
+
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step-dot {
+            display: grid;
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(216, 177, 106, 0.12);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .step-dot.active { background: linear-gradient(135deg, #8b1e2d, #64111e); color: var(--white); box-shadow: 0 0 18px rgba(139, 30, 45, 0.3); }
+        .step-dot.completed { background: linear-gradient(135deg, #168b58, #0b5f3b); color: white; }
+        .step-line { width: 34px; height: 2px; background: rgba(216, 177, 106, 0.16); }
+        .step-line.active { background: linear-gradient(90deg, #d8b16a, #8b1e2d); }
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: stepIn 0.22s ease-out; }
+        @keyframes stepIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .step-heading { margin: 0 0 24px; }
+        .step-heading h3 { margin: 0 0 5px; color: var(--white); font-size: 23px; }
+        .step-heading p { margin: 0; color: var(--muted); font-size: 14px; }
+
+        .form-section + .form-section {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-heading { margin-bottom: 16px; }
+        .section-heading h3 { margin: 0; font-size: 17px; }
+        .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .field { min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: 700; }
+        .required { color: var(--danger); }
+
+        input, textarea, select {
+            width: 100%;
+            min-height: 46px;
+            padding: 13px 14px;
+            border: 1px solid rgba(216, 177, 106, 0.18);
+            border-radius: 12px;
+            outline: none;
+            background: rgba(4, 29, 22, 0.76);
+            color: var(--text);
+            font: inherit;
+            transition: 0.2s ease;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.2);
+        }
+
+        textarea { min-height: 120px; resize: vertical; }
+        input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(216, 177, 106, 0.1); }
+        input::placeholder, textarea::placeholder { color: #a99c7d; }
+        option { color: #10251a; }
+        .field-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+        .iti { width: 100%; }
+        .iti input[type="tel"] { width: 100%; min-height: 46px; }
+        .iti__country-list { border-color: var(--border); background: var(--panel-strong); color: var(--text); }
+        .iti__country.iti__highlight { background: rgba(22, 139, 88, 0.2); }
+        .iti__divider { border-color: var(--border); }
+        .iti__search-input { background: var(--bg); color: var(--text); }
+
+        .delegate-card-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .delegate-card {
+            padding: 0 18px 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(4, 29, 22, 0.58);
+        }
+
+        .delegate-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 60px;
+            margin: 0 -18px 18px;
+            padding: 10px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .delegate-card-header h4 { margin: 0; }
+        .delegate-card-heading { min-width: 0; }
+        .delegate-card-state { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+        .delegate-card[data-complete="true"] .delegate-card-state { color: var(--gold); }
+        .delegate-card-controls { display: flex; align-items: center; gap: 8px; }
+
+        .delegate-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-width: 42px;
+            min-height: 40px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: rgba(5, 36, 27, 0.82);
+            color: var(--text);
+            font: inherit;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .delegate-toggle:hover, .delegate-review:hover { border-color: var(--gold); }
+        .delegate-toggle-chevron {
+            width: 9px;
+            height: 9px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: translateY(-2px) rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+        .delegate-toggle[aria-expanded="true"] .delegate-toggle-chevron { transform: translateY(2px) rotate(225deg); }
+        .delegate-review {
+            min-height: 40px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: transparent;
+            color: var(--gold);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .delegate-card-body[hidden] { display: none; }
+        .delegate-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .delegate-card-status { min-height: 20px; margin: 8px 0 0; color: var(--gold); font-size: 12px; }
+
+        .delegate-card-header h4 {
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        .delegate-add-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .payment-details {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(4, 29, 22, 0.58);
+        }
+
+        .payment-details h4 { margin: 0 0 16px; color: var(--gold); font-size: 16px; }
+        .payment-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .payment-detail-grid span, .payment-detail-grid strong { display: block; }
+        .payment-detail-grid span { margin-bottom: 4px; color: var(--muted); font-size: 12px; }
+        .payment-detail-grid strong { color: var(--white); font-size: 14px; }
+        .payment-note { margin: 16px 0 0; color: var(--muted); font-size: 13px; }
+        .payment-proof-field { margin-top: 24px; }
+        .payment-proof-field input[type="file"] { padding: 8px; }
+
+        .review-box { overflow: hidden; border: 1px solid rgba(216, 177, 106, 0.18); border-radius: 12px; background: rgba(4, 29, 22, 0.76); }
+        .review-section + .review-section { border-top: 1px solid var(--border); }
+        .review-title { margin: 0; padding: 12px 16px; background: linear-gradient(135deg, rgba(120, 21, 34, 0.76), rgba(79, 12, 22, 0.76)); color: #d8b16a; font-size: 13px; font-weight: 800; }
+        .review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .review-item { min-width: 0; padding: 13px 16px; border-top: 1px solid rgba(216, 177, 106, 0.16); }
+        .review-item:nth-child(odd) { border-right: 1px solid rgba(216, 177, 106, 0.16); }
+        .review-label { margin-bottom: 4px; color: var(--muted); font-size: 11px; }
+        .review-value { overflow-wrap: anywhere; color: var(--white); font-size: 14px; }
+
+        .conduct-box {
+            margin-top: 24px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(4, 29, 22, 0.58);
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.65;
+        }
+        .conduct-box h4 { margin: 0 0 10px; color: var(--text); font-size: 17px; }
+        .conduct-box ul { margin: 0; padding-left: 22px; }
+        .conduct-box li + li { margin-top: 7px; }
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(4, 29, 22, 0.64);
+        }
+        .agreement input { width: auto; min-height: 0; margin: 4px 0 0; padding: 0; border: 0; border-radius: 3px; background: transparent; accent-color: var(--green); }
+        .agreement label { margin: 0; color: var(--text); font-size: 13px; font-weight: 400; line-height: 1.6; }
+        .agreement-links { margin: 9px 0 0 28px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+        .agreement-links a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+
+        .legal-dialog {
+            width: min(720px, calc(100% - 32px));
+            max-height: min(82vh, 760px);
+            padding: 0;
+            border: 1px solid rgba(216, 177, 106, 0.32);
+            border-radius: 20px;
+            color: var(--text);
+            background: linear-gradient(150deg, rgba(10, 52, 38, 0.99), rgba(5, 32, 24, 0.99));
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.62);
+        }
+        .legal-dialog::backdrop { background: rgba(1, 10, 7, 0.78); backdrop-filter: blur(8px); }
+        .legal-dialog[open] { display: flex; flex-direction: column; }
+        .legal-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 22px 24px 16px; border-bottom: 1px solid var(--border); }
+        .legal-dialog-header h2 { margin: 0; color: var(--white); font-size: 24px; }
+        .legal-dialog-close { flex: 0 0 auto; width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 10px; background: rgba(4, 29, 22, 0.76); color: var(--text); font: inherit; font-size: 23px; cursor: pointer; }
+        .legal-tabs { display: flex; gap: 8px; padding: 14px 24px 0; }
+        .legal-tab { padding: 9px 13px; border: 1px solid var(--border); border-radius: 9px; background: rgba(4, 29, 22, 0.66); color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .legal-tab[aria-selected="true"] { border-color: rgba(216, 177, 106, 0.55); background: rgba(139, 30, 45, 0.36); color: var(--white); }
+        .legal-content { max-height: calc(min(82vh, 760px) - 120px); overflow-y: auto; padding: 18px 20px 22px; color: var(--muted); font-size: 14px; }
+        .legal-panel h3 { margin: 20px 0 6px; color: var(--gold); font-size: 15px; }
+        .legal-panel p { margin: 0 0 12px; }
+        .legal-panel ul { margin: 0 0 12px; padding-left: 22px; }
+        .legal-panel[hidden] { display: none; }
+        .legal-dialog :focus-visible, .agreement-links a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+        .form-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 30px; }
+        .wizard-button { min-height: 46px; padding: 11px 20px; border: 1px solid transparent; border-radius: 9px; background: linear-gradient(135deg, #8b1e2d, #64111e); color: var(--white); font: inherit; font-weight: 700; cursor: pointer; box-shadow: 0 14px 26px rgba(74, 7, 16, 0.3); transition: 0.2s ease; }
+        .auth-gate-button { display: inline-flex; align-items: center; text-decoration: none; }
+        .wizard-button.secondary { border-color: rgba(216, 177, 106, 0.28); background: rgba(5, 36, 27, 0.82); color: var(--white); box-shadow: none; }
+        .wizard-button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        .wizard-button:not(.secondary):hover:not(:disabled) { background: linear-gradient(135deg, #a52a38, #741421); }
+        .wizard-button.secondary:hover:not(:disabled) { background: rgba(8, 47, 34, 0.96); }
+        .wizard-button:disabled { cursor: not-allowed; opacity: 0.6; }
+        .wizard-status { min-height: 22px; margin: 14px 0 0; color: var(--gold); font-size: 13px; }
+
+        .form-note {
+            margin-top: 24px;
+            padding: 16px 18px;
+            border-left: 3px solid var(--green);
+            background: rgba(22, 139, 88, 0.12);
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .form-note strong { color: var(--text); }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            main { width: calc(100% - 28px); padding: 111px 0 56px; }
+            .field-grid { grid-template-columns: 1fr; gap: 16px; }
+            .field.full { grid-column: auto; }
+            .form-content { padding: 20px; }
+            .form-head { padding: 20px; }
+            .payment-detail-grid { grid-template-columns: 1fr; gap: 13px; }
+            .review-grid { grid-template-columns: 1fr; }
+            .review-item:nth-child(odd) { border-right: 0; }
+            .step-line { width: 20px; }
+            .form-actions { gap: 10px; }
+            .wizard-button { padding: 10px 14px; }
+        }
+
+        @media (max-width: 700px) {
+            .topbar { padding: 0 20px; }
+            .brand img { width: 42px; height: 42px; }
+            .brand-text strong { font-size: 17px; }
+            main { padding-top: 111px; }
+            .theme-map { right: -52%; width: 130vw; opacity: 0.2; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg class="theme-map" viewBox="0 0 460 345" aria-hidden="true">
+        <defs>
+            <filter id="delegation-red-map" color-interpolation-filters="sRGB">
+                <feColorMatrix type="matrix" values="
+                    0 0 0 0 0.55
+                    0 0 0 0 0.045
+                    0 0 0 0 0.08
+                    -0.2126 -0.7152 -0.0722 1 0" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="3" intercept="-0.75" />
+                </feComponentTransfer>
+            </filter>
+        </defs>
+        <image href="world-map.webp" width="460" height="345" filter="url(#delegation-red-map)" />
+    </svg>
+
+    <header class="topbar">
+        <a href="index.html" class="brand">
+            <img src="apsacs-logo.png" alt="APSACS Logo" onerror="this.style.display='none'">
+            <div class="brand-text">
+                <strong>AMUN</strong>
+                <span>APSACS MODEL UNITED NATIONS</span>
+            </div>
+        </a>
+    </header>
+
+    <main>
+        <section class="intro reveal" aria-labelledby="pageTitle">
+            <p class="eyebrow">Group / Institutional Registration</p>
+            <h1 id="pageTitle">Delegation Registration</h1>
+            <p>Submit your institution and delegate details for AMUN 2026.</p>
+        </section>
+
+        <section class="form-shell reveal" id="loginGate" aria-labelledby="loginGateTitle">
+            <div class="form-head">
+                <h2 id="loginGateTitle">Sign in required</h2>
+                <p>Sign in to your AMUN account before starting a delegation registration.</p>
+            </div>
+            <div class="form-content">
+                <a class="wizard-button auth-gate-button" href="index.html?auth=required&amp;next=delegation">Sign in to continue</a>
+                <p class="wizard-status" id="loginGateStatus" role="status" aria-live="polite"></p>
+            </div>
+        </section>
+
+        <section class="form-shell reveal" id="delegationFormShell" aria-labelledby="pageTitle" hidden>
+            <div class="steps" aria-label="Registration progress">
+                <span class="step-dot active" aria-current="step">1</span><span class="step-line"></span>
+                <span class="step-dot">2</span><span class="step-line"></span>
+                <span class="step-dot">3</span><span class="step-line"></span>
+                <span class="step-dot">4</span>
+            </div>
+
+            <form class="form-content" id="delegationWizard" novalidate>
+                <section class="form-step active" aria-labelledby="institutionHeading">
+                    <div class="step-heading">
+                        <h3 id="institutionHeading">Institution &amp; Head Delegate</h3>
+                        <p>Enter your institution and the person coordinating the delegation.</p>
+                    </div>
+                    <div class="form-section">
+                        <div class="section-heading"><h3>Institution Details</h3></div>
+                        <div class="field-grid">
+                            <div class="field full">
+                                <label for="institutionName">Institution / Organization Name <span class="required">*</span></label>
+                                <input id="institutionName" name="institutionName" type="text" autocomplete="organization" maxlength="120" placeholder="Enter your institution or organization name" required>
+                            </div>
+                            <div class="field">
+                                <label for="country">Country <span class="required">*</span></label>
+                                <input id="country" name="country" type="text" autocomplete="country-name" maxlength="80" placeholder="Enter your country" required>
+                            </div>
+                            <div class="field">
+                                <label for="city">City <span class="required">*</span></label>
+                                <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="80" placeholder="Enter your city" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="section-heading"><h3>Head Delegate Information</h3></div>
+                        <div class="field-grid">
+                            <div class="field full">
+                                <label for="headDelegateName">Head Delegate Full Name <span class="required">*</span></label>
+                                <input id="headDelegateName" name="headDelegateName" type="text" autocomplete="name" maxlength="120" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="field">
+                                <label for="email">Email Address <span class="required">*</span></label>
+                                <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="Enter your email address" required>
+                            </div>
+                            <div class="field">
+                                <label for="phone">Phone Number <span class="required">*</span></label>
+                                <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="Enter phone number" aria-describedby="phoneHint" required>
+                                <small class="field-hint" id="phoneHint">Choose a country code, then enter the contact number.</small>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-step" aria-labelledby="delegationHeading">
+                    <div class="step-heading">
+                        <h3 id="delegationHeading">Delegation Details</h3>
+                        <p>Choose the delegation size, then open each delegate panel to enter and submit their details.</p>
+                    </div>
+                    <div class="field-grid">
+                        <div class="field">
+                            <label for="delegateCount">Total Number of Delegates <span class="required">*</span></label>
+                            <select id="delegateCount" name="delegateCount" aria-describedby="delegateCountHint" required>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select>
+                            <small class="field-hint" id="delegateCountHint">Choose 5 or 6 delegates.</small>
+                        </div>
+                        <div class="field full">
+                            <div class="delegate-card-list" id="delegateDetails" aria-live="polite"></div>
+                            <small class="field-hint" id="delegateProgress" aria-live="polite"></small>
+                        </div>
+                        <div class="field full">
+                            <label for="additionalNotes">Additional Notes</label>
+                            <textarea id="additionalNotes" name="additionalNotes" maxlength="1200" placeholder="Add any details for the organizing team."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-step" aria-labelledby="paymentHeading">
+                    <div class="step-heading">
+                        <h3 id="paymentHeading">Payment Details</h3>
+                        <p>Payment instructions and fees have not been finalized yet.</p>
+                    </div>
+                    <div class="payment-details">
+                        <h4>Bank Details</h4>
+                        <div class="payment-detail-grid">
+                            <div><span>Bank</span><strong>To be announced</strong></div>
+                            <div><span>Account Title</span><strong>To be announced</strong></div>
+                            <div><span>Account / IBAN</span><strong>To be announced</strong></div>
+                            <div><span>Delegation Fee</span><strong>To be announced</strong></div>
+                        </div>
+                        <p class="payment-note">Payment instructions are not finalized. You can attach a JPG, PNG, or PDF proof for the organizing team.</p>
+                    </div>
+                    <div class="field payment-proof-field">
+                        <label for="paymentProof">Proof of Payment (optional)</label>
+                        <input id="paymentProof" name="paymentProof" type="file" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" aria-describedby="paymentProofHint paymentProofName">
+                        <small class="field-hint" id="paymentProofHint">JPG, PNG, or PDF up to 5 MB.</small>
+                        <small class="field-hint" id="paymentProofName">No file selected.</small>
+                    </div>
+                </section>
+
+                <section class="form-step" aria-labelledby="reviewHeading">
+                    <div class="step-heading">
+                        <h3 id="reviewHeading">Review &amp; Submit</h3>
+                        <p>Review your information, read the Code of Conduct and policies, then submit.</p>
+                    </div>
+                    <div class="review-box" id="reviewSummary"></div>
+                    <div class="conduct-box">
+                        <h4>Code of Conduct</h4>
+                        <ul>
+                            <li><strong>No Smoking:</strong> Smoking is strictly prohibited on event premises.</li>
+                            <li><strong>No Drugs or Alcohol:</strong> Possession or use is not allowed during the event.</li>
+                            <li><strong>No Harassment:</strong> Zero tolerance for harassment of any kind (verbal, physical, sexual, or online).</li>
+                            <li><strong>Respect All Participants:</strong> Maintain professionalism.</li>
+                            <li><strong>Follow Staff Instructions:</strong> Organizers' directions are final and must be followed.</li>
+                            <li><strong>No Vandalism:</strong> Damage to property will be penalized and reported.</li>
+                            <li><strong>Reporting Misconduct:</strong> Report issues to the Secretariat or Integrity Desk immediately.</li>
+                            <li><strong>Punctuality:</strong> Be on time for all sessions and committee meetings.</li>
+                        </ul>
+                    </div>
+                    <div class="agreement">
+                        <input id="agreement" name="agreement" type="checkbox" required>
+                        <label for="agreement">
+                            I confirm that the information above is accurate, and that I have read,
+                            understood, and agree to follow the Code of Conduct and the AMUN Privacy
+                            Policy and Terms &amp; Conditions.
+                        </label>
+                    </div>
+                    <p class="agreement-links">
+                        Review the <a href="privacy-policy.html" data-legal-open="privacy">Privacy Policy</a>
+                        and <a href="terms.html" data-legal-open="terms">Terms &amp; Conditions</a>
+                        without leaving this form.
+                    </p>
+                    <p class="wizard-status" id="wizardStatus" role="status" aria-live="polite"></p>
+                </section>
+
+                <div class="form-actions">
+                    <button class="wizard-button secondary" id="backButton" type="button" hidden>← Back</button>
+                    <button class="wizard-button" id="continueButton" type="button">Continue →</button>
+                </div>
+            </form>
+        </section>
+
+        <dialog class="legal-dialog" id="legalDialog" aria-labelledby="legalDialogTitle">
+            <div class="legal-dialog-header">
+                <h2 id="legalDialogTitle">AMUN policies</h2>
+                <button type="button" class="legal-dialog-close" id="legalDialogClose" aria-label="Close policies">×</button>
+            </div>
+            <div class="legal-tabs" role="tablist" aria-label="AMUN policies">
+                <button type="button" class="legal-tab" id="privacyTab" role="tab" data-legal-tab="privacy" tabindex="0" aria-selected="true" aria-controls="privacyPanel">Privacy Policy</button>
+                <button type="button" class="legal-tab" id="termsTab" role="tab" data-legal-tab="terms" tabindex="-1" aria-selected="false" aria-controls="termsPanel">Terms &amp; Conditions</button>
+            </div>
+            <div class="legal-content">
+                <section class="legal-panel" id="privacyPanel" role="tabpanel" aria-labelledby="privacyTab">
+                    <p>AMUN is committed to protecting the personal information of delegates, guardians and participants. This page will be finalized before public launch.</p>
+                    <h3>Information we may collect</h3>
+                    <ul>
+                        <li>Name, email address, phone number and guardian contact details.</li>
+                        <li>Registration and committee preference information.</li>
+                        <li>Proof of payment and relevant event records.</li>
+                    </ul>
+                    <h3>How we use it</h3>
+                    <p>Information is used to process delegate registration, maintain event records, contact participants, and ensure smooth operations for the conference.</p>
+                    <h3>Data protection</h3>
+                    <p>We will handle personal data responsibly and store it securely using approved systems. Only necessary information will be accessed by authorized AMUN organizers.</p>
+                    <h3>Consent</h3>
+                    <p>By submitting a registration form, participants consent to the processing of information necessary for delegate registration and conference administration.</p>
+                    <h3>Changes</h3>
+                    <p>This privacy policy may be updated before launch and after the event begins. The latest version will remain available on this page.</p>
+                </section>
+                <section class="legal-panel" id="termsPanel" role="tabpanel" aria-labelledby="termsTab" hidden>
+                    <p>These terms govern delegate participation in the AMUN conference and will be finalized before launch.</p>
+                    <h3>Eligibility</h3>
+                    <p>Participation is subject to eligibility requirements, committee availability, and registration confirmation by the organizers.</p>
+                    <h3>Registration</h3>
+                    <p>All registrations must be submitted accurately and honestly. Duplicate, incomplete or fraudulent registrations may be rejected or removed.</p>
+                    <h3>Conduct</h3>
+                    <p>Delegates are expected to uphold respectful behavior, follow conference rules, and act with professionalism throughout the event.</p>
+                    <h3>Payments</h3>
+                    <p>Payment details and deadlines will be published in the official registration process. Any fee arrangement is subject to organizer confirmation.</p>
+                    <h3>Changes</h3>
+                    <p>AMUN reserves the right to update event details, committee assignments and rules as needed. Participants will be informed of material changes as they arise.</p>
+                </section>
+            </div>
+        </dialog>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/intlTelInput.min.js"></script>
+    <script>
+        const SUPABASE_URL = "https://gxtmwoeusikehczprbvv.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_GKugMH1psPft3B_clIJ_cA_o5nFZgpQ";
+        const authClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const phoneInput = document.getElementById("phone");
+        const phoneWidget = window.intlTelInput(phoneInput, {
+            initialCountry: "pk",
+            nationalMode: true,
+            separateDialCode: true,
+            loadUtils: () =>
+                import("https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/utils.js")
+        });
+
+        const delegateCountInput = document.getElementById("delegateCount");
+        const delegateDetailsContainer = document.getElementById("delegateDetails");
+        const delegatePhoneWidgets = new Map();
+
+        function buildCommitteeOptions() {
+            return [
+                '<option value="">Select committee</option>',
+                '<option value="UNHRC">UNHRC</option>',
+                '<option value="UNSC">UNSC</option>',
+                '<option value="Crisis Committee">Crisis Committee</option>',
+                '<option value="ICJ">ICJ (International Court of Justice)</option>',
+                '<option value="UNW">UNW (UN Women)</option>'
+            ].join("");
+        }
+
+        function createDelegateCard(index, expanded = false) {
+            const card = document.createElement("div");
+            card.className = "delegate-card";
+            card.dataset.complete = "false";
+            card.innerHTML = `
+                    <div class="delegate-card-header">
+                        <div class="delegate-card-heading">
+                        <h4>Delegate ${index + 1}</h4>
+                            <span class="delegate-card-state">Details not submitted</span>
+                        </div>
+                        <div class="delegate-card-controls">
+                            <button class="delegate-review" type="button" hidden>Review &amp; Edit</button>
+                            <button class="delegate-toggle" type="button" aria-expanded="${expanded}" aria-label="${expanded ? "Collapse" : "Open"} Delegate ${index + 1} details">
+                                <span class="delegate-toggle-chevron" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="delegate-card-body" ${expanded ? "" : "hidden"}>
+                      <div class="field-grid">
+                        <div class="field">
+                            <label for="delegateName${index}">Full Name <span class="required">*</span></label>
+                            <input id="delegateName${index}" name="delegateName${index}" type="text" maxlength="120" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="field">
+                            <label for="delegateGender${index}">Gender <span class="required">*</span></label>
+                            <select id="delegateGender${index}" name="delegateGender${index}" required>
+                                <option value="">Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="delegateCnic${index}">CNIC / Passport No. <span class="required">*</span></label>
+                            <input id="delegateCnic${index}" name="delegateCnic${index}" type="text" maxlength="40" placeholder="XXXXX-XXXXXXX-X or passport number" required>
+                        </div>
+                        <div class="field">
+                            <label for="delegateDob${index}">Date of Birth <span class="required">*</span></label>
+                            <input id="delegateDob${index}" name="delegateDob${index}" type="text" autocomplete="bday" placeholder="e.g. 15 August 2008" required>
+                        </div>
+                        <div class="field">
+                            <label for="delegatePhone${index}">Phone Number <span class="required">*</span></label>
+                            <input id="delegatePhone${index}" name="delegatePhone${index}" type="tel" inputmode="tel" maxlength="25" placeholder="Enter phone number" required>
+                        </div>
+                        <div class="field">
+                            <label for="delegateEmail${index}">Email <span class="required">*</span></label>
+                            <input id="delegateEmail${index}" name="delegateEmail${index}" type="email" maxlength="120" placeholder="Enter your email address" required>
+                        </div>
+                        <div class="field">
+                            <label for="delegateCommitte1${index}">First Preference <span class="required">*</span></label>
+                            <select id="delegateCommitte1${index}" name="delegateCommitte1${index}" data-role="committee1" required>
+                                ${buildCommitteeOptions()}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="delegateCommitte2${index}">Second Preference <span class="required">*</span></label>
+                            <select id="delegateCommitte2${index}" name="delegateCommitte2${index}" data-role="committee2" required>
+                                ${buildCommitteeOptions()}
+                            </select>
+                        </div>
+                      </div>
+                      <div class="delegate-card-actions">
+                        <button class="wizard-button save-delegate" type="button">Submit Delegate ${index + 1}</button>
+                      </div>
+                      <p class="delegate-card-status" role="status" aria-live="polite"></p>
+                    </div>
+            `;
+
+            const body = card.querySelector(".delegate-card-body");
+            const toggleButton = card.querySelector(".delegate-toggle");
+            const reviewButton = card.querySelector(".delegate-review");
+            const cardState = card.querySelector(".delegate-card-state");
+            const cardStatus = card.querySelector(".delegate-card-status");
+            const saveButton = card.querySelector(".save-delegate");
+            const committee1 = card.querySelector('[data-role="committee1"]');
+            const committee2 = card.querySelector('[data-role="committee2"]');
+            const delegatePhoneInput = card.querySelector(`#delegatePhone${index}`);
+            const delegatePhoneWidget = window.intlTelInput(delegatePhoneInput, {
+                initialCountry: "pk",
+                nationalMode: true,
+                separateDialCode: true,
+                loadUtils: () =>
+                    import("https://cdn.jsdelivr.net/npm/intl-tel-input@25/build/js/utils.js")
+            });
+            delegatePhoneWidgets.set(index, delegatePhoneWidget);
+
+            const setExpanded = (expanded, focusFirstField = false) => {
+                if (expanded) {
+                    delegateDetailsContainer.querySelectorAll(".delegate-card").forEach(otherCard => {
+                        if (otherCard !== card) {
+                            otherCard.querySelector(".delegate-card-body").hidden = true;
+                            const otherToggle = otherCard.querySelector(".delegate-toggle");
+                            otherToggle.setAttribute("aria-expanded", "false");
+                            otherToggle.setAttribute("aria-label", `Open ${otherCard.querySelector("h4").textContent} details`);
+                        }
+                    });
+                }
+
+                body.hidden = !expanded;
+                toggleButton.setAttribute("aria-expanded", String(expanded));
+                toggleButton.setAttribute("aria-label", `${expanded ? "Collapse" : "Open"} Delegate ${index + 1} details`);
+                if (focusFirstField && expanded) body.querySelector("input").focus();
+            };
+
+            toggleButton.addEventListener("click", () => {
+                setExpanded(toggleButton.getAttribute("aria-expanded") !== "true");
+            });
+
+            reviewButton.addEventListener("click", () => {
+                setExpanded(true, true);
+            });
+
+            const markCardEdited = () => {
+                    if (card.dataset.complete === "true") {
+                        card.dataset.complete = "false";
+                        cardState.textContent = "Edits not submitted";
+                        reviewButton.hidden = true;
+                        cardStatus.textContent = "Submit these changes to mark this delegate complete.";
+                        updateDelegateProgress();
+                    }
+            };
+
+            body.querySelectorAll("input, select, textarea").forEach(field => {
+                field.addEventListener("input", markCardEdited);
+                field.addEventListener("change", markCardEdited);
+            });
+            delegatePhoneInput.addEventListener("countrychange", markCardEdited);
+
+            saveButton.addEventListener("click", async () => {
+                const fields = Array.from(body.querySelectorAll("input, select, textarea"));
+                for (const field of fields) {
+                    field.setCustomValidity("");
+                    if (!field.checkValidity()) {
+                        field.reportValidity();
+                        field.focus();
+                        return;
+                    }
+                }
+
+                try {
+                    await delegatePhoneWidget.promise;
+                } catch {
+                    cardStatus.textContent = "Phone validation needs an internet connection. Please try again.";
+                    delegatePhoneInput.focus();
+                    return;
+                }
+
+                if (!delegatePhoneWidget.isValidNumber()) {
+                    delegatePhoneInput.setCustomValidity("Enter a valid phone number for the selected country code.");
+                    delegatePhoneInput.reportValidity();
+                    delegatePhoneInput.focus();
+                    return;
+                }
+
+                if (committee1.value === committee2.value) {
+                    committee2.setCustomValidity("Choose a different second committee.");
+                    committee2.reportValidity();
+                    committee2.focus();
+                    return;
+                }
+
+                card.dataset.complete = "true";
+                cardState.textContent = "Details submitted";
+                cardStatus.textContent = "Delegate details are ready for review.";
+                reviewButton.hidden = false;
+                updateDelegateProgress();
+                setExpanded(false);
+            });
+
+            const refreshCommitteeOptions = () => {
+                const selectedOther = committee2.value;
+                Array.from(committee1.options).forEach(option => {
+                    option.disabled = Boolean(option.value && option.value === selectedOther);
+                });
+
+                const selectedCurrent = committee1.value;
+                Array.from(committee2.options).forEach(option => {
+                    option.disabled = Boolean(option.value && option.value === selectedCurrent);
+                });
+            };
+
+            committee1.addEventListener("change", refreshCommitteeOptions);
+            committee2.addEventListener("change", refreshCommitteeOptions);
+            return card;
+        }
+
+        const delegateProgress = document.getElementById("delegateProgress");
+
+        function updateDelegateProgress() {
+            const completedCount = delegateDetailsContainer.querySelectorAll('.delegate-card[data-complete="true"]').length;
+            const targetCount = Number(delegateCountInput.value) || 5;
+            delegateProgress.textContent = `${completedCount} of ${targetCount} delegate details submitted`;
+        }
+
+        function renderDelegateCards() {
+            const targetCount = Number(delegateCountInput.value) || 5;
+            let cards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
+
+            while (cards.length > targetCount) {
+                const removedCard = cards.pop();
+                delegatePhoneWidgets.delete(cards.length);
+                removedCard.remove();
+            }
+
+            while (cards.length < targetCount) {
+                const card = createDelegateCard(cards.length, cards.length === 0);
+                delegateDetailsContainer.appendChild(card);
+                cards.push(card);
+            }
+
+            const expandedCard = cards.find(card => !card.querySelector(".delegate-card-body").hidden);
+            if (!expandedCard && cards.length) cards[0].querySelector(".delegate-toggle").click();
+            updateDelegateProgress();
+        }
+
+        delegateCountInput.addEventListener("change", () => {
+            renderDelegateCards();
+            wizardStatus.textContent = "";
+        });
+
+        const wizard = document.getElementById("delegationWizard");
+        const wizardSteps = Array.from(wizard.querySelectorAll(".form-step"));
+        const stepDots = Array.from(document.querySelectorAll(".step-dot"));
+        const stepLines = Array.from(document.querySelectorAll(".step-line"));
+        const backButton = document.getElementById("backButton");
+        const continueButton = document.getElementById("continueButton");
+        const wizardStatus = document.getElementById("wizardStatus");
+        let currentStep = 0;
+
+        document.getElementById("paymentProof").addEventListener("change", event => {
+            document.getElementById("paymentProofName").textContent = event.target.files[0]?.name || "No file selected.";
+        });
+
+        function updateWizard() {
+            wizardSteps.forEach((step, index) => {
+                step.classList.toggle("active", index === currentStep);
+                step.hidden = index !== currentStep;
+            });
+
+            stepDots.forEach((dot, index) => {
+                dot.classList.toggle("active", index === currentStep);
+                dot.classList.toggle("completed", index < currentStep);
+                if (index === currentStep) {
+                    dot.setAttribute("aria-current", "step");
+                } else {
+                    dot.removeAttribute("aria-current");
+                }
+            });
+
+            stepLines.forEach((line, index) => {
+                line.classList.toggle("active", index < currentStep);
+            });
+
+            backButton.hidden = currentStep === 0;
+            const isFinalStep = currentStep === wizardSteps.length - 1;
+            continueButton.type = isFinalStep ? "submit" : "button";
+            continueButton.disabled = false;
+            continueButton.textContent = isFinalStep
+                ? "Submit Registration"
+                : "Continue →";
+        }
+
+        async function validateCurrentStep() {
+            if (currentStep === 1) {
+                const incompleteCard = delegateDetailsContainer.querySelector('.delegate-card[data-complete="false"]');
+                if (incompleteCard) {
+                    wizardStatus.textContent = `Submit the details for ${incompleteCard.querySelector("h4").textContent} before continuing.`;
+                    const toggleButton = incompleteCard.querySelector(".delegate-toggle");
+                    if (toggleButton.getAttribute("aria-expanded") !== "true") toggleButton.click();
+                    incompleteCard.querySelector("input").focus();
+                    return false;
+                }
+            }
+
+            const currentFields = Array.from(
+                wizardSteps[currentStep].querySelectorAll("input, select, textarea")
+            );
+
+            for (const field of currentFields) {
+                field.setCustomValidity("");
+                if (!field.checkValidity()) {
+                    field.reportValidity();
+                    field.focus();
+                    return false;
+                }
+            }
+
+            if (currentStep === 0) {
+                try {
+                    await phoneWidget.promise;
+                } catch {
+                    phoneInput.focus();
+                    wizardStatus.textContent = "Phone validation needs an internet connection. Please try again.";
+                    return false;
+                }
+
+                if (!phoneWidget.isValidNumber()) {
+                    phoneInput.setCustomValidity("Enter a valid phone number for the selected country.");
+                    phoneInput.reportValidity();
+                    phoneInput.focus();
+                    return false;
+                }
+            }
+
+            if (currentStep === 1) {
+                const cards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
+
+                for (const [index, card] of cards.entries()) {
+                    const nameField = card.querySelector(`#delegateName${index}`);
+                    const committee1 = card.querySelector(`#delegateCommitte1${index}`);
+                    const committee2 = card.querySelector(`#delegateCommitte2${index}`);
+
+                    if (committee1.value === committee2.value) {
+                        committee2.setCustomValidity("Choose a different second committee.");
+                        committee2.reportValidity();
+                        committee2.focus();
+                        return false;
+                    }
+
+                    if (!nameField.value.trim()) {
+                        nameField.focus();
+                        nameField.reportValidity();
+                        return false;
+                    }
+                }
+            }
+
+            if (currentStep === 2) {
+                const paymentProof = document.getElementById("paymentProof").files[0];
+                if (paymentProof) {
+                    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+                    const allowedExtensions = /\.(jpe?g|png|pdf)$/i;
+                    if (
+                        paymentProof.size > 5 * 1024 * 1024 ||
+                        (paymentProof.type && !allowedTypes.includes(paymentProof.type)) ||
+                        !allowedExtensions.test(paymentProof.name)
+                    ) {
+                        const paymentProofInput = document.getElementById("paymentProof");
+                        paymentProofInput.setCustomValidity("Choose a JPG, PNG, or PDF file up to 5 MB.");
+                        paymentProofInput.reportValidity();
+                        paymentProofInput.focus();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        function addReviewSection(title, entries) {
+            const section = document.createElement("section");
+            section.className = "review-section";
+
+            const heading = document.createElement("h4");
+            heading.className = "review-title";
+            heading.textContent = title;
+
+            const grid = document.createElement("div");
+            grid.className = "review-grid";
+
+            entries.forEach(([label, value]) => {
+                const item = document.createElement("div");
+                item.className = "review-item";
+
+                const itemLabel = document.createElement("div");
+                itemLabel.className = "review-label";
+                itemLabel.textContent = label;
+
+                const itemValue = document.createElement("div");
+                itemValue.className = "review-value";
+                itemValue.textContent = value || "Not provided";
+
+                item.append(itemLabel, itemValue);
+                grid.append(item);
+            });
+
+            section.append(heading, grid);
+            return section;
+        }
+
+        function renderReview() {
+            const paymentProof = document.getElementById("paymentProof").files[0];
+            const delegateCards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
+            const delegateSections = delegateCards.map((card, index) => addReviewSection(`Delegate ${index + 1}`, [
+                ["Name", card.querySelector(`#delegateName${index}`).value],
+                ["Gender", card.querySelector(`#delegateGender${index}`).value],
+                ["CNIC / Passport", card.querySelector(`#delegateCnic${index}`).value],
+                ["Date of Birth", card.querySelector(`#delegateDob${index}`).value],
+                ["Phone Number", delegatePhoneWidgets.get(index).getNumber()],
+                ["Email", card.querySelector(`#delegateEmail${index}`).value],
+                ["First Preference", card.querySelector(`#delegateCommitte1${index}`).value],
+                ["Second Preference", card.querySelector(`#delegateCommitte2${index}`).value]
+            ]));
+
+            const reviewSections = [
+                addReviewSection("Institution & Head Delegate", [
+                    ["Institution", document.getElementById("institutionName").value],
+                    ["Country", document.getElementById("country").value],
+                    ["City", document.getElementById("city").value],
+                    ["Head Delegate", document.getElementById("headDelegateName").value],
+                    ["Email", document.getElementById("email").value],
+                    ["Phone", phoneWidget.getNumber()]
+                ]),
+                ...delegateSections,
+                addReviewSection("Delegation Details", [
+                    ["Number of Delegates", document.getElementById("delegateCount").value],
+                    ["Additional Notes", document.getElementById("additionalNotes").value]
+                ]),
+                addReviewSection("Payment", [
+                    ["Bank Details", "To be announced"],
+                    ["Delegation Fee", "To be announced"],
+                    ["Proof of Payment", paymentProof?.name || "Not provided"]
+                ])
+            ];
+
+            document.getElementById("reviewSummary").replaceChildren(...reviewSections);
+        }
+
+        function getDelegationPayload(user) {
+            const delegateCards = Array.from(delegateDetailsContainer.querySelectorAll(".delegate-card"));
+            const delegates = delegateCards.map((card, index) => {
+                return {
+                    delegate_number: index + 1,
+                    full_name: card.querySelector(`#delegateName${index}`).value.trim(),
+                    gender: card.querySelector(`#delegateGender${index}`).value,
+                    cnic_or_passport: card.querySelector(`#delegateCnic${index}`).value.trim(),
+                    date_of_birth: card.querySelector(`#delegateDob${index}`).value.trim(),
+                    phone_number: delegatePhoneWidgets.get(index).getNumber(),
+                    email: card.querySelector(`#delegateEmail${index}`).value.trim(),
+                    committee_1: card.querySelector(`#delegateCommitte1${index}`).value,
+                    committee_2: card.querySelector(`#delegateCommitte2${index}`).value
+                };
+            });
+
+            return {
+                head_delegate_user_id: user.id,
+                institution_name: document.getElementById("institutionName").value.trim(),
+                country: document.getElementById("country").value.trim(),
+                city: document.getElementById("city").value.trim(),
+                head_delegate_name: document.getElementById("headDelegateName").value.trim(),
+                head_delegate_email: user.email.toLowerCase(),
+                head_delegate_phone: phoneWidget.getNumber(),
+                delegates_count: delegates.length,
+                delegates,
+                additional_notes: document.getElementById("additionalNotes").value.trim(),
+                payment_proof_path: null,
+                status: "Pending"
+            };
+        }
+
+        async function submitDelegationRegistration() {
+            const { data, error: sessionError } = await authClient.auth.getSession();
+            if (sessionError) throw sessionError;
+            const user = data.session?.user;
+            if (!user?.id || !user.email) {
+                throw new Error("Your sign-in expired. Sign in again before submitting.");
+            }
+
+            const payload = getDelegationPayload(user);
+            const paymentProof = document.getElementById("paymentProof").files[0];
+            let uploadedProofPath = null;
+
+            if (paymentProof) {
+                const safeFileName = paymentProof.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                uploadedProofPath = `delegations/${user.id}/${Date.now()}-${safeFileName}`;
+                const { error: uploadError } = await authClient.storage
+                    .from("payment-proofs")
+                    .upload(uploadedProofPath, paymentProof, {
+                        contentType: paymentProof.type || "application/octet-stream",
+                        upsert: false
+                    });
+
+                if (uploadError) throw new Error(`Payment proof upload failed: ${uploadError.message}`);
+                payload.payment_proof_path = uploadedProofPath;
+            }
+
+            const { error: insertError } = await authClient
+                .from("delegations")
+                .insert([payload]);
+
+            if (insertError) {
+                if (uploadedProofPath) {
+                    const { error: cleanupError } = await authClient.storage
+                        .from("payment-proofs")
+                        .remove([uploadedProofPath]);
+                    if (cleanupError) console.error("Could not remove unlinked payment proof:", cleanupError);
+                }
+                throw insertError;
+            }
+        }
+
+        backButton.addEventListener("click", () => {
+            if (currentStep > 0) {
+                currentStep--;
+                wizardStatus.textContent = "";
+                continueButton.disabled = false;
+                updateWizard();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+
+        continueButton.addEventListener("click", async () => {
+            if (currentStep === wizardSteps.length - 1) {
+                if (!await validateCurrentStep()) return;
+                return;
+            }
+
+            if (!await validateCurrentStep()) return;
+
+            currentStep++;
+            if (currentStep === wizardSteps.length - 1) renderReview();
+            updateWizard();
+            wizardStatus.textContent = "";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        wizard.addEventListener("submit", async event => {
+            event.preventDefault();
+            if (currentStep !== wizardSteps.length - 1) return;
+            if (!await validateCurrentStep()) return;
+
+            continueButton.disabled = true;
+            continueButton.textContent = "Submitting...";
+            wizardStatus.textContent = "Submitting your delegation...";
+
+            try {
+                await submitDelegationRegistration();
+                wizardStatus.textContent = "Delegation submitted successfully.";
+                continueButton.textContent = "Submitted";
+            } catch (error) {
+                console.error("Delegation submission failed:", error);
+                const message = error.message && error.message.includes("Could not find the table")
+                    ? "The delegations table is not set up yet. Run supabase-delegation-schema.sql in Supabase SQL Editor."
+                    : `Submission failed: ${error.message}`;
+                wizardStatus.textContent = message;
+                continueButton.disabled = false;
+                continueButton.textContent = "Submit Registration";
+            }
+        });
+
+        const legalDialog = document.getElementById("legalDialog");
+        const privacyTab = document.getElementById("privacyTab");
+        const termsTab = document.getElementById("termsTab");
+        const privacyPanel = document.getElementById("privacyPanel");
+        const termsPanel = document.getElementById("termsPanel");
+
+        function showLegalPolicy(policy) {
+            const showPrivacy = policy === "privacy";
+            privacyTab.setAttribute("aria-selected", String(showPrivacy));
+            termsTab.setAttribute("aria-selected", String(!showPrivacy));
+            privacyTab.tabIndex = showPrivacy ? 0 : -1;
+            termsTab.tabIndex = showPrivacy ? -1 : 0;
+            privacyPanel.hidden = !showPrivacy;
+            termsPanel.hidden = showPrivacy;
+
+            if (!legalDialog.open) legalDialog.showModal();
+            (showPrivacy ? privacyTab : termsTab).focus();
+        }
+
+        document.querySelectorAll("[data-legal-open]").forEach(link => {
+            link.addEventListener("click", event => {
+                event.preventDefault();
+                showLegalPolicy(link.dataset.legalOpen);
+            });
+        });
+
+        privacyTab.addEventListener("click", () => showLegalPolicy("privacy"));
+        termsTab.addEventListener("click", () => showLegalPolicy("terms"));
+        [privacyTab, termsTab].forEach((tab, index, tabs) => {
+            tab.addEventListener("keydown", event => {
+                const nextIndex = event.key === "ArrowRight"
+                    ? (index + 1) % tabs.length
+                    : event.key === "ArrowLeft"
+                        ? (index + tabs.length - 1) % tabs.length
+                        : event.key === "Home"
+                            ? 0
+                            : event.key === "End"
+                                ? tabs.length - 1
+                                : -1;
+
+                if (nextIndex !== -1) {
+                    event.preventDefault();
+                    showLegalPolicy(tabs[nextIndex].dataset.legalTab);
+                }
+            });
+        });
+        document.getElementById("legalDialogClose").addEventListener("click", () => legalDialog.close());
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll(".reveal").forEach(element => {
+            revealObserver.observe(element);
+        });
+
+        async function initializeDelegationAccess() {
+            const loginGate = document.getElementById("loginGate");
+            const formShell = document.getElementById("delegationFormShell");
+            const gateStatus = document.getElementById("loginGateStatus");
+
+            try {
+                const { data, error } = await authClient.auth.getSession();
+                if (error) throw error;
+
+                const user = data.session?.user;
+                if (!user?.email) {
+                    loginGate.hidden = false;
+                    formShell.hidden = true;
+                    return;
+                }
+
+                const emailInput = document.getElementById("email");
+                emailInput.value = user.email;
+                emailInput.readOnly = true;
+                loginGate.hidden = true;
+                formShell.hidden = false;
+            } catch (error) {
+                loginGate.hidden = false;
+                formShell.hidden = true;
+                gateStatus.textContent = `Could not check your sign-in: ${error.message}`;
+            }
+        }
+
+        renderDelegateCards();
+        updateWizard();
+        initializeDelegationAccess();
+    </script>
+</body>
+</html>
